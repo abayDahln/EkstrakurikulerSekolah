@@ -12,14 +12,14 @@ Dibangun menggunakan *ReactJS (frontend)* dan *C# (backend)*.
 - Melihat daftar ekskul
 - Mendaftar ekskul
 - Melihat jadwal kegiatan ekskul
-- Melihat laporan kegiatan
+- Melihat dan mengunggah laporan kegiatan
 
 ### 👨‍🏫 Pembina
 - Login
 - Membuat / mengedit / menghapus jadwal ekskul
 - Mengelola absensi murid
 - Mengunggah dokumentasi kegiatan
-- Mengunggah laporan kegiatan
+- Melihat laporan kegiatan
 
 ---
 
