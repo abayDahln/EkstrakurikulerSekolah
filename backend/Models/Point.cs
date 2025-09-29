@@ -7,11 +7,12 @@ public partial class Point
 {
     public int Id { get; set; }
 
-    public int? MemberId { get; set; }
+    public int MemberId { get; set; }
 
-    public int? Points { get; set; }
+    public int Points { get; set; }
+    public string Title { get; set; } = null!;
 
-    public DateTime? LastUpdated { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public virtual Member? Member { get; set; }
+    public virtual Member? Member { get; set; } = null!;
 }

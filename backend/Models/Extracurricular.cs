@@ -13,8 +13,6 @@ public partial class Extracurricular
 
     public int? PembinaId { get; set; }
 
-    public virtual ICollection<ExtracurricularPembina> ExtracurricularPembinas { get; set; } = new List<ExtracurricularPembina>();
-
     public virtual ICollection<Member> Members { get; set; } = new List<Member>();
 
     public virtual User? Pembina { get; set; }

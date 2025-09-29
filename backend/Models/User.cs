@@ -15,9 +15,9 @@ public partial class User
 
     public string Role { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public string? ProfileUrl { get; set; }
 
-    public virtual ICollection<ExtracurricularPembina> ExtracurricularPembinas { get; set; } = new List<ExtracurricularPembina>();
+    public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<Extracurricular> Extracurriculars { get; set; } = new List<Extracurricular>();
 

@@ -8,7 +8,7 @@ public partial class Member
     public int Id { get; set; }
 
     public int? UserId { get; set; }
-
+     
     public int? ExtracurricularId { get; set; }
 
     public DateOnly? JoinDate { get; set; }
@@ -23,7 +23,7 @@ public partial class Member
 
     public virtual Extracurricular? Extracurricular { get; set; }
 
-    public virtual Point? Point { get; set; }
+    public virtual ICollection<Point>? Point { get; set; } = new List<Point>();
 
     public virtual User? User { get; set; }
 }

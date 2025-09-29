@@ -47,3 +47,8 @@ packages/
 # Mac / Linux junk
 .DS_Store
 Thumbs.db
+
+
+Migrations/
+migrations/
+*.db
