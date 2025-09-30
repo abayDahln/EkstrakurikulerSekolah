@@ -140,17 +140,8 @@ namespace EkstrakurikulerSekolah.Controllers
 
             await _context.SaveChangesAsync();
 
-            var point = new Point
-            {
-                MemberId = member.Id,
-                Points = 5,
-                Title = "bergabung",
-                CreatedAt = DateTime.Now
-            };
-
-            _context.Points.Add(point);
-
-            await _context.SaveChangesAsync();
+            var pointService = new PointService(_context);
+            await pointService.AddJoinExtracurricularPoints(member.Id, id);
 
             return Ok(new ApiResponse<object>(200, "Berhasil join ekskul"));
         }

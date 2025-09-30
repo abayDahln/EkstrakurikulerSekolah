@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using EkstrakurikulerSekolah.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,21 +57,25 @@ namespace EkstrakurikulerSekolah.Controllers
                                     .FirstOrDefault()
                             }
                         }).ToList(),
-                    
+
                     ActivityStats = new
                     {
                         TotalAttendances = _context.Attendances
-                            .Count(a => _context.Members
-                                .Any(m => m.Id == a.MemberId && m.UserId == userId)),
-                        TotalReports = _context.ActivityReports
-                            .Count(r => _context.Members
-                                .Any(m => m.Id == r.MemberId && m.UserId == userId)),
-                        TotalDocumentations = _context.ActivityDocumentations
-                            .Count(d => d.UserId == userId),
-                        JoinedExtracurriculars = u.Members.Count(m => m.Status == "active"),
-                        CreatedSchedules = u.Schedules.Count()
+                        .Count(a => _context.Members
+                            .Any(m => m.Id == a.MemberId && m.UserId == userId)),
+                                        TotalReports = _context.ActivityReports
+                        .Count(r => _context.Members
+                            .Any(m => m.Id == r.MemberId && m.UserId == userId)),
+                                        TotalDocumentations = _context.ActivityDocumentations
+                        .Count(d => d.UserId == userId),
+                                        JoinedExtracurriculars = u.Members.Count(m => m.Status == "active"),
+                                        CreatedSchedules = u.Schedules.Count(),
+                                        // Total poin dari tabel points - melalui member
+                                        TotalPoints = u.Members
+                        .SelectMany(m => m.Point)
+                        .Sum(p => p.Points)
                     },
-                 
+
                     RecentActivities = _context.Attendances
                         .Where(a => _context.Members.Any(m => m.Id == a.MemberId && m.UserId == userId))
                         .OrderByDescending(a => a.AttendanceTime)
@@ -83,6 +88,25 @@ namespace EkstrakurikulerSekolah.Controllers
                             Status = a.Status,
                             Date = a.AttendanceTime,
                             Location = a.Schedule.Location
+                        })
+                        .ToList(),
+                    PointDetails = u.Members
+                        .SelectMany(m => m.Point)
+                        .OrderByDescending(p => p.CreatedAt)
+                        .Select(p => new
+                        {
+                            p.Id,
+                            p.Points,
+                            p.Title,
+                            p.CreatedAt,
+                            Extracurricular = p.Member.ExtracurricularId != null ? new
+                            {
+                                Id = p.Member.ExtracurricularId,
+                                Name = _context.Extracurriculars
+                                    .Where(e => e.Id == p.Member.ExtracurricularId)
+                                    .Select(e => e.Name)
+                                    .FirstOrDefault()
+                            } : null
                         })
                         .ToList()
                 })
@@ -129,7 +153,15 @@ namespace EkstrakurikulerSekolah.Controllers
                     .AnyAsync(u => u.Email == request.Email && u.Id != userId);
 
                 if (emailExists)
-                    return BadRequest(new ApiResponse<object>(400, "Email sudah digunakan", null));
+                    return Conflict(new ApiResponse<object>(409, "Email sudah digunakan", null));
+
+                Regex email = new Regex(@"^+.+@.+\..+$");
+
+                if (!email.IsMatch(request.Email))
+                {
+                    return BadRequest(new ApiResponse<object>(400, "format email salah"));
+                }
+
 
                 user.Email = request.Email;
             }
@@ -141,10 +173,8 @@ namespace EkstrakurikulerSekolah.Controllers
 
                 return Ok(new ApiResponse<object>(200, "Profile berhasil diupdate", new
                 {
-                    user.Id,
                     user.Name,
-                    user.Email,
-                    user.ProfileUrl
+                    user.Email
                 }));
             }
             catch (Exception ex)
@@ -161,113 +191,94 @@ namespace EkstrakurikulerSekolah.Controllers
                 return Unauthorized();
 
             if (image == null || image.Length <= 0)
-            {
                 return BadRequest(new ApiResponse<object>(400, "File tidak valid", null));
-            }
 
             if (image.Length > 10 * 1024 * 1024)
-            {
-                return BadRequest(new ApiResponse<object>(400, "Ukuran file maksimal 1MB", null));
-            }
+                return BadRequest(new ApiResponse<object>(400, "Ukuran file maksimal 10MB", null));
 
-            var allowedExtensions = new[] { ".png", ".jpeg", ".jpg" };
+            var allowedExtensions = new[] { ".png", ".jpg", ".jpeg" };
             var fileExtension = Path.GetExtension(image.FileName).ToLower();
             if (!allowedExtensions.Contains(fileExtension))
-            {
-                return BadRequest(new ApiResponse<object>(400, "Format file tidak didukung. Gunakan PNG, JPEG atau JPG", null));
-            }
+                return BadRequest(new ApiResponse<object>(400, "Format file tidak didukung. Gunakan PNG, JPG, atau JPEG", null));
+
+            var allowedMimeTypes = new[] { "image/png", "image/jpeg", "image/jpg" };
+            if (!allowedMimeTypes.Contains(image.ContentType.ToLower()))
+                return BadRequest(new ApiResponse<object>(400, "Tipe file tidak didukung", null));
 
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
                 return NotFound(new ApiResponse<object>(404, "User tidak ditemukan", null));
 
+            string oldFileName = null;
+            string newFileName = null;
+
             try
             {
-                var fileName = $"{Guid.NewGuid().ToString().Split('-')[0]}{fileExtension}";
-                var folderPath = Path.Combine(_env.WebRootPath, "public", "profile");
+                // Simpan nama file lama
+                if (!string.IsNullOrEmpty(user.ProfileUrl))
+                    oldFileName = Path.GetFileName(user.ProfileUrl);
 
+                // Generate nama file baru
+                newFileName = $"{Guid.NewGuid().ToString().Split('-')[0]}{fileExtension}";
+                var folderPath = Path.Combine(_env.WebRootPath, "public", "profile");
                 Directory.CreateDirectory(folderPath);
 
-                var fullPath = Path.Combine(folderPath, fileName);
+                var fullPath = Path.Combine(folderPath, newFileName);
 
+                // Simpan file baru
                 using (var stream = new FileStream(fullPath, FileMode.Create))
-                {
                     await image.CopyToAsync(stream);
-                }
 
-                if (!string.IsNullOrEmpty(user.ProfileUrl))
-                {
-                    var oldFileName = Path.GetFileName(user.ProfileUrl);
-                    if (!string.IsNullOrEmpty(oldFileName))
-                    {
-                        var oldFilePath = Path.Combine(folderPath, oldFileName);
-                        if (System.IO.File.Exists(oldFilePath))
-                        {
-                            System.IO.File.Delete(oldFilePath);
-                        }
-                    }
-                }
-
-                user.ProfileUrl = $"public/profile/{fileName}";
+                // Update database
+                user.ProfileUrl = $"public/profile/{newFileName}";
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
+                // Hapus file lama
+                if (!string.IsNullOrEmpty(oldFileName))
+                {
+                    try
+                    {
+                        var oldFilePath = Path.Combine(folderPath, oldFileName);
+                        if (System.IO.File.Exists(oldFilePath))
+                            System.IO.File.Delete(oldFilePath);
+                    }
+                    catch (Exception deleteEx)
+                    {
+                        Console.WriteLine($"Warning: Gagal hapus file lama: {deleteEx.Message}");
+                    }
+                }
+
+                var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                var fullProfileUrl = $"{baseUrl}/{user.ProfileUrl}";
+
                 return Ok(new ApiResponse<object>(200, "Foto profil berhasil diupdate", new
                 {
-                    ProfileUrl = user.ProfileUrl
+                    ProfileUrl = user.ProfileUrl,
+                    FullProfileUrl = fullProfileUrl
                 }));
             }
             catch (Exception ex)
             {
+                // Cleanup file baru jika error
+                if (!string.IsNullOrEmpty(newFileName))
+                {
+                    try
+                    {
+                        var newFilePath = Path.Combine(_env.WebRootPath, "public", "profile", newFileName);
+                        if (System.IO.File.Exists(newFilePath))
+                            System.IO.File.Delete(newFilePath);
+                    }
+                    catch (Exception cleanupEx)
+                    {
+                        Console.WriteLine($"Error cleanup: {cleanupEx.Message}");
+                    }
+                }
+
                 return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat upload foto", null));
             }
         }
 
-        [HttpGet("ekskul")]
-        public async Task<IActionResult> GetMyExtracurriculars()
-        {
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
-                return Unauthorized();
-
-            var ekskuls = await _context.Members
-                .Where(m => m.UserId == userId && m.Status == "active")
-                .Select(m => new
-                {
-                    m.Extracurricular.Id,
-                    m.Extracurricular.Name,
-                    m.Extracurricular.Description,
-                    m.JoinDate,
-                    m.Status,
-                    Pembina = new
-                    {
-                        Id = m.Extracurricular.PembinaId,
-                        Name = _context.Users
-                            .Where(u => u.Id == m.Extracurricular.PembinaId)
-                            .Select(u => u.Name)
-                            .FirstOrDefault(),
-                        ProfileUrl = _context.Users
-                            .Where(u => u.Id == m.Extracurricular.PembinaId)
-                            .Select(u => u.ProfileUrl)
-                            .FirstOrDefault()
-                    },
-                    TotalMembers = m.Extracurricular.Members.Count(mm => mm.Status == "active"),
-                    UpcomingSchedules = _context.Schedules
-                        .Where(s => s.ExtracurricularId == m.ExtracurricularId && s.ScheduleDate >= DateTime.Now)
-                        .OrderBy(s => s.ScheduleDate)
-                        .Take(3)
-                        .Select(s => new
-                        {
-                            s.Id,
-                            s.Title,
-                            s.ScheduleDate,
-                            s.Location
-                        }).ToList()
-                })
-                .ToListAsync();
-
-            return Ok(new ApiResponse<object>(200, "success", ekskuls));
-        }
     }
 
     

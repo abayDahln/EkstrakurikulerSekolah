@@ -210,5 +210,248 @@ namespace EkstrakurikulerSekolah.Controllers
         }
 
 
+        [HttpPost("attendance")]
+        public async Task<IActionResult> PostAttendance([FromBody] PostAttendanceRequest request)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
+                return Unauthorized();
+
+            
+            if (request == null)
+                return BadRequest(new ApiResponse<object>(400, "Data request tidak valid", null));
+
+            if (request.ScheduleId <= 0)
+                return BadRequest(new ApiResponse<object>(400, "ScheduleId tidak valid", null));
+
+            
+            var allowedStatus = new[] { "hadir", "izin", "sakit" };
+            if (string.IsNullOrEmpty(request.Status) || !allowedStatus.Contains(request.Status.ToLower()))
+            {
+                return BadRequest(new ApiResponse<object>(400, "Status tidak valid. Gunakan: hadir, izin, atau sakit", null));
+            }
+
+            try
+            {
+
+                var schedule = await _context.Schedules
+                    .FirstOrDefaultAsync(s => s.Id == request.ScheduleId);
+
+                if (schedule == null)
+                    return NotFound(new ApiResponse<object>(404, "Jadwal tidak ditemukan", null));
+
+                
+                var member = await _context.Members
+                    .FirstOrDefaultAsync(m => m.UserId == userId &&
+                                             m.ExtracurricularId == schedule.ExtracurricularId &&
+                                             m.Status == "active");
+
+                if (member == null)
+                    return BadRequest(new ApiResponse<object>(400, "Anda bukan member dari ekskul ini", null));
+
+               
+                var existingAttendance = await _context.Attendances
+                    .FirstOrDefaultAsync(a => a.ScheduleId == request.ScheduleId &&
+                                             a.MemberId == member.Id);
+
+                if (existingAttendance != null)
+                {
+                    return BadRequest(new ApiResponse<object>(400, "Anda sudah melakukan absen untuk jadwal ini", new
+                    {
+                        existingAttendance.Id,
+                        existingAttendance.Status,
+                        existingAttendance.AttendanceTime
+                    }));
+                }
+
+                
+                var attendance = new Attendance
+                {
+                    ScheduleId = request.ScheduleId,
+                    MemberId = member.Id,
+                    Status = request.Status.ToLower(),
+                    AttendanceTime = DateTime.Now
+                };
+
+                _context.Attendances.Add(attendance);
+                await _context.SaveChangesAsync();
+
+                var pointService = new PointService(_context);
+                await pointService.AddAttendancePoints(member.Id, request.Status);
+
+                int pointsEarned = request.Status.ToLower() switch
+                {
+                    "hadir" => 2,
+                    "sakit" => 1,
+                    "izin" => 1,
+                    _ => 0
+                };
+
+                var createdAttendance = await _context.Attendances
+                    .Where(a => a.Id == attendance.Id)
+                    .Select(a => new
+                    {
+                        a.Id,
+                        a.ScheduleId,
+                        Schedule = new
+                        {
+                            a.Schedule.Title,
+                            a.Schedule.Description,
+                            a.Schedule.ScheduleDate,
+                            a.Schedule.Location
+                        },
+                        Extracurricular = new
+                        {
+                            a.Schedule.Extracurricular.Id,
+                            a.Schedule.Extracurricular.Name
+                        },
+                        a.Status,
+                        a.AttendanceTime,
+                        Member = new
+                        {
+                            member.Id,
+                            User = new
+                            {
+                                member.User.Id,
+                                member.User.Name,
+                                member.User.ProfileUrl
+                            }
+                        },
+                        PointsEarned = pointsEarned
+                    })
+                    .FirstOrDefaultAsync();
+
+
+                return Ok(new ApiResponse<object>(201, "Absen berhasil dicatat", createdAttendance));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat melakukan absen", null));
+            }
+        }
+
+        [HttpPost("report")]
+        public async Task<IActionResult> PostReport([FromBody] PostReportRequest request)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
+                return Unauthorized();
+
+            // Validasi request
+            if (request == null)
+                return BadRequest(new ApiResponse<object>(400, "Data request tidak valid", null));
+
+            if (string.IsNullOrEmpty(request.ReportTitle))
+                return BadRequest(new ApiResponse<object>(400, "Judul laporan tidak boleh kosong", null));
+
+            if (string.IsNullOrEmpty(request.ReportText))
+                return BadRequest(new ApiResponse<object>(400, "Isi laporan tidak boleh kosong", null));
+
+            if (request.ScheduleId <= 0)
+                return BadRequest(new ApiResponse<object>(400, "ScheduleId tidak valid", null));
+
+            try
+            {
+                var schedule = await _context.Schedules
+                    .FirstOrDefaultAsync(s => s.Id == request.ScheduleId);
+
+                if (schedule == null)
+                    return NotFound(new ApiResponse<object>(404, "Jadwal tidak ditemukan", null));
+
+                var member = await _context.Members
+                    .FirstOrDefaultAsync(m => m.UserId == userId &&
+                                             m.ExtracurricularId == schedule.ExtracurricularId &&
+                                             m.Status == "active");
+
+                if (member == null)
+                    return BadRequest(new ApiResponse<object>(400, "Anda bukan member dari ekskul ini", null));
+
+                var existingReport = await _context.ActivityReports
+                    .FirstOrDefaultAsync(r => r.ScheduleId == request.ScheduleId &&
+                                             r.MemberId == member.Id);
+
+                if (existingReport != null)
+                {
+                    return BadRequest(new ApiResponse<object>(400, "Anda sudah membuat laporan untuk jadwal ini", new
+                    {
+                        existingReport.Id,
+                        existingReport.ReportTitle,
+                        existingReport.SubmittedAt
+                    }));
+                }
+
+                var report = new ActivityReport
+                {
+                    MemberId = member.Id,
+                    ScheduleId = request.ScheduleId,
+                    ReportTitle = request.ReportTitle,
+                    ReportText = request.ReportText,
+                    FileUrl = null,
+                    SubmittedAt = DateTime.Now
+                };
+
+                _context.ActivityReports.Add(report);
+                await _context.SaveChangesAsync();
+
+                var pointService = new PointService(_context);
+                await pointService.AddReportPoints(member.Id);
+
+                var createdReport = await _context.ActivityReports
+                    .Where(r => r.Id == report.Id)
+                    .Select(r => new
+                    {
+                        r.Id,
+                        r.ScheduleId,
+                        Schedule = new
+                        {
+                            r.Schedule.Title,
+                            r.Schedule.Description,
+                            r.Schedule.ScheduleDate,
+                            r.Schedule.Location
+                        },
+                        Extracurricular = new
+                        {
+                            r.Schedule.Extracurricular.Id,
+                            r.Schedule.Extracurricular.Name
+                        },
+                        r.ReportTitle,
+                        r.ReportText,
+                        r.FileUrl,
+                        r.SubmittedAt,
+                        Member = new
+                        {
+                            member.Id,
+                            User = new
+                            {
+                                member.User.Id,
+                                member.User.Name,
+                                member.User.ProfileUrl
+                            }
+                        },
+                        PointsEarned = 3
+                    })
+                    .FirstOrDefaultAsync();
+
+                return Ok(new ApiResponse<object>(201, "Laporan berhasil dibuat", createdReport));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat membuat laporan", null));
+            }
+        }
+
+        public class PostAttendanceRequest
+        {
+            public int ScheduleId { get; set; }
+            public string Status { get; set; } = string.Empty;
+        }
+
+        public class PostReportRequest
+        {
+            public int ScheduleId { get; set; }
+            public string ReportTitle { get; set; } = string.Empty;
+            public string ReportText { get; set; } = string.Empty;
+        }
+
     }
 }
