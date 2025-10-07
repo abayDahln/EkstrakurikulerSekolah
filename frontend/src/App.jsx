@@ -1,10 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"
 
 function LoginButton() {
+  const navigate = useNavigate()
+
+  const handleOnClick = () => {
+    navigate("/login")
+  }
+
   return (
- 
     <div className="flex justify-end p-3 sm:p-5"> 
       <button 
+        onClick={handleOnClick}
         className="bg-gray-700 text-white font-semibold py-2 px-3 text-sm rounded-lg shadow-lg hover:bg-gray-800 transition duration-300 transform hover:scale-105 md:text-base md:px-4"
       >
         Login Sebagai Pembina

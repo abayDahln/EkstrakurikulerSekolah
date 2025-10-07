@@ -1,6 +1,7 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
+import { useNavigate } from "react-router-dom";
 
 function Login(){
   return(
@@ -11,7 +12,7 @@ function Login(){
 function Form(){
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
 
   function handleUsernameChange(e){
     setUsername(e.target.value);
@@ -24,6 +25,7 @@ function Form(){
   function handleSubmit(e){
     e.preventDefault();
     alert(`Username: ${username}, Password: ${password}`);
+    navigate("/home")
   }
 
   return(
@@ -66,12 +68,12 @@ export default function Log() {
   return (
     <div className="h-screen w-screen flex justify-start relative overflow-hidden">
 
-      <div className="block sm:hidden z-10 pl-10 pt-[25%]">
+      <div className="block sm:hidden z-10 pl-5 pt-[25%]">
         <Login />
         <Form />
       </div>
 
-      <div className="hidden sm:block z-10 pl-10 pt-[30px]">
+      <div className="hidden sm:block z-10 pl-[5%] pt-[30px]">
         <Login />
         <Form />
       </div>
