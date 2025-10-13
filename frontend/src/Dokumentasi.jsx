@@ -34,6 +34,7 @@ export default function Dokum(){
     return(
         <div className="h-screen bg-white">
             <Navbar />
+            <p className="text-4xl font-extrabold text-center pt-20">Simpel? Memang</p>
         </div>
      )
 }

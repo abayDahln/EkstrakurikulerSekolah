@@ -29,11 +29,39 @@ function Navbar(){
     )
 }
 
+function Formulir(){
+    return(
+        <div className="sm:w-200 sm:ml-15 mt-20 pl-7 w-80 bg-green-300 rounded shadow-2xl">
+            <form>
+                <div className="flex flex-col">
+                <p className="font-bold">Nama Kegiatan</p>
+                <input 
+                    type="text" 
+                    placeholder="Masukkan Nama Kegiatan"
+                    className="bg-gray-100 rounded shadow-xl w-70 sm:w-150 sm:h-10 text-center">
+                </input>
+                </div>
+                <div>
+                <p className="font-bold">Waktu Kegiataan</p>
+                <input 
+                    type="date" 
+                    className="bg-gray-100 rounded shadow-xl w-70 sm:w-150 sm:h-10 text-center">
+                </input>
+                </div>
+                <div className="flex">
+                    <button className="bg-blue-300 shadow-xl rounded mt-5 w-40 sm:w-50 p-1">Buat Jadwal</button>
+                </div>
+            </form>
+        </div>
+    )
+}
+
 
 export default function Jadwal(){
     return(
         <div className="h-screen bg-white">
             <Navbar />
+            <Formulir />
         </div>
      )
 }
