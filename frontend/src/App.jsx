@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"
+import { easeInOut, easeOut, motion } from "framer-motion";
 
 function LoginButton() {
   const navigate = useNavigate()
@@ -9,21 +10,29 @@ function LoginButton() {
   }
 
   return (
-    <div className="flex justify-end p-3 sm:p-5"> 
+    <motion.div 
+    initial={{opacity: 0, x: 200 }}
+    animate={{opacity: 1, x: 0 }}
+    transition={{duration: 1.4, ease: "easeOut"}}
+    className="flex justify-end p-3 sm:p-5"> 
       <button 
         onClick={handleOnClick}
         className="bg-gray-700 text-white font-semibold py-2 px-3 text-sm rounded-lg shadow-lg hover:bg-gray-800 transition duration-300 transform hover:scale-105 md:text-base md:px-4"
       >
         Login Sebagai Pembina
       </button>
-    </div>
+    </motion.div>
   );
 }
 
 function Isi(){
   return(
 
-    <div className="flex flex-col items-center justify-center min-h-screen text-center p-6 sm:p-8 pt-20">
+    <motion.div 
+    initial={{ y: 400, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{ duration: 1.1, ease: 'easeOut'}}
+    className="flex flex-col items-center justify-center min-h-screen text-center p-6 sm:p-8 pt-20">
         
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-4 tracking-tight max-w-lg sm:max-w-3xl">
           Sistem Informasi Ekstrakurikuler
@@ -40,7 +49,7 @@ function Isi(){
             📥 Download Aplikasi 
           </button>
         </div>      
-      </div>
+      </motion.div>
   )
 }
 
