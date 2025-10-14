@@ -36,37 +36,66 @@ function Navbar(){
 
 function Formulir(){
     return(
-        <div className="sm:w-200 sm:ml-15 mt-20 pl-7 w-80 bg-green-300 rounded shadow-2xl">
-            <form>
-                <div className="flex flex-col">
-                <p className="font-bold">Nama Kegiatan</p>
+        <div className="flex flex-col md:flex-row justify-center items-center gap-12 mt-20 px-10 pb-10">
+          
+          <motion.div 
+          initial={{ x: -200, opacity: 0}}
+          animate={{ x: 0, opacity: 1}}
+          transition={{ duration: 1.4, ease: "easeOut"}}
+          className="flex-1 flex flex-col justify-center text-center md:text-left">
+            <h3 className="text-3xl font-extrabold mb-4 text-gray-800">
+              Atur Jadwal Ekstrakurikermu dengan Mudah!
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              Pastikan setiap kegiatan ekstrakurikuler berjalan teratur tanpa bentrok dengan yang lain. 
+              Isi form di samping untuk membuat, mengedit, atau mengatur jadwal ekskul sesuai kebutuhan.
+            </p>
+          </motion.div>
+
+          <motion.div 
+          initial={{ x: 200, opacity: 0}}
+          animate={{ x: 0, opacity: 1}}
+          transition={{ duration: 1.4, ease: "easeOut"}}
+          className="flex-1 bg-gray-50 rounded-2xl shadow-2xl p-8 flex flex-col justify-center">
+            <form className="space-y-6">
+              <div>
+                <p className="text-2xl font-extrabold mb-2">Buat Jadwal</p>
+              </div>
+
+              <div>
+                <p className="font-bold mb-1">Nama Kegiatan</p>
                 <input 
-                    type="text" 
-                    placeholder="Masukkan Nama Kegiatan"
-                    className="bg-gray-100 rounded shadow-xl w-70 sm:w-150 sm:h-10 text-center">
-                </input>
-                </div>
-                <div>
-                <p className="font-bold">Waktu Kegiataan</p>
+                  type="text"
+                  placeholder="Masukkan Nama Kegiatan"
+                  className="bg-gray-100 rounded w-full sm:h-10 p-2 text-center shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+              </div>
+              <div>
+                <p className="font-bold mb-1">Waktu Kegiatan</p>
                 <input 
-                    type="date" 
-                    className="bg-gray-100 rounded shadow-xl w-70 sm:w-150 sm:h-10 text-center">
-                </input>
-                </div>
-                <div className="flex">
-                    <button className="bg-blue-300 shadow-xl rounded mt-5 w-40 sm:w-50 p-1">Buat Jadwal</button>
-                </div>
+                  type="date"
+                  className="bg-gray-100 rounded w-full sm:h-10 p-2 text-center shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300"/>
+              </div>
+
+              <div className="flex justify-start">
+                <button 
+                  type="submit" 
+                  className="bg-blue-400 hover:bg-blue-500 transition text-white font-semibold rounded shadow-lg w-full sm:w-40 p-2">
+                  Buat Jadwal
+                </button>
+              </div>
             </form>
+          </motion.div>
         </div>
+
     )
 }
 
-
 export default function Jadwal(){
     return(
-        <div className="h-screen bg-white">
+        <div className="h-screen">
             <Navbar />
             <Formulir />
+
         </div>
      )
 }
