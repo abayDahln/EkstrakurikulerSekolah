@@ -5,7 +5,7 @@ namespace EkstrakurikulerSekolah.Models
 {
     public class ApiResponse<T>
     {
-        public string Title { get; set; }
+        public string Message { get; set; }
         public int Status { get; set; }
         
         public T? Data { get; set; }
@@ -13,7 +13,7 @@ namespace EkstrakurikulerSekolah.Models
         public ApiResponse(int responseCode, string message, T? data = default)
         {
             
-            Title = message;
+            Message = message;
             Status = responseCode;
             Data = data;
         }

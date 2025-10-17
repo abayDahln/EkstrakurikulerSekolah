@@ -32,7 +32,6 @@ namespace EkstrakurikulerSekolah
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Extracuricular API", Version = "v1" });
 
-
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -101,7 +100,7 @@ namespace EkstrakurikulerSekolah
                         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                         context.Response.ContentType = "application/json";
 
-                        var apiResponse = new ApiResponse<object>(401, "Unauthorized - Token tidak valid atau expired");
+                        var apiResponse = new ApiResponse<object>(401, "Unauthorized");
                         var json = System.Text.Json.JsonSerializer.Serialize(apiResponse);
                         return context.Response.WriteAsync(json);
                     },
@@ -110,13 +109,15 @@ namespace EkstrakurikulerSekolah
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
                         context.Response.ContentType = "application/json";
 
-                        var apiResponse = new ApiResponse<object>(403, "Forbidden - Anda tidak memiliki akses");
+                        var apiResponse = new ApiResponse<object>(403, "Forbidden");
                         var json = System.Text.Json.JsonSerializer.Serialize(apiResponse);
                         return context.Response.WriteAsync(json);
                     }
                 };
 
             });
+
+            builder.Services.AddScoped<ICertificateService, CertificateService>();
 
             builder.Services.AddAuthorization();
 

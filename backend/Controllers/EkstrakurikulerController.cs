@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EkstrakurikulerSekolah.Controllers
 {
     [ApiController]
-    [Route("api/ekskul")]
+    [Route("api/extracurricular")]
     [Authorize(Roles = "siswa")]
     public class EkstrakurikulerController : ControllerBase
     {
@@ -23,15 +23,14 @@ namespace EkstrakurikulerSekolah.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEkskuls([FromQuery] string? search)
         {
-           
+
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdString))
-                return Unauthorized();
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
-            if (!int.TryParse(userIdString, out var userId))
-                return Unauthorized();
 
-            
             var baseQuery = _context.Extracurriculars.AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
@@ -49,6 +48,7 @@ namespace EkstrakurikulerSekolah.Controllers
                     x.Id,
                     x.Name,
                     x.Description,
+                    x.ImageUrl,
                     Pembina = new
                     {
                         Id = x.PembinaId,
@@ -68,10 +68,10 @@ namespace EkstrakurikulerSekolah.Controllers
         public async Task<IActionResult> GetEkskulDetail(int id)
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdString))
-                return Unauthorized();
-            if (!int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
             var ekskul = await _context.Extracurriculars
                 .Where(x => x.Id == id)
@@ -80,8 +80,8 @@ namespace EkstrakurikulerSekolah.Controllers
                     x.Id,
                     x.Name,
                     x.Description,
+                    x.ImageUrl,
 
-                    
                     Pembinas = _context.Users.Where(y => y.Id == x.PembinaId)
                         .Select(p => new {
                             Id = p.Id,
@@ -112,11 +112,10 @@ namespace EkstrakurikulerSekolah.Controllers
         public async Task<IActionResult> JoinEkskul(int id)
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdString))
-                return Unauthorized();
-
-            if (!int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
             var ekskul = await _context.Extracurriculars
                 .FirstOrDefaultAsync(x => x.Id == id);

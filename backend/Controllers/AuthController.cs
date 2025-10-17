@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using EkstrakurikulerSekolah.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,12 @@ using Microsoft.IdentityModel.Tokens;
 namespace EkstrakurikulerSekolah.Controllers
 {
     [ApiController]
-    [Route("api/login")]
-    public class LoginController : ControllerBase
+    [Route("api/auth")]
+    public class AuthController : ControllerBase
     {
         private readonly EkskulDbContext _context;
         private readonly IConfiguration _configuration;
-        public LoginController(EkskulDbContext context, IConfiguration config)
+        public AuthController(EkskulDbContext context, IConfiguration config)
         {
             _context = context;
             _configuration = config;
@@ -26,6 +27,13 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             public string Email { get; set; } = null!;
             public string Password { get; set; } = null!;
+        }
+        public class RegisterRequest
+        {
+            public string Name { get; set; } = null!;
+            public string Email { get; set; } = null!;
+            public string Password { get; set; } = null!;
+
         }
         public static string HashPassword(string password)
         {
@@ -47,7 +55,7 @@ namespace EkstrakurikulerSekolah.Controllers
             return result;
         }
 
-        [HttpPost("siswa")]
+        [HttpPost("login/siswa")]
         public async Task<IActionResult> LoginSiswa(LoginDto dto)
         {
             string password = HashPassword(dto.Password);
@@ -71,25 +79,26 @@ namespace EkstrakurikulerSekolah.Controllers
             };
             return Ok(new ApiResponse<object>(200, "success", responseData));
         }
-        [HttpPost("pembina")]
+        [HttpPost("login/pembina")]
         public async Task<IActionResult> LoginPembina(LoginDto dto)
         {
-            var siswa = await _context.Users.FirstOrDefaultAsync(x => x.Role == "pembina" && x.Email == dto.Email && x.PasswordHash == dto.Password);
+            string password = HashPassword(dto.Password);
+            var pembina = await _context.Users.FirstOrDefaultAsync(x => x.Role == "pembina" && x.Email == dto.Email && x.PasswordHash == password);
 
-            if (siswa == null)
-                return Unauthorized(new ApiResponse<object>(401, "invalid username or password"));
+            if (pembina == null)
+                return Unauthorized(new ApiResponse<object>(401, "invalid email or password"));
 
 
             var claims = new[] {
-                new Claim(ClaimTypes.Name, siswa.Name),
+                new Claim(ClaimTypes.Name, pembina.Name),
                 new Claim(ClaimTypes.Role, "pembina"),
-                new Claim(ClaimTypes.NameIdentifier, siswa.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, pembina.Id.ToString()),
             };
 
             var responseData = new
             {
                 Token = GenerateJwtToken(claims),
-                Role = "siswa",
+                Role = "pembina",
                 ExpireaAt = DateTime.UtcNow.AddMinutes(120)
             };
             return Ok(new ApiResponse<object>(200, "success", responseData));
@@ -112,6 +121,40 @@ namespace EkstrakurikulerSekolah.Controllers
 
             var token = tokenHandler.CreateToken(tokendesciptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        [HttpPost("register/siswa")]
+        public async Task<IActionResult> RegisterSiswa([FromBody] RegisterRequest dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                return BadRequest(new ApiResponse<object>(400, "data harus di isi"));
+
+            Regex email = new Regex(@"^+.+@.+\..+$");
+
+            if (!email.IsMatch(dto.Email))
+            {
+                return BadRequest(new ApiResponse<object>(400, "format email salah"));
+            }
+
+            var EmailExisting = await _context.Users.FirstOrDefaultAsync(s => s.Email == dto.Email && s.Role == "siswa");
+            if (EmailExisting != null)
+            {
+                return Conflict(new ApiResponse<object>(409, "Email sudah digunakan"));
+            }
+
+            string pw = HashPassword(dto.Password);
+            var student = new User
+            {
+                Name = dto.Name,
+                Email = dto.Email,
+                PasswordHash = pw,
+                Role = "siswa",
+                CreatedAt = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")),
+            };
+            _context.Users.Add(student);
+
+            await _context.SaveChangesAsync();
+            return Ok(new ApiResponse<object>(201, "success", new { student.Name, student.Email }));
         }
     }
 }

@@ -165,6 +165,9 @@ public partial class EkskulDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("name");
             entity.Property(e => e.PembinaId).HasColumnName("pembina_id");
+            entity.Property(e => e.ImageUrl)    
+                .HasMaxLength(300)             
+                .HasColumnName("image_url");
 
             entity.HasOne(d => d.Pembina).WithMany(p => p.Extracurriculars)
                 .HasForeignKey(d => d.PembinaId)
@@ -298,131 +301,131 @@ public partial class EkskulDbContext : DbContext
             new User
             {
                 Id = 1,
-                Name = "Budi Pembina",
+                Name = "Budi Pranowo S.Pd.",
                 Email = "budi@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "pembina",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.469578"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_1.jpg"
             },
             new User
             {
                 Id = 2,
-                Name = "Wati Pembina",
+                Name = "Wati Sulastri M.Pd.",
                 Email = "wati@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "pembina",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.469578"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_2.jpg"
             },
             new User
             {
                 Id = 3,
-                Name = "Rudi Pembina",
+                Name = "Rudi Gunawan S.Pd.",
                 Email = "rudi@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "pembina",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.469578"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_3.jpg"
             },
             new User
             {
                 Id = 4,
-                Name = "Andi Siswa",
+                Name = "Andiansyah",
                 Email = "andi@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_4.jpg"
             },
             new User
             {
                 Id = 5,
-                Name = "Siti Siswa",
+                Name = "Siti Sarifah",
                 Email = "siti@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_5.jpg"
             },
             new User
             {
                 Id = 6,
-                Name = "Joko Siswa",
+                Name = "Jokowi",
                 Email = "joko@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_6.jpg"
             },
             new User
             {
                 Id = 7,
-                Name = "Mira Siswa",
+                Name = "Mira Fitri",
                 Email = "mira@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_7.jpg"
             },
             new User
             {
                 Id = 8,
-                Name = "Dewi Siswa",
+                Name = "Dewi Azzahra",
                 Email = "dewi@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_8.jpg"
             },
             new User
             {
                 Id = 9,
-                Name = "Rina Siswa",
+                Name = "Rina Putri",
                 Email = "rina@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_9.jpg"
             },
             new User
             {
                 Id = 10,
-                Name = "Bayu Siswa",
+                Name = "Muhammad Bayu",
                 Email = "bayu@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_10.jpg"
             },
             new User
             {
                 Id = 11,
-                Name = "Lia Siswa",
+                Name = "Lia Sari",
                 Email = "lia@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_11.jpg"
             },
             new User
             {
                 Id = 12,
-                Name = "Fahri Siswa",
+                Name = "Ahmad Fahri",
                 Email = "fahri@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_12.jpg"
             },
             new User
             {
                 Id = 13,
-                Name = "Indah Siswa",
+                Name = "Indah Rahmawati",
                 Email = "indah@sekolah.id",
                 PasswordHash = "3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2",
                 Role = "siswa",
-                CreatedAt = DateTime.Parse("2025-09-23 13:27:45.49238"),
+                CreatedAt = DateTime.Parse("2025-09-23 13:27:45"),
                 ProfileUrl = "public/profile/profile_13.jpg"
             }
         );
@@ -433,35 +436,41 @@ public partial class EkskulDbContext : DbContext
                 Id = 1,
                 Name = "Pramuka",
                 Description = "Ekskul Pramuka untuk siswa yang ingin belajar tentang kepanduan dan kegiatan luar ruangan.",
-                PembinaId = 1
+                PembinaId = 1,
+                ImageUrl = "public/extracurricular/extracurricular_pramuka.jpg"
             },
             new Extracurricular
             {
                 Id = 2,
                 Name = "Paskibra",
                 Description = "Ekskul Paskibra untuk siswa yang ingin belajar tentang baris-berbaris dan upacara bendera.",
-                PembinaId = 2
+                PembinaId = 2,
+                ImageUrl = "public/extracurricular/extracurricular_paskibra.jpg"
+
             },
             new Extracurricular
             {
                 Id = 3,
                 Name = "KIR",
                 Description = "Ekskul Kelompok Ilmiah Remaja untuk mengembangkan bakat, kreativitas, dan keterampilan ilmiah remaja.",
-                PembinaId = 3
+                PembinaId = 3,
+                ImageUrl = "public/extracurricular/extracurricular_kir.jpg"
             },
             new Extracurricular
             {
                 Id = 4,
                 Name = "Padus",
                 Description = "Ekskul Paduan Suara untuk melakukan kegiatan seni pertunjukan, ibadah keagamaan, dan hiburan.",
-                PembinaId = 2
+                PembinaId = 2,
+                ImageUrl = "public/extracurricular/extracurricular_padus.jpg"
             },
             new Extracurricular
             {
                 Id = 5,
                 Name = "Basket",
                 Description = "Ekskul Basket untuk siswa yang suka bermain bola basket dan ingin pengembangan bakat.",
-                PembinaId = 1
+                PembinaId = 1,
+                ImageUrl = "public/extracurricular/extracurricular_basket.jpg"
             }
         );
 
@@ -675,22 +684,22 @@ public partial class EkskulDbContext : DbContext
             {
                 Id = 1,
                 MemberId = 1,
-                CertificateName = "Sertifikat Keikutsertaan Pramuka 2025",
-                CertificateUrl = "https://sekolah.id/certificates/pramuka_andi.pdf",
+                CertificateName = "Sertifikat Keaktifan Pramuka 2025",
+                CertificateUrl = "public/certificate/Andiansyah_f89b46168abd4f09bd641b0e11a59141.png",
             },
             new Certificate
             {
                 Id = 2,
                 MemberId = 12, 
-                CertificateName = "Sertifikat Juara 1 Basket 2025",
-                CertificateUrl = "https://sekolah.id/certificates/basket_siti.pdf",
+                CertificateName = "Sertifikat Juara 1 Basket Putri 2045",
+                CertificateUrl = "public/certificate/Siti_Sarifah_b6014b86e55e4c8cb9ea6e6314b43536.png",
             },
             new Certificate
             {
                 Id = 3,
                 MemberId = 7, 
-                CertificateName = "Sertifikat Workshop KIR 2025",
-                CertificateUrl = "https://sekolah.id/certificates/kir_joko.pdf",
+                CertificateName = "Sertifikat Keaktifan KIR 2025",
+                CertificateUrl = "public/certificate/Jokowi_4022eaa24efb42f79b1237f8bdb239e9.png",
             }
         );
 

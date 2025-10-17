@@ -9,7 +9,7 @@ namespace EkstrakurikulerSekolah.Controllers
 {
     [ApiController]
     [Route("api/profile")]
-    [Authorize]
+    [Authorize(Roles = "pembina,siswa")]
     public class ProfileController : ControllerBase
     {
         private readonly EkskulDbContext _context;
@@ -26,10 +26,16 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
 
-            var user = await _context.Users
-                .Where(u => u.Id == userId)
+            object? user = null;
+
+            if (userRole == "siswa")
+            {
+                user = await _context.Users.Where(u => u.Id == userId)
                 .Select(u => new
                 {
                     u.Id,
@@ -38,7 +44,7 @@ namespace EkstrakurikulerSekolah.Controllers
                     u.ProfileUrl,
                     u.Role,
                     u.CreatedAt,
-                 
+
                     Extracurriculars = u.Members
                         .Where(m => m.Status == "active")
                         .Select(m => new
@@ -46,8 +52,12 @@ namespace EkstrakurikulerSekolah.Controllers
                             m.Extracurricular.Id,
                             m.Extracurricular.Name,
                             m.Extracurricular.Description,
+                            m.Extracurricular.ImageUrl,
                             JoinDate = m.JoinDate,
                             Status = m.Status,
+                            TotalPoints = _context.Points
+                            .Where(p => p.MemberId == m.Id)
+                            .Sum(p => p.Points),
                             Pembina = new
                             {
                                 Id = m.Extracurricular.PembinaId,
@@ -63,15 +73,14 @@ namespace EkstrakurikulerSekolah.Controllers
                         TotalAttendances = _context.Attendances
                         .Count(a => _context.Members
                             .Any(m => m.Id == a.MemberId && m.UserId == userId)),
-                                        TotalReports = _context.ActivityReports
+                        TotalReports = _context.ActivityReports
                         .Count(r => _context.Members
                             .Any(m => m.Id == r.MemberId && m.UserId == userId)),
-                                        TotalDocumentations = _context.ActivityDocumentations
+                        TotalDocumentations = _context.ActivityDocumentations
                         .Count(d => d.UserId == userId),
-                                        JoinedExtracurriculars = u.Members.Count(m => m.Status == "active"),
-                                        CreatedSchedules = u.Schedules.Count(),
-                                        // Total poin dari tabel points - melalui member
-                                        TotalPoints = u.Members
+                        JoinedExtracurriculars = u.Members.Count(m => m.Status == "active"),
+                        CreatedSchedules = u.Schedules.Count(),
+                        TotalPoints = u.Members
                         .SelectMany(m => m.Point)
                         .Sum(p => p.Points)
                     },
@@ -111,6 +120,50 @@ namespace EkstrakurikulerSekolah.Controllers
                         .ToList()
                 })
                 .FirstOrDefaultAsync();
+            }
+            else
+            {
+                user = await _context.Users
+                    .Where(u => u.Id == userId)
+                    .Select(u => new
+                    {
+                        u.Id,
+                        u.Name,
+                        u.Email,
+                        u.ProfileUrl,
+                        u.Role,
+                        u.CreatedAt,
+
+                        ManagedExtracurriculars = _context.Extracurriculars
+                            .Where(e => e.PembinaId == userId)
+                            .Select(e => new
+                            {
+                                e.Id,
+                                e.Name,
+                                e.Description,
+                                e.ImageUrl,
+                                TotalMembers = e.Members.Count(m => m.Status == "active"),
+                                TotalSchedules = e.Schedules.Count(),
+                                NextSchedule = e.Schedules
+                                    .Where(s => s.ScheduleDate > DateTime.Now)
+                                    .OrderBy(s => s.ScheduleDate)
+                                    .FirstOrDefault()
+                            })
+                            .ToList(),
+
+                        ActivityStats = new
+                        {
+                            TotalManagedExtracurriculars = _context.Extracurriculars.Count(e => e.PembinaId == userId),
+                            TotalSchedulesCreated = _context.Schedules.Count(s => s.Extracurricular.PembinaId == userId),
+                            TotalAttendanceRecords = _context.Attendances
+                                .Count(a => a.Schedule.Extracurricular.PembinaId == userId),
+                            UpcomingSchedules = _context.Schedules
+                                .Count(s => s.Extracurricular.PembinaId == userId && s.ScheduleDate > DateTime.Now)
+                        }
+                    })
+                    .FirstOrDefaultAsync();
+            }
+
 
             if (user == null)
                 return NotFound(new ApiResponse<object>(404, "User tidak ditemukan", null));
@@ -123,17 +176,19 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
                 return NotFound(new ApiResponse<object>(404, "User tidak ditemukan", null));
 
-            
+
             if (request == null)
                 return BadRequest(new ApiResponse<object>(400, "Data request tidak valid", null));
 
-           
+
             if (!string.IsNullOrEmpty(request.Name))
             {
                 if (request.Name.Length > 100)
@@ -142,13 +197,13 @@ namespace EkstrakurikulerSekolah.Controllers
                 user.Name = request.Name;
             }
 
-         
+
             if (!string.IsNullOrEmpty(request.Email))
             {
                 if (request.Email.Length > 255)
                     return BadRequest(new ApiResponse<object>(400, "Email maksimal 255 karakter", null));
 
-                
+
                 var emailExists = await _context.Users
                     .AnyAsync(u => u.Email == request.Email && u.Id != userId);
 
@@ -188,7 +243,9 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
             if (image == null || image.Length <= 0)
                 return BadRequest(new ApiResponse<object>(400, "File tidak valid", null));
@@ -214,27 +271,22 @@ namespace EkstrakurikulerSekolah.Controllers
 
             try
             {
-                // Simpan nama file lama
                 if (!string.IsNullOrEmpty(user.ProfileUrl))
                     oldFileName = Path.GetFileName(user.ProfileUrl);
 
-                // Generate nama file baru
                 newFileName = $"{Guid.NewGuid().ToString().Split('-')[0]}{fileExtension}";
                 var folderPath = Path.Combine(_env.WebRootPath, "public", "profile");
                 Directory.CreateDirectory(folderPath);
 
                 var fullPath = Path.Combine(folderPath, newFileName);
 
-                // Simpan file baru
                 using (var stream = new FileStream(fullPath, FileMode.Create))
                     await image.CopyToAsync(stream);
 
-                // Update database
                 user.ProfileUrl = $"public/profile/{newFileName}";
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
-                // Hapus file lama
                 if (!string.IsNullOrEmpty(oldFileName))
                 {
                     try
@@ -260,7 +312,6 @@ namespace EkstrakurikulerSekolah.Controllers
             }
             catch (Exception ex)
             {
-                // Cleanup file baru jika error
                 if (!string.IsNullOrEmpty(newFileName))
                 {
                     try
@@ -281,15 +332,11 @@ namespace EkstrakurikulerSekolah.Controllers
 
     }
 
-    
+
     public class UpdateProfileRequest
     {
         public string? Name { get; set; }
         public string? Email { get; set; }
     }
 
-    public class UpdateProfilePhotoRequest
-    {
-        public string ProfileUrl { get; set; } = string.Empty;
-    }
 }

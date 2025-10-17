@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using EkstrakurikulerSekolah.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,13 +8,15 @@ namespace EkstrakurikulerSekolah.Controllers
 {
     [ApiController]
     [Route("api/schedule")]
+    [Authorize(Roles = "siswa")]
     public class ScheduleController : ControllerBase
     {
         private readonly EkskulDbContext _context;
-
-        public ScheduleController(EkskulDbContext context)
+        private readonly ICertificateService _certificateService;
+        public ScheduleController(EkskulDbContext context, ICertificateService certificateService)
         {
             _context = context;
+            _certificateService = certificateService;
         }
 
         [HttpGet]
@@ -21,9 +24,11 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
-           
+
             var userExtracurricularIds = await _context.Members
                 .Where(m => m.UserId == userId && m.Status == "active")
                 .Select(m => m.ExtracurricularId)
@@ -51,8 +56,9 @@ namespace EkstrakurikulerSekolah.Controllers
                     s.Location,
                     Extracurricular = new
                     {
-                        s.Extracurricular.Id,
-                        s.Extracurricular.Name,
+                        Id = s.Extracurricular.Id,
+                        Name = s.Extracurricular.Name,
+                        ImageUrl = s.Extracurricular.ImageUrl,
                         Pembina = new
                         {
                             Id = s.Extracurricular.PembinaId,
@@ -80,7 +86,9 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
             var schedule = await _context.Schedules
                 .Where(s => s.Id == id)
@@ -215,9 +223,11 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
-            
+
             if (request == null)
                 return BadRequest(new ApiResponse<object>(400, "Data request tidak valid", null));
 
@@ -240,16 +250,17 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (schedule == null)
                     return NotFound(new ApiResponse<object>(404, "Jadwal tidak ditemukan", null));
 
-                
+
                 var member = await _context.Members
+                    .Include(m => m.User)
                     .FirstOrDefaultAsync(m => m.UserId == userId &&
-                                             m.ExtracurricularId == schedule.ExtracurricularId &&
-                                             m.Status == "active");
+                                              m.ExtracurricularId == schedule.ExtracurricularId &&
+                                              m.Status == "active");
 
-                if (member == null)
-                    return BadRequest(new ApiResponse<object>(400, "Anda bukan member dari ekskul ini", null));
+                                if (member == null)
+                                    return BadRequest(new ApiResponse<object>(400, "Anda bukan member dari ekskul ini", null));
 
-               
+
                 var existingAttendance = await _context.Attendances
                     .FirstOrDefaultAsync(a => a.ScheduleId == request.ScheduleId &&
                                              a.MemberId == member.Id);
@@ -270,7 +281,7 @@ namespace EkstrakurikulerSekolah.Controllers
                     ScheduleId = request.ScheduleId,
                     MemberId = member.Id,
                     Status = request.Status.ToLower(),
-                    AttendanceTime = DateTime.Now
+                    AttendanceTime = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
                 };
 
                 _context.Attendances.Add(attendance);
@@ -287,6 +298,17 @@ namespace EkstrakurikulerSekolah.Controllers
                     _ => 0
                 };
 
+                var totalPointsOverall = await pointService.GetMemberTotalPoints(member.Id);
+
+                string? message = null;
+
+                if (totalPointsOverall >= 100)
+                {
+
+                    message = await CreateCertificate(member.User.Name, member.ExtracurricularId, member.UserId);
+
+                }
+
                 var createdAttendance = await _context.Attendances
                     .Where(a => a.Id == attendance.Id)
                     .Select(a => new
@@ -302,8 +324,9 @@ namespace EkstrakurikulerSekolah.Controllers
                         },
                         Extracurricular = new
                         {
-                            a.Schedule.Extracurricular.Id,
-                            a.Schedule.Extracurricular.Name
+                            Id = a.Schedule.Extracurricular.Id,
+                            Name = a.Schedule.Extracurricular.Name,
+                            ImageUrl = a.Schedule.Extracurricular.ImageUrl,
                         },
                         a.Status,
                         a.AttendanceTime,
@@ -317,7 +340,10 @@ namespace EkstrakurikulerSekolah.Controllers
                                 member.User.ProfileUrl
                             }
                         },
-                        PointsEarned = pointsEarned
+                        PointsEarned = pointsEarned,
+                        TotalPointsOverall = totalPointsOverall,
+                        CertificateMessage = message
+
                     })
                     .FirstOrDefaultAsync();
 
@@ -335,9 +361,10 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
-                return Unauthorized();
+            {
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+            }
 
-            // Validasi request
             if (request == null)
                 return BadRequest(new ApiResponse<object>(400, "Data request tidak valid", null));
 
@@ -359,9 +386,10 @@ namespace EkstrakurikulerSekolah.Controllers
                     return NotFound(new ApiResponse<object>(404, "Jadwal tidak ditemukan", null));
 
                 var member = await _context.Members
+                    .Include(m => m.User)
                     .FirstOrDefaultAsync(m => m.UserId == userId &&
-                                             m.ExtracurricularId == schedule.ExtracurricularId &&
-                                             m.Status == "active");
+                                              m.ExtracurricularId == schedule.ExtracurricularId &&
+                                              m.Status == "active");
 
                 if (member == null)
                     return BadRequest(new ApiResponse<object>(400, "Anda bukan member dari ekskul ini", null));
@@ -387,7 +415,7 @@ namespace EkstrakurikulerSekolah.Controllers
                     ReportTitle = request.ReportTitle,
                     ReportText = request.ReportText,
                     FileUrl = null,
-                    SubmittedAt = DateTime.Now
+                    SubmittedAt = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
                 };
 
                 _context.ActivityReports.Add(report);
@@ -395,6 +423,17 @@ namespace EkstrakurikulerSekolah.Controllers
 
                 var pointService = new PointService(_context);
                 await pointService.AddReportPoints(member.Id);
+
+                var totalPointsOverall = await pointService.GetMemberTotalPoints(member.Id);
+
+                string? message = "Poin anda kurang untuk mendapatkan sertifikat.";
+
+                if (totalPointsOverall >= 100)
+                {
+                    message = await CreateCertificate(member.User.Name, member.ExtracurricularId, member.UserId);
+                    
+                }
+
 
                 var createdReport = await _context.ActivityReports
                     .Where(r => r.Id == report.Id)
@@ -428,7 +467,9 @@ namespace EkstrakurikulerSekolah.Controllers
                                 member.User.ProfileUrl
                             }
                         },
-                        PointsEarned = 3
+                        PointsEarned = 3,
+                        TotalPointsOverall = totalPointsOverall,
+                        CertificateMessage = message
                     })
                     .FirstOrDefaultAsync();
 
@@ -437,6 +478,33 @@ namespace EkstrakurikulerSekolah.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat membuat laporan", null));
+            }
+        }
+
+        internal async Task<string> CreateCertificate(string name, int? extracurricularId, int? userId)
+        {
+            var cert = _context.Certificates.Any(c => c.MemberId == userId && c.CertificateName.Contains("Keaktifan"));
+
+            if (cert)
+            {
+                return "Anda sudah mendapatkan sertifikat keaktifan sebelumnya.";
+            }
+
+            var result = await _certificateService.GenerateCertificateWithRecordAsync(name, extracurricularId, userId);
+
+            //Console.WriteLine($"member: {member}");
+            //Console.WriteLine($"member.User: {member?.User}");
+            //Console.WriteLine($"member.User.Name: {member?.User?.Name}");
+            //Console.WriteLine($"member.ExtracurricularId: {member?.ExtracurricularId}");
+            //Console.WriteLine($"_certificateService: {_certificateService}");
+
+            if (result.Status == "success")
+            {
+                return result.Message;
+            }
+            else
+            {
+                return "Poin anda kurang untuk mendapatkan sertifikat.";
             }
         }
 

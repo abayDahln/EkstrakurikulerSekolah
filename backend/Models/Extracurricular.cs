@@ -13,6 +13,8 @@ public partial class Extracurricular
 
     public int? PembinaId { get; set; }
 
+    public string? ImageUrl { get; set; }
+
     public virtual ICollection<Member> Members { get; set; } = new List<Member>();
 
     public virtual User? Pembina { get; set; }

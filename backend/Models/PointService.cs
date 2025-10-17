@@ -18,7 +18,7 @@ namespace EkstrakurikulerSekolah.Models
                 MemberId = MemberId,
                 Points = 5,
                 Title = "bergabung",
-                CreatedAt = DateTime.Now
+                CreatedAt = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
             };
 
             _context.Points.Add(point);
@@ -45,7 +45,7 @@ namespace EkstrakurikulerSekolah.Models
                     MemberId = MemberId,
                     Points = points,
                     Title = $"{statusText}",
-                    CreatedAt = DateTime.Now
+                    CreatedAt = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
                 };
 
                 _context.Points.Add(point);
@@ -60,7 +60,7 @@ namespace EkstrakurikulerSekolah.Models
                 MemberId = memberId,
                 Points = 3,
                 Title = "mengupload",
-                CreatedAt = DateTime.Now
+                CreatedAt = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
             };
 
             _context.Points.Add(point);
@@ -72,6 +72,30 @@ namespace EkstrakurikulerSekolah.Models
             return await _context.Points
                 .Where(p => p.MemberId == _context.Members.Where(x => x.UserId == userId && x.ExtracurricularId == ekskulId).Select(x => x.Id).FirstOrDefault())
                 .SumAsync(p => p.Points);
+        }
+
+        public async Task<int> GetMemberPointsInExtracurricular(int memberId, int extracurricularId)
+        {
+            return await _context.Points
+                .Where(p => p.MemberId == memberId &&
+                           _context.Members.Any(m => m.Id == memberId && m.ExtracurricularId == extracurricularId))
+                .SumAsync(p => p.Points);
+        }
+
+        public async Task<int> GetMemberTotalPoints(int memberId)
+        {
+            return await _context.Points
+                .Where(p => p.MemberId == memberId)
+                .SumAsync(p => p.Points);
+        }
+
+
+        public async Task<List<Point>> GetMemberPointHistory(int memberId)
+        {
+            return await _context.Points
+                .Where(p => p.MemberId == memberId)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
         }
     }
 }
