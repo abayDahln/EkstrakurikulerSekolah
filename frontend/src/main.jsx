@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 import App from './App.jsx'
 import Log from './Login.jsx'
-import Home from './home.jsx';
+import Home from './Home.jsx';
 import Jadwal from './Jadwal.jsx';
 import Dokum from './Dokumentasi.jsx';
 import Absen from './Absen.jsx';
