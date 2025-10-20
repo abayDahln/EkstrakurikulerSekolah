@@ -28,7 +28,7 @@ function Navbar(){
             <button onClick={home} className="text-xs sm:text-base bg-transparent rounded-full w-20">Home</button>
             <button onClick={jadwal} className="text-xs sm:text-base bg-transparent rounded-full">Buat Jadwal</button>
             <button onClick={dokum}className="text-xs sm:text-base bg-transparent rounded-full">Dokumentasi</button>
-            <button pnClick={absensi} className="text-xs sm:text-base bg-gray-100 p-1 rounded-full w-20">Absensi</button>
+            <button pnClick={absensi} className="text-xs sm:text-base bg-yellow-200 p-1 rounded-full w-20">Absensi</button>
         </div> 
     </motion.div>
     )
@@ -37,7 +37,7 @@ function Navbar(){
 
 export default function Absen(){
     return(
-        <div className="h-screen bg-white">
+        <div className="h-screen bg-blue-300">
             <Navbar />
         </div>
      )

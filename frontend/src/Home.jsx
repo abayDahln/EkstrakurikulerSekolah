@@ -23,13 +23,11 @@ function Navbar(){
     initial={{ y: -100 }}
     animate={{ y: 0 }}
     transition={{ duration: 1.4, ease: "easeOut"}}
-    className="pt-5 flex justify-center">
-        <div className="bg-[rgba(243,244,246,0.2)] shadow-2xl rounded-full p-1 w-100 flex justify-between">
-            <button onClick={home} className="text-xs sm:text-base bg-gray-100 p-1 rounded-full w-20">Home</button>
-            <button onClick={jadwal} className="text-xs sm:text-base bg-transparent rounded-full">Buat Jadwal</button>
-            <button onClick={dokum} className="text-xs sm:text-base bg-transparent rounded-full">Dokumentasi</button>
-            <button onClick={absensi} className="text-xs sm:text-base bg-transparent rounded-full w-20">Absensi</button>
-        </div> 
+    className="flex justify-evenly pt-5">
+            <button onClick={home} className="text-xs sm:text-base w-75 bg-yellow-200 p-1">Home</button>
+            <button onClick={jadwal} className="text-xs sm:text-xl rounded-full">Buat Jadwal</button>
+            <button onClick={dokum} className="text-xs sm:text-xl rounded-full">Dokumentasi</button>
+            <button onClick={absensi} className="text-xs sm:text-base">Absensi</button>
     </motion.div>
     )
 }
@@ -51,7 +49,7 @@ function Ekskul(){
 
 export default function Home(){
     return(
-        <div className="h-screen bg-white">
+        <div className="h-screen bg-blue-300">
             <Navbar />
             <Ekskul />
         </div>

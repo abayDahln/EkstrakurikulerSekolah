@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 function Login() {
   return (
@@ -11,15 +12,34 @@ function Login() {
 }
 
 function Form() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    alert(`Username: ${username}, Password: ${password}`);
-    navigate("/home");
+    try {
+    const res = await axios.post("http://localhost:5000/login", {
+      email,
+      password,
+    });
+
+    const token = res.data.data.token;
+    const role = res.data.data.role;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      setMessage("Login berhasil!");e
+      navigate("/home");
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.message || "Login gagal");
+    }
   }
+
+
 
   return (
     <motion.form
@@ -30,10 +50,10 @@ function Form() {
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
       <motion.input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username/Email"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
         className="shadow-lg text-black p-3 rounded w-70 sm:w-110 bg-gray-100"
         whileFocus={{ scale: 1.03 }}
         transition={{ type: "spring", stiffness: 300 }}
@@ -71,8 +91,7 @@ export default function Log() {
         className="block sm:hidden z-10 pl-5 pt-[25%]"
         initial={{ x: -300, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-      >
+        transition={{ duration: 1, ease: "easeOut" }} >
         <Login />
         <Form />
       </motion.div>
@@ -81,8 +100,7 @@ export default function Log() {
         className="hidden sm:block z-10 pl-[5%] pt-[30px]"
         initial={{ x: -400, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-      >
+        transition={{ duration: 1, ease: "easeOut" }} >
         <Login />
         <Form />
       </motion.div>

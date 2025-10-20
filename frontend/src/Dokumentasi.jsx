@@ -27,7 +27,7 @@ function Navbar(){
         <div className="bg-[rgba(243,244,246,0.2)] shadow-2xl rounded-full p-1 w-100 flex justify-between">
             <button onClick={home} className="text-xs sm:text-base bg-transparent rounded-full w-20">Home</button>
             <button onClick={jadwal} className="text-xs sm:text-base bg-transparent rounded-full">Buat Jadwal</button>
-            <button onClick={dokum} className="text-xs sm:text-base bg-gray-100 p-1 rounded-full">Dokumentasi</button>
+            <button onClick={dokum} className="text-xs sm:text-base bg-yellow-200 p-1 rounded-full">Dokumentasi</button>
             <button onClick={absensi} className="text-xs sm:text-base bg-transparent rounded-full w-20">Absensi</button>
         </div> 
     </motion.div>
@@ -37,9 +37,9 @@ function Navbar(){
 
 export default function Dokum(){
     return(
-        <div className="h-screen bg-white">
+        <div className="h-screen  bg-blue-300">
             <Navbar />
-            <p className="text-4xl font-extrabold text-center pt-20">Simpel? Memang</p>
+            <p className="text-4xl font-extrabold text-center pt-20">Beda yh</p>
         </div>
      )
 }
