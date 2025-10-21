@@ -5,8 +5,6 @@ import { House, NotebookText, Camera, ListChecks, Menu, X, CheckCircle, XCircle 
 
 const API_URL = "http://localhost:5000/api/pembina/schedule";
 
-const DUMMY_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkJ1ZGkgUHJhbm93byBTLlBkLiIsInJvbGUiOiJwZW1iaW5hIiwibmFtZWlkIjoiMSIsIm5iZiI6MTc2MTAyOTQyNywiZXhwIjoxNzYxMDMxMjI3LCJpYXQiOjE3NjEwMjk0MjcsImlzcyI6IkVrc2t1bEFQSSIsImF1ZCI6IlNpc3dhRWtza3VsIn0.opU_HvazfABtD62J_Ijhi4fYlv9UduvqiN7r18acWbA";
-
 function Navbar() {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
@@ -104,24 +102,28 @@ function Card() {
         const scheduleDate = `${tanggal}T${waktu}:00Z`;
 
         const scheduleData = {
-
-            title,
-            description,
-            scheduleDate,
-            location,
+          ekstrakurikulerId: 1,
+          title,
+          description,
+          scheduleDate: tanggal,
+          location,
         };
+
 
         setIsLoading(true);
 
         try {
-            const response = await fetch(API_URL, {
+           const token = localStorage.getItem("authToken");
+
+            const response = await fetch("http://localhost:5000/api/pembina/schedule", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${DUMMY_TOKEN}`,
+                    "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify(scheduleData),
             });
+
 
             if (response.ok) {
                 setFeedback({ type: "success", message: "Jadwal berhasil dibuat!" });
