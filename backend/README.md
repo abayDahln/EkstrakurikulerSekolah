@@ -719,7 +719,7 @@ POST /api/auth/login/siswa
 Content-Type: application/json
 
 {
-  "username": "nisn_siswa",
+  "email": "email_siswa",
   "password": "password123"
 }
 ```
@@ -746,7 +746,7 @@ POST /api/auth/login/pembina
 Content-Type: application/json
 
 {
-  "username": "nip_pembina",
+  "email": "email_pembina",
   "password": "password123"
 }
 ```
@@ -757,11 +757,9 @@ POST /api/auth/register/siswa
 Content-Type: application/json
 
 {
-  "nisn": "1234567890",
   "name": "John Doe",
   "email": "john@example.com",
-  "password": "password123",
-  "class": "XII IPA 1"
+  "password": "password123"
 }
 ```
 
@@ -835,8 +833,8 @@ Content-Type: application/json
 
 {
   "scheduleId": 1,
-  "description": "Latihan rutin...",
-  "achievements": "Berhasil menyelesaikan..."
+  "reportTitle": "Latihan rutin...",
+  "reportText": "Berhasil menyelesaikan..."
 }
 ```
 
@@ -874,8 +872,7 @@ Content-Type: application/json
 
 {
   "name": "John Doe Updated",
-  "email": "john.new@example.com",
-  "phone": "081234567890"
+  "email": "john.new@example.com"
 }
 ```
 
@@ -926,9 +923,7 @@ Content-Type: application/json
   "ekstrakurikulerId": 1,
   "title": "Latihan Rutin",
   "description": "Latihan mingguan...",
-  "date": "2024-02-01",
-  "startTime": "14:00",
-  "endTime": "16:00",
+  "scheduleDate": "2024-02-01",
   "location": "Lapangan Basket"
 }
 ```
@@ -940,9 +935,8 @@ Authorization: Bearer {token}
 Content-Type: multipart/form-data
 
 userId: 1
-type: "Juara 1 Lomba"
-description: "Juara 1 Basket Antar Sekolah"
-file: [file]
+name: "Abby Dahlam"
+image: [file]
 ```
 
 #### Upload Documentation
@@ -952,8 +946,8 @@ Authorization: Bearer {token}
 Content-Type: multipart/form-data
 
 scheduleId: 1
-description: "Dokumentasi latihan..."
-images: [file1, file2, ...]
+title: "Dokumentasi latihan..."
+file: [file]
 ```
 
 ---
@@ -965,7 +959,7 @@ Semua endpoint menggunakan format response standar:
 **Success Response:**
 ```json
 {
-  "success": true,
+  "success": 200,
   "message": "Operation successful",
   "data": { ... }
 }
@@ -974,9 +968,9 @@ Semua endpoint menggunakan format response standar:
 **Error Response:**
 ```json
 {
-  "success": false,
+  "success": 400,
   "message": "Error message",
-  "errors": [ ... ]
+  "data": null
 }
 ```
 
@@ -999,11 +993,11 @@ http://localhost:5000/swagger/index.html
 
 ---
 
-### 🔌 API Endpoints Overview
+### 🔌 API Authorize Overview
 
 ![API Endpoints](https://res.cloudinary.com/dueixuonp/image/upload/v1760971348/ss_debug_2_ab72fa.png)
 
-*Complete list of available endpoints with request/response schemas*
+*Swagger UI view of the Extracurricular API showing the Available Authorizations dialog for entering a Bearer (JWT) token.*
 
 ---
 
