@@ -26,6 +26,9 @@ function LoginButton() {
 }
 
 function Isi(){
+  const APP_DOWNLOAD = '/assets/app-debug.apk';
+  const APP_NAME = 'Ekskul-App';
+
   return(
 
     <motion.div 
@@ -43,11 +46,12 @@ function Isi(){
         </p>
 
         <div className="flex justify-center mt-6">
-          <button 
-            className="bg-blue-600 text-white text-md sm:text-lg font-bold py-3 px-6 sm:px-8 rounded-full shadow-xl hover:bg-blue-700 transition duration-300 transform hover:scale-105 sm:w-100 max-w-xs sm:max-w-none "
-          >
-            📥 Download Aplikasi 
-          </button>
+          <a href={APP_DOWNLOAD} download={APP_NAME} className="flex items-center gap-2">
+            <button 
+              className="bg-blue-600 text-white text-md sm:text-lg font-bold py-3 px-6 sm:px-8 rounded-full shadow-xl hover:bg-blue-700 transition duration-300 transform hover:scale-105 sm:w-100 max-w-xs sm:max-w-none ">
+              📥 Download Aplikasi 
+            </button>
+          </a>
         </div>      
       </motion.div>
   )

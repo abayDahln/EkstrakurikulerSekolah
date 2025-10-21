@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { easeOut, motion } from "framer-motion";
-import { House, NotebookText, Camera, ListChecks, Plus, Menu, X } from "lucide-react";
+import { House, NotebookText, Camera, ListChecks, CirclePlus, Menu, X } from "lucide-react";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -43,8 +43,7 @@ function Navbar() {
                     <button 
                         key={index}
                         className={`w-60 ${item.color} text-2xl font-semibold rounded shadow-xl flex items-center justify-center gap-4 px-3 py-2 h-10 transition duration-300 ease-in-out hover:opacity-80`} 
-                        onClick={item.onClick}
-                    >
+                        onClick={item.onClick}>
                         {item.icon}{item.label}
                     </button>
                 ))}
@@ -62,8 +61,7 @@ function Navbar() {
                             <button 
                                 key={index}
                                 className={`w-full ${item.color} text-3xl font-semibold rounded flex items-center justify-start gap-5 px-5 py-4 h-16 shadow-lg`} 
-                                onClick={item.onClick}
-                            >
+                                onClick={item.onClick}>
                                 {item.icon}{item.label}
                             </button>
                         ))}
@@ -74,18 +72,23 @@ function Navbar() {
     );
 }
 
+
 function Card(){
     return(
         <motion.div
         initial={{y:1000, opacity:0}}
         animate={{y:0, opacity:1}}
         transition={{duration:1.4, ease:"easeOut"}}
-        className="bg-white rounded-xl w-100 sm:w-200 h-110">
-            <div className="flex justify-end pr-2 pt-2 text-center">
-            <button className="w-50 bg-yellow-300 text-2xl font-semibold rounded-md flex justify-center items-center gap-4 h-8 hover:bg-yellow-400" ><Plus />Tambah</button>
+        className="bg-white rounded-xl w-full max-w-4xl min-h-fit shadow-2xl mx-4"> 
+            <div className="flex justify-between pl-4 pr-4 pt-4 text-center">
+            <span className="font-bold text-xl">Data Absen</span>
+            <button 
+                className="w-24 text-sm h-8 sm:w-40 bg-yellow-300 sm:text-xl font-bold rounded-lg flex justify-center items-center gap-1 sm:gap-2 hover:bg-yellow-400 transition duration-200">
+                <CirclePlus color="#4b87b4" strokeWidth={3} />Tambah
+            </button>
             </div>
-            <div className="p-4">
-              <table className="min-w-full border border-gray-200 divide-y divide-gray-200 shadow-md rounded-lg overflow-hidden">
+            <div className="p-4 overflow-x-auto">
+              <table className="min-w-full border border-gray-200 divide-y divide-gray-200 shadow-md rounded-lg">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">No</th>
@@ -117,13 +120,14 @@ function Card(){
 
 
 
+
 export default function Absen(){
     return(
-        <div className="h-screen bg-blue-400">
+        <div className="min-h-screen bg-blue-400">
             <Navbar />
-            <div className="flex justify-center pt-40 sm:pt-10">
+            <div className="flex justify-center pr-3 pl-3 pt-20 pb-10 sm:pt-10"> 
                 <Card />
             </div>
         </div>
-     )
+    )
 }

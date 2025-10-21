@@ -1,4 +1,3 @@
-# Gunakan Node.js untuk build tahap pertama
 FROM node:22-alpine AS build
 
 WORKDIR /app

@@ -43,8 +43,7 @@ function Navbar() {
                     <button 
                         key={index}
                         className={`w-60 ${item.color} text-2xl font-semibold rounded shadow-xl flex items-center justify-center gap-4 px-3 py-2 h-10 transition duration-300 ease-in-out hover:opacity-80`} 
-                        onClick={item.onClick}
-                    >
+                        onClick={item.onClick}>
                         {item.icon}{item.label}
                     </button>
                 ))}
@@ -62,8 +61,7 @@ function Navbar() {
                             <button 
                                 key={index}
                                 className={`w-full ${item.color} text-3xl font-semibold rounded flex items-center justify-start gap-5 px-5 py-4 h-16 shadow-lg`} 
-                                onClick={item.onClick}
-                            >
+                                onClick={item.onClick}>
                                 {item.icon}{item.label}
                             </button>
                         ))}
@@ -75,24 +73,39 @@ function Navbar() {
 }
 
 function Card(){
+    const imagePlaceholders = Array.from({ length: 10 }, (_, i) => i);
+
     return(
         <motion.div
         initial={{y:1000, opacity:0}}
         animate={{y:0, opacity:1}}
         transition={{duration:1.4, ease:"easeOut"}}
-        className="flex bg-white rounded-xl w-100 sm:w-200 h-110"
+        className="flex flex-col bg-white rounded-xl w-full max-w-5xl min-h-[500px] shadow-2xl p-4 mx-4 sm:mx-auto" 
         >
-           <div>Hai</div>
+           <span className="font-bold text-xl mb-4">Data Dokumentasi</span>
+           <div 
+                className="grid gap-4 overflow-y-auto pb-4"
+                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))' }}
+           >
+                {imagePlaceholders.map((_, index) => (
+                    <div 
+                        key={index} 
+        
+                        className="rounded-lg w-full h-32 border-4 border-gray-300 bg-gray-100 flex items-center justify-center text-gray-500 text-xs"
+                    >
+                        Image {index + 1}
+                    </div>
+                ))}
+           </div>
         </motion.div>
     )
 }
 
-
 export default function Dokum(){
     return(
-        <div className="h-screen bg-blue-400">
+        <div className="min-h-screen bg-blue-400">
             <Navbar />
-            <div className="flex justify-center pt-40 sm:pt-10">
+            <div className="flex justify-center pt-20 pb-10 sm:pt-10">
                 <Card />
             </div>
         </div>

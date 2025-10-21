@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { easeOut, motion } from "framer-motion";
 import { House, NotebookText, Camera, ListChecks, Menu, X } from "lucide-react";
 
+
 function Navbar() {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
@@ -74,6 +75,7 @@ function Navbar() {
 }
 
 function Card(){
+
     return(
         <motion.div
         initial={{y:1000, opacity:0}}
@@ -81,7 +83,7 @@ function Card(){
         transition={{duration:1.4, ease:"easeOut"}}
         className="bg-white w-200 h-110 mx-4 p-8 rounded-xl flex flex-col justify-center items-center text-center shadow-2xl">
             <div className="flex flex-col gap-5">
-                <div className="font-bold text-3xl">Halo, Pembina [Nama Ekskul]</div>
+                <div className="font-bold text-3xl">Halo, Pembina [Ekskul ...]</div>
                 <div className="font-semibold text-xl">Atur Jadwal Ekstrakurikermu dengan Mudah!</div>
                 <div>Pastikan setiap kegiatan ekstrakurikuler berjalan teratur tanpa bentrok dengan ekstrakurikuler lain. Ayo Amati Kegiatan dan buat Jadwal untuk ekstrakurikuler</div>
             </div>

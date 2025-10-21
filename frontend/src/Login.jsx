@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -11,15 +11,54 @@ function Login() {
 }
 
 function Form() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const API_URL = "http://localhost:5000/api/auth/login/pembina";
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Username: ${username}, Password: ${password}`);
-    navigate("/home");
-  }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Login gagal. Cek kredensial Anda.";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+        }
+        throw new Error(errorMessage);
+      }
+      
+      const data = await response.json();
+      console.log("Login successful:", data);
+      if (data.token) {
+        localStorage.setItem("authToken", data.token);
+      }
+      navigate("/home");
+    } catch (err) {
+      setError(err.message);
+      localStorage.removeItem("authToken");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <motion.form
@@ -30,33 +69,47 @@ function Form() {
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
       <motion.input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username/Email"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Masukkan Email"
         className="shadow-lg text-black p-3 rounded w-70 sm:w-110 bg-gray-100"
         whileFocus={{ scale: 1.03 }}
         transition={{ type: "spring", stiffness: 300 }}
+        disabled={loading}
+        required
       />
       <motion.input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
+        placeholder="Masukkan Password"
         className="shadow-lg text-black p-3 rounded w-70 sm:w-110 bg-gray-100"
         whileFocus={{ scale: 1.03 }}
         transition={{ type: "spring", stiffness: 300 }}
+        disabled={loading}
+        required
       />
 
       <div className="flex items-center justify-end w-70 sm:w-110">
+        {error && (
+            <p className="text-red-500 text-sm mr-4">{error}</p>
+        )}
         <motion.button
           type="submit"
-          className="bg-blue-500 text-white p-3 rounded hover:bg-blue-600 min-w-10 h-full max-h-8 flex items-center justify-center w-25 sm:w-40"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className={`
+            p-3 rounded min-w-10 h-full max-h-8 flex items-center justify-center w-25 sm:w-40 text-white font-bold
+            ${loading 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-blue-500 hover:bg-blue-600'
+            }
+          `}
+          whileHover={!loading ? { scale: 1.05 } : {}}
+          whileTap={!loading ? { scale: 0.95 } : {}}
           transition={{ type: "spring", stiffness: 300 }}
+          disabled={loading} 
         >
-          Login
+          {loading ? 'Memproses...' : 'Login'}
         </motion.button>
       </div>
     </motion.form>
