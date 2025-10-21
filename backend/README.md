@@ -1125,15 +1125,11 @@ http://localhost:5000/swagger/index.html
 
 <div align="center">
 
-```
-MIT License
-
-Copyright (c) 2024 Abby Dahlan Havizh
-
-Bebas untuk digunakan, dimodifikasi, dan didistribusikan
-```
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+**MIT License** - Copyright (c) 2024 Abby Dahlan Havizh
+
+*Bebas untuk digunakan, dimodifikasi, dan didistribusikan dengan tetap mencantumkan credit*
 
 </div>
 
