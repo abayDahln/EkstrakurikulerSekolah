@@ -1,14 +1,26 @@
-# Ekstrakurikuler Sekolah API
+# 🎓 Ekstrakurikuler Sekolah API
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<div align="center">
 
-Backend API untuk aplikasi manajemen ekstrakurikuler sekolah yang mendukung platform website dan Android. Sistem ini memfasilitasi interaksi antara siswa dan pembina ekstrakurikuler dengan fitur point system, sertifikat otomatis, dan manajemen jadwal kegiatan.
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
+[![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)](https://jwt.io/)
+[![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white)](https://swagger.io/)
+
+### 🚀 Backend API untuk Manajemen Ekstrakurikuler Sekolah
+
+*Sistem digital terintegrasi untuk siswa dan pembina ekstrakurikuler dengan point system otomatis dan certificate generation*
+
+[📖 Documentation](#-api-documentation) • [🔧 Installation](#-instalasi) • [🎯 Features](#-fitur-utama) • [💬 Contact](#-kontak)
+
+---
 
 ![Swagger Documentation](https://res.cloudinary.com/dueixuonp/image/upload/v1760971347/ss_debug_1_alsyt3.png)
 
-## Daftar Isi
+</div>
+
+## 📋 Daftar Isi
 
 - [Tentang Project](#-tentang-project)
 - [Fitur Utama](#-fitur-utama)
@@ -22,102 +34,204 @@ Backend API untuk aplikasi manajemen ekstrakurikuler sekolah yang mendukung plat
 - [Screenshot](#-screenshot)
 - [Kontak](#-kontak)
 
-## Tentang Project
+## 🚀 Tentang Project
+
+<table>
+<tr>
+<td>
 
 **Ekstrakurikuler Sekolah API** adalah backend REST API yang dibangun untuk mengelola kegiatan ekstrakurikuler di lingkungan sekolah. API ini menyediakan layanan untuk siswa dan pembina dalam melakukan berbagai aktivitas seperti pendaftaran ekstrakurikuler, absensi, pelaporan kegiatan, hingga penerbitan sertifikat secara otomatis.
 
-### Latar Belakang
+### 🎯 Latar Belakang
 
 Project ini dikembangkan untuk memudahkan manajemen ekstrakurikuler di sekolah dengan sistem digital yang terintegrasi. Siswa dapat dengan mudah memilih dan bergabung dengan ekstrakurikuler, sementara pembina dapat mengelola anggota dan kegiatan ekstrakurikuler mereka secara efisien.
 
-### Target Pengguna
+</td>
+</tr>
+</table>
 
-- **Siswa**: Untuk join ekstrakurikuler, absensi, laporan kegiatan, dan mendapatkan sertifikat
-- **Pembina Ekstrakurikuler**: Untuk mengelola anggota, jadwal, absensi, dan sertifikat ekstrakurikuler
+### 👥 Target Pengguna
 
-## Fitur Utama
+<div align="center">
 
-### Authentication & Authorization
-- **Login Siswa**: Autentikasi untuk siswa dengan JWT token
-- **Login Pembina**: Autentikasi untuk pembina ekstrakurikuler dengan JWT token
-- **Register Siswa**: Pendaftaran akun baru untuk siswa
-- **Role-based Access Control**: Akses data disesuaikan dengan role (siswa/pembina)
+| 👨‍🎓 Siswa | 👨‍🏫 Pembina |
+|:---:|:---:|
+| Join ekstrakurikuler | Kelola anggota |
+| Absensi kegiatan | Buat jadwal |
+| Laporan aktivitas | Upload dokumentasi |
+| Dapatkan sertifikat | Terbitkan sertifikat |
 
-### Fitur Siswa
-- **Manajemen Ekstrakurikuler**
-  - Melihat daftar ekstrakurikuler tersedia
-  - Melihat detail ekstrakurikuler
-  - Join ekstrakurikuler (mendapat first point)
-- **Manajemen Jadwal**
-  - Melihat jadwal kegiatan ekstrakurikuler
-  - Absensi kehadiran/izin/sakit pada jadwal
-  - Submit laporan kegiatan (report schedule)
-- **Profil & Sertifikat**
-  - Melihat dan edit profil
-  - Upload foto profil
-  - Melihat sertifikat yang dimiliki
+</div>
 
-### Fitur Pembina
-- **Manajemen Ekstrakurikuler**
-  - Melihat ekstrakurikuler yang dibina
-  - Melihat daftar member ekstrakurikuler
-  - Dashboard statistik ekstrakurikuler
-  - Melihat absensi berdasarkan jadwal
-- **Manajemen Kegiatan**
-  - Membuat jadwal kegiatan
-  - Upload dokumentasi kegiatan
-  - Upload sertifikat tambahan (lomba/event)
-- **Profil**
-  - Melihat dan edit profil
-  - Upload foto profil
+## ✨ Fitur Utama
 
-### Sistem Point & Sertifikat (Fitur Unggulan)
-- **Point System**: Setiap aktivitas memberikan poin
-  - Join ekstrakurikuler: first point
-  - Absensi hadir: dapat poin
-  - Submit laporan kegiatan: dapat poin
-- **Auto Certificate**: Sertifikat keaktifan otomatis diterbitkan saat poin mencapai 100
-- **Certificate Management**: Pembina dapat menambahkan sertifikat lain (lomba/event)
+<table>
+<tr>
+<td width="50%">
 
-## Teknologi yang Digunakan
+### 🔐 Authentication & Authorization
+- 🔑 **Login Siswa** - Autentikasi dengan JWT token
+- 🔑 **Login Pembina** - Akses khusus pembina
+- 📝 **Register Siswa** - Pendaftaran akun baru
+- 🛡️ **Role-based Access** - Keamanan berlapis
 
-### Backend Framework
-- **C#** - Programming Language
-- **.NET Core 8.0** - Runtime Framework
-- **ASP.NET Core Web API** - Web API Framework
-- **Entity Framework Core** - ORM (Object-Relational Mapping)
+</td>
+<td width="50%">
 
-### Database
-- **PostgreSQL** - Relational Database Management System
-- **Npgsql** - PostgreSQL provider for Entity Framework Core
+### 🏆 Sistem Point & Sertifikat
+- ⭐ **Point System** - Tracking aktivitas
+- 🎖️ **Auto Certificate** - Sertifikat otomatis
+- 📜 **Certificate Management** - Kelola sertifikat
+- 📊 **Activity Tracking** - Monitor progress
 
-### Authentication & Security
-- **JWT (JSON Web Token)** - Token-based authentication
-- **ASP.NET Core Authentication JWT Bearer** - JWT authentication middleware
+</td>
+</tr>
+</table>
 
-### Documentation & Tools
-- **Swagger / Swashbuckle** - API documentation and testing
-- **SixLabors.ImageSharp** - Image processing library
-- **SixLabors.Fonts** - Font rendering for certificate generation
+<details>
+<summary><b>👨‍🎓 Fitur Siswa (Klik untuk expand)</b></summary>
 
-### Development Tools
-- **.NET SDK 8.0.121** - Software Development Kit
-- **.NET CLI** - Command Line Interface
-- **Visual Studio Community 2022** - Integrated Development Environment (optional)
-- **NuGet** - Package Manager
+### 📚 Manajemen Ekstrakurikuler
+- ✅ Lihat daftar ekstrakurikuler tersedia
+- 🔍 Cari ekstrakurikuler berdasarkan keyword
+- 📖 Lihat detail lengkap ekstrakurikuler
+- ➕ Join ekstrakurikuler (dapat first point!)
 
-### Main NuGet Packages
-```xml
-- Microsoft.AspNetCore.Authentication.JwtBearer
-- Microsoft.EntityFrameworkCore.Design
-- Microsoft.EntityFrameworkCore.Tools
-- Npgsql.EntityFrameworkCore.PostgreSQL
-- SixLabors.Fonts
-- SixLabors.ImageSharp
-- Swashbuckle.AspNetCore
+### 📅 Manajemen Jadwal
+- 📆 Lihat jadwal kegiatan
+- ✅ Absensi kehadiran/izin/sakit
+- 📝 Submit laporan kegiatan
+- 🔔 Notifikasi jadwal (coming soon)
+
+### 👤 Profil & Sertifikat
+- 👁️ Lihat profil lengkap
+- ✏️ Edit data profil
+- 📸 Upload foto profil
+- 🎓 Lihat koleksi sertifikat
+
+</details>
+
+<details>
+<summary><b>👨‍🏫 Fitur Pembina (Klik untuk expand)</b></summary>
+
+### 🎯 Manajemen Ekstrakurikuler
+- 📊 Dashboard statistik real-time
+- 👥 Lihat daftar member
+- 📋 Kelola absensi
+- 📈 Monitor progress anggota
+
+### 📅 Manajemen Kegiatan
+- ➕ Buat jadwal baru
+- 📸 Upload dokumentasi
+- 🏆 Upload sertifikat lomba/event
+- 📝 Kelola laporan kegiatan
+
+### 👤 Profil
+- 👁️ Lihat profil
+- ✏️ Edit data profil
+- 📸 Upload foto profil
+
+</details>
+
+---
+
+### 🎯 Fitur Unggulan: Smart Point System
+
+<div align="center">
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    POINT SYSTEM FLOW                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  📝 Join Ekstrakurikuler  →  🎁 First Point Granted        │
+│                                                             │
+│  ✅ Absensi Hadir         →  ⭐ Attendance Point Added     │
+│                                                             │
+│  📄 Submit Report         →  ⭐ Report Point Added         │
+│                                                             │
+│  🎯 Reach 100 Points      →  🎓 Auto Generate Certificate  │
+│                                                             │
+│  🏆 Win Competition       →  📜 Bonus Certificate          │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## Prasyarat
+</div>
+
+## 🛠️ Teknologi yang Digunakan
+
+<div align="center">
+
+### Core Technologies
+
+[![C Sharp](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![.NET Core](https://img.shields.io/badge/.NET%20Core-8.0-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
+[![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-512BD4?style=for-the-badge&logo=dotnet)](https://docs.microsoft.com/en-us/aspnet/core/)
+[![Entity Framework](https://img.shields.io/badge/Entity%20Framework-512BD4?style=for-the-badge&logo=dotnet)](https://docs.microsoft.com/en-us/ef/core/)
+
+### Database & Authentication
+
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)](https://jwt.io/)
+
+### Documentation & Tools
+
+[![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white)](https://swagger.io/)
+[![NuGet](https://img.shields.io/badge/NuGet-004880?style=for-the-badge&logo=nuget&logoColor=white)](https://www.nuget.org/)
+[![Visual Studio](https://img.shields.io/badge/Visual%20Studio-5C2D91?style=for-the-badge&logo=visual-studio&logoColor=white)](https://visualstudio.microsoft.com/)
+
+</div>
+
+---
+
+<table>
+<tr>
+<td width="33%">
+
+### 🔧 Backend Framework
+- **C#** - Language
+- **.NET Core 8.0** - Runtime
+- **ASP.NET Core Web API** - Framework
+- **Entity Framework Core** - ORM
+
+</td>
+<td width="33%">
+
+### 💾 Database
+- **PostgreSQL** - RDBMS
+- **Npgsql** - EF Provider
+
+### 🔐 Security
+- **JWT** - Authentication
+- **ASP.NET Core Auth** - Middleware
+
+</td>
+<td width="33%">
+
+### 🛠️ Development Tools
+- **.NET SDK 8.0.121** - SDK
+- **.NET CLI** - Command Line
+- **Visual Studio 2022** - IDE
+- **NuGet** - Package Manager
+
+</td>
+</tr>
+</table>
+
+### 📦 Main NuGet Packages
+
+```xml
+🔐 Microsoft.AspNetCore.Authentication.JwtBearer
+🗃️ Microsoft.EntityFrameworkCore.Design
+🔨 Microsoft.EntityFrameworkCore.Tools
+🐘 Npgsql.EntityFrameworkCore.PostgreSQL
+🖼️ SixLabors.ImageSharp
+✍️ SixLabors.Fonts
+📖 Swashbuckle.AspNetCore
+```
+
+## 📦 Prasyarat
 
 Sebelum memulai, pastikan Anda telah menginstall:
 
@@ -476,28 +590,59 @@ dotnet ef migrations add InitialDatabase
 dotnet ef database update
 ```
 
-## Cara Menjalankan
+## 🚀 Cara Menjalankan
 
-### Development Mode
+### 💻 Development Mode
 
+<table>
+<tr>
+<td width="50%">
+
+#### 🔙 Backend
 ```bash
 # Jalankan aplikasi
 dotnet run
 ```
 
-Aplikasi akan berjalan di:
-- **API Endpoint**: `http://localhost:5000/api/`
-- **Static Files**: `http://localhost:5000/public/`
-- **Swagger Documentation**: `http://localhost:5000/swagger/index.html`
+**Server akan berjalan di:**
+- 🌐 **API Endpoint**: `http://localhost:5000/api/`
+- 📁 **Static Files**: `http://localhost:5000/public/`
+- 📖 **Swagger Docs**: `http://localhost:5000/swagger/index.html`
 
-### Production Build
+</td>
+<td width="50%">
+
+#### 🎯 Quick Access
+
+| Service | URL |
+|---------|-----|
+| 🔌 API | `localhost:5000/api` |
+| 🖼️ Images | `localhost:5000/public` |
+| 📚 Docs | `localhost:5000/swagger` |
+
+**Status Check:**
+```bash
+# Test API
+curl http://localhost:5000/api
+
+# Open Swagger
+open http://localhost:5000/swagger
+```
+
+</td>
+</tr>
+</table>
+
+### 🏭 Production Build
 
 ```bash
 # Build untuk production (Coming Soon)
 dotnet publish -c Release -o ./publish
 ```
 
-## Struktur Project
+> 💡 **Tip**: Gunakan `dotnet watch run` untuk auto-reload saat development!
+
+## 📁 Struktur Project
 
 ```
 backend/
@@ -559,7 +704,7 @@ backend/
 - **Properties/**: Konfigurasi runtime seperti port dan environment
 - **Dependencies/**: Package dan library yang digunakan project
 
-## API Documentation
+## 📚 API Documentation
 
 ### Base URL
 ```
@@ -844,11 +989,64 @@ http://localhost:5000/swagger/index.html
 
 ## 📸 Screenshot
 
-### Swagger API Documentation
+<div align="center">
+
+### 📖 Swagger API Documentation
+
 ![Swagger UI](https://res.cloudinary.com/dueixuonp/image/upload/v1760971347/ss_debug_1_alsyt3.png)
 
-### API Endpoints Overview
+*Interactive API documentation with Swagger UI - Test endpoints directly from browser*
+
+---
+
+### 🔌 API Endpoints Overview
+
 ![API Endpoints](https://res.cloudinary.com/dueixuonp/image/upload/v1760971348/ss_debug_2_ab72fa.png)
+
+*Complete list of available endpoints with request/response schemas*
+
+---
+
+### ✨ Features Highlight
+
+<table>
+<tr>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/96/000000/api-settings.png" width="64"/>
+<br><b>RESTful API</b>
+<br>Clean & scalable architecture
+</td>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/96/000000/lock.png" width="64"/>
+<br><b>JWT Auth</b>
+<br>Secure authentication
+</td>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/96/000000/database.png" width="64"/>
+<br><b>PostgreSQL</b>
+<br>Robust database
+</td>
+</tr>
+<tr>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/96/000000/certificate.png" width="64"/>
+<br><b>Auto Certificate</b>
+<br>Smart point system
+</td>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/96/000000/api.png" width="64"/>
+<br><b>Swagger Docs</b>
+<br>Interactive documentation
+</td>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/96/000000/web.png" width="64"/>
+<br><b>Multi-Platform</b>
+<br>Web & Android support
+</td>
+</tr>
+</table>
+
+</div>
 
 ## 🔒 Security Features
 
@@ -871,43 +1069,115 @@ http://localhost:5000/swagger/index.html
 
 ## 🐛 Known Issues & Roadmap
 
-### Current Limitations
-- Production build belum tersedia (Coming Soon)
-- Email notification belum diimplementasikan
+<table>
+<tr>
+<td width="50%">
 
-### Future Features
-- [ ] Email notification untuk certificate
-- [ ] Export certificate to PDF
-- [ ] Real-time notification menggunakan SignalR
-- [ ] Dashboard analytics dengan chart
-- [ ] Integration dengan sistem akademik sekolah
+### ⚠️ Current Limitations
+- ⏳ Production build belum tersedia
+- 📧 Email notification belum diimplementasikan
+- 📱 Mobile push notification coming soon
+
+</td>
+<td width="50%">
+
+### 🚀 Future Features
+- [ ] 📧 Email notification untuk certificate
+- [ ] 📄 Export certificate to PDF
+- [ ] 🔔 Real-time notification (SignalR)
+- [ ] 📊 Dashboard analytics dengan chart
+- [ ] 🏫 Integration dengan sistem akademik
+- [ ] 📱 Mobile app support enhancement
+
+</td>
+</tr>
+</table>
+
+---
 
 ## 📝 Changelog
 
-### Version 1.0.0 (2024)
-- ✅ Initial release
+<details>
+<summary><b>Version 1.0.0 (2024) - Current Release 🎉</b></summary>
+
+### ✅ Features Implemented
 - ✅ Authentication & Authorization (JWT)
 - ✅ CRUD Ekstrakurikuler
 - ✅ Schedule & Attendance management
 - ✅ Point system implementation
 - ✅ Auto certificate generation
-- ✅ Profile management
+- ✅ Profile management with photo upload
 - ✅ Swagger documentation
+- ✅ Multi-platform support (Web & Android)
 
-## Lisensi
+### 🔧 Technical Improvements
+- ✅ Entity Framework Core migrations
+- ✅ PostgreSQL database integration
+- ✅ Role-based access control
+- ✅ Image processing for certificates
+- ✅ RESTful API design
 
-Project ini dilisensikan under MIT License - bebas untuk digunakan dan dimodifikasi.
-
-## Kontak
-
-**Abby Dahlan Havizh**
-
-- 📧 Email: [abby11dahlan@gmail.com](mailto:abby11dahlan@gmail.com)
-- 📱 Instagram: [@abayy_____________](https://www.instagram.com/abayy_____________/)
-- 💻 GitHub: [@abayDahln](https://github.com/abayDahln)
+</details>
 
 ---
 
-⭐ **Jika project ini membantu, berikan star di repository!**
+## 📄 Lisensi
 
-**Made with ❤️ by Abby Dahlan Havizh**
+<div align="center">
+
+```
+MIT License
+
+Copyright (c) 2024 Abby Dahlan Havizh
+
+Bebas untuk digunakan, dimodifikasi, dan didistribusikan
+```
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+</div>
+
+---
+
+## 👤 Kontak
+
+<div align="center">
+
+### 💬 Let's Connect!
+
+**Abby Dahlan Havizh**
+
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:abby11dahlan@gmail.com)
+[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/abayy_____________/)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/abayDahln)
+
+---
+
+### 💖 Support This Project
+
+<table>
+<tr>
+<td align="center">
+⭐ Star this repo
+</td>
+<td align="center">
+🔄 Share with others
+</td>
+<td align="center">
+🐛 Report issues
+</td>
+<td align="center">
+💡 Suggest features
+</td>
+</tr>
+</table>
+
+---
+
+<img src="https://img.icons8.com/fluency/48/000000/code.png"/> **Made with ❤️ by Abby Dahlan Havizh** <img src="https://img.icons8.com/fluency/48/000000/code.png"/>
+
+*Building digital solutions for better education management*
+
+⭐ **If this project helps you, please give it a star!** ⭐
+
+</div>
