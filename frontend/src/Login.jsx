@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { setToken } from "./utils/utils";
 
 function Login() {
   return (
@@ -45,20 +46,24 @@ function Form() {
         throw new Error(errorMessage);
       }
       
-      const data = await response.json();
-      console.log("Login successful:", data);
-      if (data.token) {
-        localStorage.setItem("authToken", data.token);
+      const responseBody = await response.json();
+      const token = responseBody.data.token;     
+
+      if (token) {
+          setToken(token);
+          navigate("/home");
       }
-      navigate("/home");
-    } catch (err) {
+      else {
+      throw new Error("Respons 200 OK, tetapi 'token' tidak ditemukan dalam response.data.");
+      }
+      } 
+      catch (err) { 
       setError(err.message);
-      localStorage.removeItem("authToken");
-    } finally {
+      } 
+      finally {
       setLoading(false);
-    }
-  };
-  
+      }
+    };
 
   return (
     <motion.form

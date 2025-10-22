@@ -23,11 +23,12 @@ function Navbar() {
     ];
 
     return (
+        <div>
         <motion.div
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="pt-5 px-4 md:px-10 flex justify-between items-center relative z-50"
+            className="pt-5 pb-5 px-4 md:px-10 flex justify-between items-center relative z-50"
         >
             <h1 className="text-2xl font-bold text-white md:hidden">Ekskul App</h1>
             <button 
@@ -76,6 +77,12 @@ function Navbar() {
                 </motion.div>
             )}
         </motion.div>
+        <motion.div 
+            initial={{y: -100, opacity: 0}}
+            animate={{y: 0, opacity: 1}}
+            transition={{duration: 0.7, ease: "easeOut"}}
+            className="w-full border border-white"></motion.div>
+        </div>
     );
 }
 
