@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { easeOut, motion } from "framer-motion";
 import { getToken } from "./utils/utils";
 import { House, NotebookText, Camera, ListChecks, Menu, X, CheckCircle, XCircle } from "lucide-react";
 
 const API_URL = "http://localhost:5000/api/pembina/schedule";
+const API_EKSKUL = "http://localhost:5000/api/pembina/my-extracurricular";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -85,9 +86,34 @@ function Card() {
     const [description, setDescription] = useState("");
     const [tanggal, setTanggal] = useState("");
     const [location, setLocation] = useState("");
+    const [ekskulList, setEkskulList] = useState([]);
+    const [selectedEkskul, setSelectedEkskul] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [feedback, setFeedback] = useState(null);
     const token = getToken();
+
+    useEffect(() => {
+        const fetchEkskul = async () => {
+            try {
+                const res = await fetch(API_EKSKUL, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+                const json = await res.json();
+                if (json.status === 200 && Array.isArray(json.data)) {
+                    setEkskulList(json.data);
+                } else {
+                    console.error("Gagal ambil ekskul:", json);
+                }
+            } catch (err) {
+                console.error("Error:", err);
+            }
+        };
+        fetchEkskul();
+    }, [token]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -101,27 +127,22 @@ function Card() {
                     "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    extracuriculaId: 1,
+                    extracuriculaId: parseInt(selectedEkskul),
                     title,
                     description,
-                    scheduleDate: `${tanggal}`,
+                    scheduleDate: tanggal,
                     location,
                 }),
             });
 
-
-            if (!res.ok) {
-                throw new Error("Gagal membuat jadwal");
-            }
-
+            if (!res.ok) throw new Error("Gagal membuat jadwal");
             const data = await res.json();
             setFeedback({ type: "success", message: "Jadwal berhasil dibuat" });
-            } catch (error) {
+        } catch (error) {
             setFeedback({ type: "error", message: error.message });
-            } finally {
+        } finally {
             setIsLoading(false);
-            }
-
+        }
     };
 
     return (
@@ -150,6 +171,20 @@ function Card() {
                 )}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    <select
+                        value={selectedEkskul}
+                        onChange={(e) => setSelectedEkskul(e.target.value)}
+                        required
+                        disabled={isLoading}
+                        className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+                        <option value="">-- Pilih Ekskul --</option>
+                        {ekskulList.map((ex) => (
+                            <option key={ex.id} value={ex.id}>
+                                {ex.name}
+                            </option>
+                        ))}
+                    </select>
+
                     <input
                         type="text"
                         placeholder="Nama Kegiatan"
@@ -164,13 +199,13 @@ function Card() {
                         onChange={(e) => setDescription(e.target.value)}
                         disabled={isLoading}
                         className="w-full h-24 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition resize-none"/>
-                        <input
-                            type="date"
-                            value={tanggal}
-                            onChange={(e) => setTanggal(e.target.value)}
-                            required
-                            disabled={isLoading}
-                            className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"/>
+                    <input
+                        type="date"
+                        value={tanggal}
+                        onChange={(e) => setTanggal(e.target.value)}
+                        required
+                        disabled={isLoading}
+                        className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"/>
                     <input
                         type="text"
                         placeholder="Lokasi Kegiatan"
