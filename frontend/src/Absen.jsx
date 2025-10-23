@@ -34,7 +34,6 @@ function Navbar() {
                 {isOpen ? <X size={32} /> : <Menu size={32} />}
             </button>
 
-            {/* Menu Desktop */}
             <div className="hidden md:flex gap-5 mx-auto">
                 {menuItems.map((item, index) => (
                     <button

@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { easeOut, motion } from "framer-motion";
-import { getToken } from "./utils/utils";
 import { House, NotebookText, Camera, ListChecks, Menu, X, CheckCircle, XCircle } from "lucide-react";
+import { motion, easeOut } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { getToken } from "./utils/utils";
 
-const API_URL = "http://localhost:5000/api/pembina/schedule";
-const API_EKSKUL = "http://localhost:5000/api/pembina/my-extracurricular";
+const API_BASE = "http://localhost:5000/api/pembina";
+
+const Input = ({ className = "", ...props }) => (
+  <input
+    {...props}
+    className={`w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm text-gray-700 ${className}`}/>
+);
 
 function Navbar() {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
+
     const dokum = () => { navigate("/dokumentasi"); setIsOpen(false); }
     const absensi = () => { navigate("/absen"); setIsOpen(false); }
     const home = () => { navigate("/home"); setIsOpen(false); }
     const jadwal = () => { navigate("/jadwal"); setIsOpen(false); }
+
     const toggleMenu = () => setIsOpen(!isOpen);
 
     const menuItems = [
         { icon: <House size={20} />, label: "Home", onClick: home, color: "text-white" },
-        { icon: <NotebookText size={20} />, label: "Buat Jadwal", onClick: jadwal, color: "bg-yellow-300 text-gray-800" },
+        { icon: <NotebookText size={20} />, label: "Buat Jadwal", onClick: jadwal, color: "bg-yellow-300" },
         { icon: <Camera size={20} />, label: "Dokumentasi", onClick: dokum, color: "text-white" },
         { icon: <ListChecks size={20} />, label: "Absensi", onClick: absensi, color: "text-white" },
     ];
@@ -40,9 +47,9 @@ function Navbar() {
             <div className="hidden md:flex gap-5 mx-auto">
                 {menuItems.map((item, index) => (
                     <button 
-                    key={index}
-                    className={`w-60 ${item.color} text-base font-semibold rounded-xl shadow-xl flex items-center justify-center gap-4 px-3 py-2 h-10 transition duration-300 ease-in-out hover:opacity-80`} 
-                    onClick={item.onClick}>
+                        key={index}
+                        className={`w-60 ${item.color} text-base font-semibold rounded-xl shadow-xl flex items-center justify-center gap-4 px-3 py-2 h-10 transition duration-300 ease-in-out hover:opacity-80`} 
+                        onClick={item.onClick}>
                         {item.icon}{item.label}
                     </button>
                 ))}
@@ -50,10 +57,10 @@ function Navbar() {
 
             {isOpen && (
                 <motion.div 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                exit={{ opacity: 0 }} 
-                className="md:hidden fixed inset-0 z-40 bg-blue-400/95 pt-20">
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }} 
+                    className="md:hidden fixed inset-0 z-40 bg-blue-400/95 pt-20">
                     <motion.div
                         initial={{ x: "100%" }}
                         animate={{ x: 0 }}
@@ -62,9 +69,9 @@ function Navbar() {
                         className="flex flex-col gap-5 p-5">
                         {menuItems.map((item, index) => (
                             <button 
-                            key={index}
-                            className={`w-full ${item.color} text-xl font-semibold rounded-xl flex items-center justify-start gap-5 px-5 py-4 h-16 shadow-lg`} 
-                            onClick={item.onClick}>
+                                key={index}
+                                className={`w-full ${item.color} text-xl font-semibold rounded-xl flex items-center justify-start gap-5 px-5 py-4 h-16 shadow-lg`} 
+                                onClick={item.onClick}>
                                 {item.icon}{item.label}
                             </button>
                         ))}
@@ -77,198 +84,217 @@ function Navbar() {
             animate={{y: 0, opacity: 1}}
             transition={{duration: 0.7, ease: "easeOut"}}
             className="w-full border border-white"></motion.div>
-    </div>
+        </div>
     );
 }
 
-function Card() {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [tanggal, setTanggal] = useState("");
-    const [location, setLocation] = useState("");
-    const [ekskulList, setEkskulList] = useState([]);
-    const [selectedEkskul, setSelectedEkskul] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [feedback, setFeedback] = useState(null);
-    const token = getToken();
+function ScheduleManager() {
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    tanggal: "",
+    location: "",
+  });
+  const [ekskulList, setEkskulList] = useState([]);
+  const [selectedEkskul, setSelectedEkskul] = useState("");
+  const [jadwalList, setJadwalList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+  const token = getToken();
 
-    useEffect(() => {
-        const fetchEkskul = async () => {
-            try {
-                const res = await fetch(API_EKSKUL, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                    },
-                });
-                const json = await res.json();
-                if (json.status === 200 && Array.isArray(json.data)) {
-                    setEkskulList(json.data);
-                } else {
-                    console.error("Gagal ambil ekskul:", json);
-                }
-            } catch (err) {
-                console.error("Error:", err);
-            }
-        };
-        fetchEkskul();
-    }, [token]);
+  useEffect(() => {
+    if (!token) return;
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setFeedback(null);
-        try {
-            const res = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    extracuriculaId: parseInt(selectedEkskul),
-                    title,
-                    description,
-                    scheduleDate: tanggal,
-                    location,
-                }),
-            });
+    const fetchEkskul = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/my-extracurricular`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const json = await res.json();
 
-            if (!res.ok) throw new Error("Gagal membuat jadwal");
-            const data = await res.json();
-            setFeedback({ type: "success", message: "Jadwal berhasil dibuat" });
-        } catch (error) {
-            setFeedback({ type: "error", message: error.message });
-        } finally {
-            setIsLoading(false);
+        if (json.status === 200) {
+          setEkskulList(json.data);
+          if (json.data.length > 0 && !selectedEkskul)
+            setSelectedEkskul(String(json.data[0].id));
+        } else {
+          setFeedback({
+            type: "error",
+            message: "Gagal memuat daftar ekskul.",
+          });
         }
+      } catch {
+        setFeedback({
+          type: "error",
+          message: "Gagal terhubung ke server.",
+        });
+      }
     };
+    fetchEkskul();
+  }, [token]);
 
-    return (
-        <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl px-4 md:px-0 mx-auto">
-            <motion.div
-                initial={{ x: -200, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="bg-white rounded-2xl w-full md:w-1/2 shadow-xl p-6">
-                <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800 text-center">
-                    Buat Jadwal Baru
-                </h2>
+  const fetchJadwal = async (id) => {
+    if (!id) return setJadwalList([]);
+    try {
+      const res = await fetch(`${API_BASE}/dashboard/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      if (json.status === 200 && Array.isArray(json.data?.jadwalMendatang)) {
+        setJadwalList(json.data.jadwalMendatang);
+      } else setJadwalList([]);
+    } catch {
+      setJadwalList([]);
+    }
+  };
 
-                {feedback && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`p-3 mb-4 rounded-lg flex items-center gap-2 ${
-                            feedback.type === "success"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
-                        }`}>
-                        {feedback.type === "success" ? <CheckCircle size={20} /> : <XCircle size={20} />}
-                        <span className="text-sm font-medium">{feedback.message}</span>
-                    </motion.div>
-                )}
+  useEffect(() => {
+    fetchJadwal(selectedEkskul);
+  }, [selectedEkskul]);
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                    <select
-                        value={selectedEkskul}
-                        onChange={(e) => setSelectedEkskul(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-                        <option value="">-- Pilih Ekskul --</option>
-                        {ekskulList.map((ex) => (
-                            <option key={ex.id} value={ex.id}>
-                                {ex.name}
-                            </option>
-                        ))}
-                    </select>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setFeedback(null);
 
-                    <input
-                        type="text"
-                        placeholder="Nama Kegiatan"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"/>
-                    <textarea
-                        placeholder="Deskripsi kegiatan"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        disabled={isLoading}
-                        className="w-full h-24 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition resize-none"/>
-                    <input
-                        type="date"
-                        value={tanggal}
-                        onChange={(e) => setTanggal(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"/>
-                    <input
-                        type="text"
-                        placeholder="Lokasi Kegiatan"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"/>
+    try {
+      const res = await fetch(`${API_BASE}/schedule`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          extracuriculaId: parseInt(selectedEkskul),
+          title: form.title,
+          description: form.description,
+          scheduleDate: form.tanggal,
+          location: form.location,
+        }),
+      });
 
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full h-12 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition shadow-lg mt-4 flex items-center justify-center disabled:bg-blue-300">
-                        {isLoading ? (
-                            <svg
-                                className="animate-spin h-5 w-5 text-white"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24">
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                ></circle>
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                            </svg>
-                        ) : (
-                            "Buat Jadwal"
-                        )}
-                    </button>
-                </form>
-            </motion.div>
+      const data = await res.json();
+      if (res.ok && (data.status === 200 || data.status === 201)) {
+        setFeedback({
+          type: "success",
+          message: "Jadwal berhasil dibuat!",
+        });
+        setForm({ title: "", description: "", tanggal: "", location: "" });
+        fetchJadwal(selectedEkskul);
+      } else {
+        throw new Error(data.message || "Gagal membuat jadwal.");
+      }
+    } catch (err) {
+      setFeedback({ type: "error", message: err.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-            <motion.div
-                initial={{ x: 200, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="bg-white rounded-2xl w-full md:w-1/2 min-h-[300px] shadow-xl flex flex-col text-center justify-center items-center p-6">
-                <div className="text-2xl font-extrabold text-gray-400 p-8">
-                    Daftar Jadwal Ekskul
-                </div>
-                <p className="text-gray-500 text-sm">
-                    Jadwal yang baru dibuat akan muncul di sini setelah berhasil dikirim.
-                </p>
-            </motion.div>
+  return (
+    <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl px-4 md:px-0 mx-auto">
+      <motion.div
+        initial={{ x: -200, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="bg-white rounded-2xl w-full md:w-1/2 shadow-xl p-6">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+          Buat Jadwal Baru
+        </h2>
+
+        {feedback && (
+          <div
+            className={`p-3 mb-4 rounded-xl flex items-center gap-2 ${
+              feedback.type === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}>
+            {feedback.type === "success" ? <CheckCircle /> : <XCircle />}
+            <span>{feedback.message}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <select
+            value={selectedEkskul}
+            onChange={(e) => setSelectedEkskul(e.target.value)}
+            className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500">
+            <option value="">
+              {ekskulList.length === 0
+                ? "Memuat Ekskul..."
+                : "-- Pilih Ekskul --"}
+            </option>
+            {ekskulList.map((ex) => (
+              <option key={ex.id} value={ex.id}>
+                {ex.name}
+              </option>
+            ))}
+          </select>
+
+          <Input
+            placeholder="Nama Kegiatan"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}/>
+          <textarea
+            placeholder="Deskripsi kegiatan"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            className="w-full h-24 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"/>
+          <Input
+            type="date"
+            value={form.tanggal}
+            onChange={(e) => setForm({ ...form, tanggal: e.target.value })}/>
+          <Input
+            placeholder="Lokasi Kegiatan"
+            value={form.location}
+            onChange={(e) => setForm({ ...form, location: e.target.value })}/>
+            <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-12 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">
+            {isLoading ? "Menyimpan..." : "Buat Jadwal"}
+          </button>
+        </form>
+      </motion.div>
+
+      <motion.div
+        initial={{ x: 200, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="bg-white rounded-2xl w-full md:w-1/2 shadow-xl p-6">
+        <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
+          Jadwal Mendatang Ekskul
+        </h2>
+        <div className="max-h-[500px] overflow-y-auto">
+          {jadwalList.length > 0 ? (
+            <ul className="divide-y divide-gray-200">
+              {jadwalList.map((jadwal) => (
+                <li key={jadwal.id} className="py-3 px-2">
+                  <strong className="text-blue-600">{jadwal.title}</strong>
+                  <p className="text-sm text-gray-600">
+                    {new Date(jadwal.scheduleDate).toLocaleDateString("id-ID")}
+                  </p>
+                  <p className="text-sm text-gray-500">{jadwal.location}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-gray-500 py-6">
+              Belum ada jadwal untuk ekskul ini.
+            </p>
+          )}
         </div>
-    );
+      </motion.div>
+    </div>
+  );
 }
 
-export default function Jadwal() {
-    return (
-        <div className="min-h-screen bg-gradient-to-br bg-blue-400 pb-10 font-sans">
-            <Navbar />
-            <div className="flex pt-10">
-                <Card />
-            </div>
-        </div>
-    );
+export default function JadwalScreen() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-400 pb-12 font-sans">
+      <Navbar />
+      <div className="flex pt-10">
+        <ScheduleManager />
+      </div>
+    </div>
+  );
 }
