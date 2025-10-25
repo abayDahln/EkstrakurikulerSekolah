@@ -107,13 +107,13 @@ namespace EkstrakurikulerSekolah.Controllers
         private string GenerateJwtToken(IEnumerable<Claim> claims)
         {
             var jwtSettings = _configuration.GetSection("Jwt");
-            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+            var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokendesciptor = new SecurityTokenDescriptor
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(30),
+                Expires = DateTime.UtcNow.AddDays(7),
                 Issuer = jwtSettings["Issuer"],
                 Audience = jwtSettings["Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
