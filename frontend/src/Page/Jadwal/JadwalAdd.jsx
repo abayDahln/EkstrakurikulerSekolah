@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { House, NotebookText, Camera, ListChecks, Menu, X, CheckCircle, XCircle } from "lucide-react";
-import { motion, easeOut } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { getToken } from "./utils/utils";
+import { CheckCircle, XCircle } from "lucide-react";
+import { motion} from "framer-motion";
+import { getToken } from "../../utils/utils";
 
 const API_BASE = "http://localhost:5000/api/pembina";
 
@@ -12,83 +11,8 @@ const Input = ({ className = "", ...props }) => (
     className={`w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm text-gray-700 ${className}`}/>
 );
 
-function Navbar() {
-    const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false);
 
-    const dokum = () => { navigate("/dokumentasi"); setIsOpen(false); }
-    const absensi = () => { navigate("/absen"); setIsOpen(false); }
-    const home = () => { navigate("/home"); setIsOpen(false); }
-    const jadwal = () => { navigate("/jadwal"); setIsOpen(false); }
-
-    const toggleMenu = () => setIsOpen(!isOpen);
-
-    const menuItems = [
-        { icon: <House size={20} />, label: "Home", onClick: home, color: "text-white" },
-        { icon: <NotebookText size={20} />, label: "Buat Jadwal", onClick: jadwal, color: "bg-yellow-300" },
-        { icon: <Camera size={20} />, label: "Dokumentasi", onClick: dokum, color: "text-white" },
-        { icon: <ListChecks size={20} />, label: "Absensi", onClick: absensi, color: "text-white" },
-    ];
-
-    return (
-        <div>
-        <motion.div
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="pt-5 pb-5 px-4 md:px-10 flex justify-between items-center relative z-50">
-            <h1 className="text-2xl font-bold text-white md:hidden">Ekskul App</h1>
-            <button 
-                onClick={toggleMenu} 
-                className="text-white md:hidden p-2 z-50"
-                aria-label="Toggle Menu">
-                {isOpen ? <X size={32} /> : <Menu size={32} />}
-            </button>
-            <div className="hidden md:flex gap-5 mx-auto">
-                {menuItems.map((item, index) => (
-                    <button 
-                        key={index}
-                        className={`w-60 ${item.color} text-base font-semibold rounded-xl shadow-xl flex items-center justify-center gap-4 px-3 py-2 h-10 transition duration-300 ease-in-out hover:opacity-80`} 
-                        onClick={item.onClick}>
-                        {item.icon}{item.label}
-                    </button>
-                ))}
-            </div>
-
-            {isOpen && (
-                <motion.div 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
-                    exit={{ opacity: 0 }} 
-                    className="md:hidden fixed inset-0 z-40 bg-blue-400/95 pt-20">
-                    <motion.div
-                        initial={{ x: "100%" }}
-                        animate={{ x: 0 }}
-                        exit={{ x: "100%" }}
-                        transition={{ duration: 0.3, ease: easeOut }}
-                        className="flex flex-col gap-5 p-5">
-                        {menuItems.map((item, index) => (
-                            <button 
-                                key={index}
-                                className={`w-full ${item.color} text-xl font-semibold rounded-xl flex items-center justify-start gap-5 px-5 py-4 h-16 shadow-lg`} 
-                                onClick={item.onClick}>
-                                {item.icon}{item.label}
-                            </button>
-                        ))}
-                    </motion.div>
-                </motion.div>
-            )}
-        </motion.div>
-        <motion.div 
-            initial={{y: -100, opacity: 0}}
-            animate={{y: 0, opacity: 1}}
-            transition={{duration: 0.7, ease: "easeOut"}}
-            className="w-full border border-white"></motion.div>
-        </div>
-    );
-}
-
-function ScheduleManager() {
+export function ScheduleManager() {
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -191,7 +115,10 @@ function ScheduleManager() {
   };
 
   return (
+      
     <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl px-4 md:px-0 mx-auto">
+        
+      {/* Jadwal */}
       <motion.div
         initial={{ x: -200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -256,6 +183,8 @@ function ScheduleManager() {
         </form>
       </motion.div>
 
+      { /* Jadwal*/ }
+
       <motion.div
         initial={{ x: 200, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -284,17 +213,6 @@ function ScheduleManager() {
           )}
         </div>
       </motion.div>
-    </div>
-  );
-}
-
-export default function JadwalScreen() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-400 pb-12 font-sans">
-      <Navbar />
-      <div className="flex pt-10">
-        <ScheduleManager />
-      </div>
     </div>
   );
 }
