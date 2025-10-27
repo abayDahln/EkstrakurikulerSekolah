@@ -297,7 +297,7 @@ namespace EkstrakurikulerSekolah.Controllers
             }
         }
 
-        [HttpGet("member")]
+        [HttpGet("member/{extracurricularId}")]
         public async Task<IActionResult> GetSiswa(int extracurricularId) 
         {
             try
@@ -341,9 +341,43 @@ namespace EkstrakurikulerSekolah.Controllers
                 return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data siswa", null));
             }
         }
+        [HttpGet("schedule")]
+        public async Task<IActionResult> GetSchedules()
+        {
+            try
+            {
+                var pembinaId = GetPembinaId();
+                var pembinaExtracurricularIds = await GetPembinaExtracurricularIds();
 
-        [HttpGet("attendance/{scheduleId}")]
-        public async Task<IActionResult> GetAttendanceBySchedule(int scheduleId)
+                var schedules = await _context.Schedules
+                    .Where(s => pembinaExtracurricularIds.Any(id => id == s.ExtracurricularId))
+                    .Include(s => s.Extracurricular)
+                    .OrderBy(s => s.ScheduleDate)
+                    .Select(s => new
+                    {
+                        s.Id,
+                        s.Title,
+                        s.Description,
+                        s.ScheduleDate,
+                        s.Location,
+                        Extracurricular = new
+                        {
+                            s.Extracurricular.Id,
+                            s.Extracurricular.Name,
+                            s.Extracurricular.ImageUrl
+                        }
+                    })
+                    .ToListAsync();
+                return Ok(new ApiResponse<object>(200, "success", schedules));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data", null));
+            }
+        }
+
+        [HttpGet("schedule/{scheduleId}")]
+        public async Task<IActionResult> GetScheduleDetail(int scheduleId, [FromQuery] string? search)
         {
             try
             {
@@ -358,11 +392,14 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (schedule == null)
                     return NotFound(new ApiResponse<object>(404, "Jadwal tidak ditemukan atau tidak ada akses", null));
 
-                
+
                 var members = await _context.Members
                     .Where(m => m.ExtracurricularId == schedule.ExtracurricularId && m.Status == "active")
-                    .Include(m => m.User)
-                    .ToListAsync();
+                    .Include(m => m.User).ToListAsync();
+
+                if (!string.IsNullOrEmpty(search))
+                    members = members.Where(x => x.User.Name.ToLower().Contains(search.ToLower())).ToList();
+    
 
                 var attendances = await _context.Attendances
                     .Where(a => a.ScheduleId == scheduleId)
@@ -379,7 +416,7 @@ namespace EkstrakurikulerSekolah.Controllers
                         ProfileUrl = member.User.ProfileUrl,
                         Status = attendance?.Status ?? "alfa",
                         AttendanceTime = attendance?.AttendanceTime,
-                        IsPresent = attendance != null
+                        IsPresent = attendance?.Status == "hadir"
                     };
                 }).ToList();
 
@@ -405,12 +442,41 @@ namespace EkstrakurikulerSekolah.Controllers
                         Izin = attendanceData.Count(a => a.Status == "izin"),
                         Alpha = attendanceData.Count(a => a.Status == "alfa")
                     },
-                    AttendanceData = attendanceData
+                    AttendanceData = attendanceData,
+                    ReportData = await _context.ActivityReports
+                        .Where(r => r.ScheduleId == scheduleId)
+                        .Include(r => r.Member)
+                        .ThenInclude(m => m.User)
+                        .Select(r => new
+                        {
+                            r.Id,
+                            r.ReportTitle,
+                            r.ReportText,
+                            UserId = r.Member.User.Id,
+                            MemberName = r.Member.User.Name,
+                            Profile = r.Member.User.ProfileUrl,
+                            r.SubmittedAt
+                        })
+                        .ToListAsync(),
+                    DocumentatioData = await _context.ActivityDocumentations
+                        .Where(d => d.ScheduleId == scheduleId)
+                        .Include(d => d.User)
+                        .Select(d => new
+                        {
+                            d.Id,
+                            d.DocumentationTitle,
+                            d.FileUrl,
+                            UserId = d.User.Id,
+                            UserName = d.User.Name,
+                            Profile = d.User.ProfileUrl,
+                            d.SubmittedAt
+                        })
+                        .ToListAsync()
                 }));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data absen", null));
+                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data", null));
             }
         }
 
@@ -437,32 +503,13 @@ namespace EkstrakurikulerSekolah.Controllers
                             e.Name,
                             e.Description,
                             e.ImageUrl,
-                            TotalSiswa = e.Members.Count(m => m.Status == "active"),
+                            TotalMember = e.Members.Count(m => m.Status == "active"),
                             TotalJadwal = e.Schedules.Count
                         })
                         .FirstOrDefaultAsync(),
 
-                    Statistics = new
-                    {
-                        TotalStudents = await _context.Members
-                            .CountAsync(m => m.Status == "active" && m.ExtracurricularId == extracurricularId),
-
-                        TotalSchedules = await _context.Schedules
-                            .CountAsync(s => s.ExtracurricularId == extracurricularId),
-
-                        RecentReports = await _context.ActivityReports
-                            .CountAsync(r => r.Schedule.ExtracurricularId == extracurricularId &&
-                                            r.SubmittedAt >= DateTime.Now.AddDays(-7)),
-
-                        UpcomingSchedules = await _context.Schedules
-                            .CountAsync(s => s.ExtracurricularId == extracurricularId &&
-                                            s.ScheduleDate >= DateTime.Now &&
-                                            s.ScheduleDate <= DateTime.Now.AddDays(7))
-                    },
-
-                    JadwalMendatang = await _context.Schedules
-                        .Where(s => s.ExtracurricularId == extracurricularId &&
-                                   s.ScheduleDate >= DateTime.Now)
+                    ListJadwal = await _context.Schedules
+                        .Where(s => s.ExtracurricularId == extracurricularId)
                         .OrderBy(s => s.ScheduleDate)
                         .Take(5)
                         .Select(s => new
@@ -475,10 +522,9 @@ namespace EkstrakurikulerSekolah.Controllers
                         })
                         .ToListAsync(),
 
-                    SiswaTerbaru = await _context.Members
+                    ListMember = await _context.Members
                         .Where(m => m.ExtracurricularId == extracurricularId && m.Status == "active")
                         .OrderByDescending(m => m.JoinDate)
-                        .Take(5)
                         .Select(m => new
                         {
                             m.User.Name,

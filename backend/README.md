@@ -897,13 +897,19 @@ Authorization: Bearer {token}
 
 #### Get Members
 ```http
-GET /api/pembina/member
+GET /api/pembina/member/{extracurricularId}
 Authorization: Bearer {token}
 ```
 
-#### Get Attendance by Schedule
+#### Get Schedules
 ```http
-GET /api/pembina/attendance/{scheduleId}
+GET /api/pembina/schedule
+Authorization: Bearer {token}
+```
+
+#### Get Schedule Detail
+```http
+GET /api/pembina/schedule/{scheduleId}
 Authorization: Bearer {token}
 ```
 
