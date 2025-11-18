@@ -1,0 +1,29 @@
+import React from "react";
+import Sidebar from "../components/Sidebar";
+
+export default function MainLayout({ children, darkMode }) {
+    return (
+        <div
+            className={`min-h-screen transition-colors duration-300 ${
+                darkMode
+                    ? "bg-slate-900"
+                    : "bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50"
+            }`}
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
+            <Sidebar 
+                darkMode={darkMode} 
+                initialMenu={1}
+            />
+
+            <div
+                className="transition-all duration-300"
+                style={{ marginLeft: "280px" }}
+            >
+                {children}
+            </div>
+        </div>
+
+
+    );
+}
