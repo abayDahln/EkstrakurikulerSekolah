@@ -48,8 +48,17 @@ export default function Landing({ darkMode }) {
 		{ number: "99.99%", label: "Kepuasan" },
 	];
 
-	const handleNavigate = (path) => {
-		alert(`Navigasi ke: ${path}`);
+	const handleDownload = (os) => {
+		const link = document.createElement("a");
+		if (os === "android"){
+			link.href = "../assets/Ekstrakurikuler.apk";   
+			link.download = "Ekstrakurikuler.apk";
+		}
+		else {
+			
+		}
+		      
+		link.click();
 	};
 
 	return (
@@ -111,7 +120,7 @@ export default function Landing({ darkMode }) {
 							<motion.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								onClick={() => handleNavigate("/")}
+								onClick={() => handleDownload("android")}
 								className={`flex items-center gap-3 text-lg font-bold py-4 px-8 rounded-full shadow-2xl transition-all duration-300
                   ${
 										darkMode
@@ -136,7 +145,7 @@ export default function Landing({ darkMode }) {
 							<motion.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								onClick={() => handleNavigate("/")}
+								onClick={() => handleDownload("ios")}
 								className={`flex items-center gap-3 text-lg font-bold py-4 px-8 rounded-full shadow-2xl transition-all duration-300
                   ${
 										darkMode
