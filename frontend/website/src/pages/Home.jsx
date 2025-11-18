@@ -11,6 +11,7 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
+import { useNavigate } from "react-router-dom";
 
 const SkeletonCard = ({ darkMode }) => (
 	<div
@@ -125,7 +126,7 @@ const Home = ({ darkMode }) => {
 	const [allMembers, setAllMembers] = useState([]);
 	const [memberFilter, setMemberFilter] = useState("points");
 	const [isInitialLoad, setIsInitialLoad] = useState(true);
-
+	const navigate = useNavigate();
 	const API_URL = "http://localhost:5000";
 	const intervalRef = useRef(null);
 
@@ -338,6 +339,10 @@ const Home = ({ darkMode }) => {
 
 	const tickStep =
 		maxMember <= 10 ? 1 : maxMember <= 20 ? 2 : maxMember <= 50 ? 5 : 10;
+
+	const handleProfileClick = (id) => {
+		navigate(`/profile/${id}`);
+	};
 
 	return (
 		
@@ -616,7 +621,7 @@ const Home = ({ darkMode }) => {
 										filteredMembers.map((member) => (
 											<div
 												key={member.id}
-												className={`grid grid-cols-4 items-center py-3 rounded-xl transition-all ${
+												className={`grid grid-cols-4 items-center py-3 rounded-xl transition-all hover:scale-102 cursor-pointer ${
 													darkMode
 														? "hover:bg-slate-700/50"
 														: "hover:bg-slate-100"
@@ -625,6 +630,7 @@ const Home = ({ darkMode }) => {
 													paddingLeft: "0.25rem",
 													paddingRight: "0.25rem",
 												}}
+												onClick={() => handleProfileClick(member.id)}
 											>
 												<div className="flex items-center gap-3">
 													<img
@@ -736,11 +742,12 @@ const Home = ({ darkMode }) => {
 								) : (
 									<ul className="space-y-3">
 										{filteredSchedules.map((item) => (
-											<li key={item.id} className="flex items-center gap-3">
+											<li key={item.id} className="flex items-center gap-3 transition-all hover:scale-102 cursor-pointer" onClick={() => navigate(`/schedule/${item.id}`)}>
 												<img
 													src={`${API_URL}/${item.extracurricular.imageUrl}`}
 													alt={item.extracurricular.name}
 													className="w-10 h-10 rounded-lg object-cover"
+													
 												/>
 												<div>
 													<p

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-	FiCalendar,
 	FiPlus,
 	FiSearch,
 	FiX,
@@ -684,7 +683,6 @@ const Jadwal = ({ darkMode }) => {
 									darkMode ? "text-white" : "text-slate-900"
 								}`}
 							>
-								<FiCalendar />
 								Jadwal Kegiatan
 							</h1>
 							<p
