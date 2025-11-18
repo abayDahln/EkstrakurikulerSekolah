@@ -17,13 +17,16 @@ export function Card() {
   useEffect(() => {
     const fetchEkskul = async () => {
       try {
-        const res = await fetch(`${API_URL}/my-extracurricular`, {
+        const res = await fetch(`${API_URL}/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const json = await res.json();
         if (json.status === 200) {
-          setEkskulList(json.data);
-          if (json.data.length > 0) setSelectedEkskul(String(json.data[0].id));
+          setEkskulList(json.data.ekskulList);
+          if (json.data.ekskulList && json.data.ekskulList.length > 0) {
+            setEkskulList(json.data.ekskulList);
+            setSelectedEkskul(String(json.data.ekskulList[0].id));
+          }
         }
       } catch {
         setFeedback({ type: "error", message: "Gagal memuat ekskul." });

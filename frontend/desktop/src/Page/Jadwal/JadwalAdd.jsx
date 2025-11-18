@@ -32,16 +32,17 @@ export function ScheduleManager() {
 
     const fetchEkskul = async () => {
       try {
-        const res = await fetch(`${API_BASE}/my-extracurricular`, {
+        const res = await fetch(`${API_BASE}/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const json = await res.json();
 
         if (json.status === 200) {
-          setEkskulList(json.data);
+          setEkskulList(json.data.ekskulList);
           if (json.data.length > 0 && !selectedEkskul)
             setSelectedEkskul(String(json.data[0].id));
-        } else {
+        } 
+        else {
           setFeedback({ type: "error", message: "Gagal memuat daftar ekskul." });
         }
       } catch {
@@ -97,7 +98,7 @@ export function ScheduleManager() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          extracuriculaId: parseInt(selectedEkskul),
+          extracurricularId: parseInt(selectedEkskul),
           title: form.title,
           description: form.description,
           scheduleDate: form.tanggal,
@@ -171,7 +172,7 @@ export function ScheduleManager() {
             className="w-full h-24 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
           />
           <Input
-            type="datetime-local"
+            type="date"
             value={form.tanggal}
             onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
           />
