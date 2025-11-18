@@ -1,14 +1,15 @@
-import React from "react"
-import { Card } from "./HomeCard"
-import { Navbar } from "./HomeNavbar"
+import React from "react";
+import { Card } from "./HomeCard";
+import { Sidebar } from "../Sidebar/sidebar";
 
-export default function Home(){
-    return(
-        <div className="min-h-screen bg-blue-400">
-            <Navbar />
-            <div className="flex justify-center pt-8 sm:pt-8">
-            <Card />
-            </div>
-        </div>
-    )
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-400 to-blue-200 flex">
+      <Sidebar />
+
+      <div className="flex-1 md:ml-64 mt-16 md:mt-0 flex justify-center px-4 sm:px-8">
+        <Card />
+      </div>
+    </div>
+  );
 }

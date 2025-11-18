@@ -1,12 +1,13 @@
 import React from "react";
-import { Navbar } from "./JadwalNavbar";
 import { ScheduleManager } from "./JadwalAdd";
+import { Sidebar } from "../Sidebar/sidebar";
 
 export default function Jadwal() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-400 pb-12 font-sans">
-      <Navbar />
-      <div className="flex pt-10">
+    <div className="min-h-screen bg-gradient-to-b from-blue-400 to-blue-200 flex">
+      <Sidebar />
+
+      <div className="flex-1 md:ml-64 mt-16 md:mt-0 flex justify-center items-start px-4 pt-10 sm:px-8 pb-12">
         <ScheduleManager />
       </div>
     </div>
