@@ -1,0 +1,54 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.userprefs
+
+# Visual Studio
+.vs/
+
+# Rider / JetBrains
+.idea/
+
+# Logs
+*.log
+
+# Database / EF Migrations snapshots (optional)
+*.mdf
+*.ldf
+
+# Sensitive configs
+appsettings.Development.json
+appsettings.*.local.json
+appsettings.local.json
+
+# Publish outputs
+publish/
+dist/
+
+# Paket NuGet hasil restore
+packages/
+*.nupkg
+*.snupkg
+
+# File cache
+*.swp
+*.tmp
+*.bak
+
+# Dump / crash files
+*.dmp
+
+# Mac / Linux junk
+.DS_Store
+Thumbs.db
+
+
+Migrations/
+migrations/
+*.db
