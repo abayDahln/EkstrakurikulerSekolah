@@ -864,6 +864,12 @@ GET /api/profile
 Authorization: Bearer {token}
 ```
 
+#### Get Other Profile
+```http
+GET /api/profile/{id}
+Authorization: Bearer {token}
+```
+
 #### Update Profile
 ```http
 PUT /api/profile
@@ -889,15 +895,10 @@ photo: [file]
 
 ### Pembina Endpoints
 
-#### Get My Ekstrakurikuler
-```http
-GET /api/pembina/my-extracurricular
-Authorization: Bearer {token}
-```
 
 #### Get Members
 ```http
-GET /api/pembina/member/{extracurricularId}
+GET /api/pembina/member
 Authorization: Bearer {token}
 ```
 
@@ -915,7 +916,7 @@ Authorization: Bearer {token}
 
 #### Get Dashboard Statistics
 ```http
-GET /api/pembina/dashboard/{ekstrakurikulerId}
+GET /api/pembina/dashboard/
 Authorization: Bearer {token}
 ```
 
@@ -929,7 +930,7 @@ Content-Type: application/json
   "ekstrakurikulerId": 1,
   "title": "Latihan Rutin",
   "description": "Latihan mingguan...",
-  "scheduleDate": "2024-02-01",
+  "scheduleDate": "2024-02-01T01:00:00",
   "location": "Lapangan Basket"
 }
 ```
