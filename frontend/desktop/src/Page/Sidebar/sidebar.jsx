@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, easeOut } from "framer-motion";
-import { House, NotebookText, Camera, ListChecks, Menu, X, LogOut } from "lucide-react";
+import { House, NotebookText, Camera, ListChecks, Menu, X, LogOut, SquareUser } from "lucide-react";
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ export function Sidebar() {
     { path: "/jadwal", icon: <NotebookText size={20} />, label: "Buat Jadwal" },
     { path: "/dokumentasi", icon: <Camera size={20} />, label: "Dokumentasi" },
     { path: "/absen", icon: <ListChecks size={20} />, label: "Absensi" },
+    { path: "/member", icon: <SquareUser />, label: "Member" },
   ];
 
   return (

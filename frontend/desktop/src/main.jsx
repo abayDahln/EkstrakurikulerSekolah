@@ -8,6 +8,7 @@ import Home from './Page/Home/Home.jsx';
 import Jadwal from './Page/Jadwal/jadwal.jsx';
 import Dokum from './Page/Dokumentasi/Dokum.jsx';
 import Absen from './Page/Absen/Absen.jsx';
+import Member from './Page/Member/Member.jsx';
 import ProtectedRoute from './utils/ProtectedRoute.jsx';
 
 createRoot(document.getElementById('root')).render(
@@ -53,6 +54,16 @@ createRoot(document.getElementById('root')).render(
             </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/member" 
+          element={
+            <ProtectedRoute>
+              <Member />
+            </ProtectedRoute>
+          } 
+        />
+
       </Routes>
     </BrowserRouter>
   </StrictMode>,

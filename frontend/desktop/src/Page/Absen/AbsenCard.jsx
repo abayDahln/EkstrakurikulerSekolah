@@ -3,12 +3,12 @@ import { motion } from "framer-motion";
 import { getToken } from "../../utils/utils";
 
 const API_URL = "http://localhost:5000/api/pembina";
+const DEFAULT_AVATAR = "/orang.png";
 
 export function Card() {
   const token = getToken();
 
   const [feedback, setFeedback] = useState(null);
-
   const [EkskulList, setEkskulList] = useState([]);
   const [ScheduleList, setScheduleList] = useState([]);
 
@@ -28,7 +28,6 @@ export function Card() {
         if (json.status === 200) {
           setEkskulList(json.data.ekskulList);
           if (json.data.ekskulList && json.data.ekskulList.length > 0) {
-            setEkskulList(json.data.ekskulList);
             setSelectedEkskul(String(json.data.ekskulList[0].id));
           }
         } else {
@@ -111,16 +110,14 @@ export function Card() {
       initial={{ y: 1000, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1.4, ease: "easeOut" }}
-      className="bg-white rounded-xl w-full max-w-4xl min-h-fit shadow-2xl mx-4"
+      className="bg-white rounded-xl w-full max-w-4xl min-h-fit shadow-2xl mx-auto"
     >
       <div className="flex flex-col sm:flex-row justify-between items-center px-4 pt-4 gap-3">
-        <span className="font-bold text-xl text-center sm:text-left">
-          Data Absen
-        </span>
+        <span className="font-bold text-xl">Data Absen</span>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <select
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full"
             value={selectedEkskul}
             onChange={(e) => setSelectedEkskul(e.target.value)}
           >
@@ -136,7 +133,7 @@ export function Card() {
           </select>
 
           <select
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full"
             value={selectedSchedule}
             onChange={(e) => setSelectedSchedule(e.target.value)}
           >
@@ -184,35 +181,57 @@ export function Card() {
         <table className="min-w-full border border-gray-200 divide-y divide-gray-200 shadow-md rounded-lg">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase border-r">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase border-r">
                 No
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase border-r">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase border-r">
                 Nama
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase border-r">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase border-r">
                 Waktu Absen
               </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
                 Status
               </th>
             </tr>
           </thead>
+
           <tbody className="bg-white divide-y divide-gray-200 text-center">
             {attendance.length > 0 ? (
               attendance.map((item, idx) => (
                 <tr key={item.memberId}>
-                  <td className="px-6 py-3 border-r">{idx + 1}</td>
-                  <td className="px-6 py-3 border-r text-left">{item.name}</td>
-                  <td className="px-6 py-3 border-r text-left">
+                  <td className="px-4 py-3 border-r">{idx + 1}</td>
+
+                  <td className="px-4 py-3 border-r text-left">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={
+                          item.profileUrl
+                            ? `http://localhost:5000/${item.profileUrl}`
+                            : DEFAULT_AVATAR
+                        }
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = DEFAULT_AVATAR;
+                        }}
+                        className="rounded-full w-10 h-10 hidden sm:block"
+                        alt="profile" />
+                      <span className="whitespace-normal break-words text-sm">
+                        {item.name}
+                      </span>
+                    </div>
+                  </td>
+
+                  <td className="px-4 py-3 border-r text-left">
                     {item.attendanceTime
-                      ? new Date(item.attendanceTime).toLocaleTimeString("id-ID", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
+                      ? new Date(item.attendanceTime).toLocaleTimeString(
+                          "id-ID",
+                          { hour: "2-digit", minute: "2-digit" }
+                        )
                       : "-"}
                   </td>
-                  <td className="px-6 py-3 text-center">
+
+                  <td className="px-4 py-3 text-center">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         item.status === "hadir"

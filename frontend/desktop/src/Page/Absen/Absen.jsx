@@ -9,7 +9,7 @@ export default function Absen() {
         <Sidebar />
       </div>
 
-      <div className="flex-1 ml-64 p-8 sm:p-10 flex justify-center items-start">
+      <div className="flex-1 md:ml-64 p-4 pt-35 sm:p-10 flex justify-center items-start">
         <div className="w-full max-w-5xl">
           <Card />
         </div>

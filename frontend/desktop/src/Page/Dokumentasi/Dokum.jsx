@@ -9,7 +9,7 @@ export default function Dokum() {
         <Sidebar />
       </div>
 
-      <div className="flex-1 ml-64 p-8 sm:p-10 flex justify-center items-start">
+      <div className="flex-1 md:ml-64 mt-20 sm:mt-0 p-8 sm:p-10 flex justify-center items-start">
         <div className="w-full max-w-6xl">
           <Card />
         </div>
