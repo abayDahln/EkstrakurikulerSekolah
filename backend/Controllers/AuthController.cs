@@ -157,5 +157,4 @@ namespace EkstrakurikulerSekolah.Controllers
             return Ok(new ApiResponse<object>(201, "success", new { student.Name, student.Email }));
         }
     }
-    // test
 }

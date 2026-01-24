@@ -94,60 +94,6 @@ public class CertificateController : ControllerBase
         return Ok("success");
     }
 
-        //[HttpPost("generate")]
-        //public IActionResult GenerateCertificate([FromBody] CertificateRequest request)
-        //{
-        //    if (!System.IO.File.Exists(_templatePath))
-        //        return NotFound("Template sertifikat tidak ditemukan.");
-        //    if (!System.IO.File.Exists(_fontPathName))
-        //        return NotFound("Font tidak ditemukan di wwwroot/font.");
-        //    if (!System.IO.File.Exists(_fontPathDesc))
-        //        return NotFound("Font tidak ditemukan di wwwroot/font.");
-        //    if (!Directory.Exists(_outputFolder))
-        //        Directory.CreateDirectory(_outputFolder);
-
-        //    using var image = Image.Load<Rgba32>(_templatePath);
-
-        //    var fc = new FontCollection();
-        //    var greatVibes = fc.Add(_fontPathName);
-        //    var regularFont = fc.Add(_fontPathDesc);
-
-        //    var nameFont = greatVibes.CreateFont(200, FontStyle.Regular);
-        //    var descFont = regularFont.CreateFont(30, FontStyle.Regular);
-
-        //    string nameText = request.RecipientName ?? "";
-        //    string descText = $"Atas partisipasi aktif dalam mengikuti kegiatan ekstrakurikuler {request.ExtracurricularName} selama belajar di sekolah.";
-
-        //    float centerX = image.Width / 2f;
-
-        //    var textOptions = new TextOptions(nameFont);
-        //    var nameSize = TextMeasurer.MeasureSize(nameText, textOptions);
-        //    var descSize = TextMeasurer.MeasureSize(descText, new TextOptions(descFont));
-
-        //    const float yName = 560;
-        //    const float yDesc = 830;
-
-        //    image.Mutate(ctx =>
-        //    {
-        //        ctx.DrawText(nameText, nameFont, Color.Parse("#bb8331"), new PointF(centerX - nameSize.Width / 2f, yName));
-        //        ctx.DrawText(descText, descFont, Color.Black, new PointF(centerX - descSize.Width / 2f, yDesc));
-        //    });
-
-        //    var safeName = string.IsNullOrWhiteSpace(nameText) ? "certificate" : string.Concat(nameText.Split(Path.GetInvalidFileNameChars())).Replace(" ", "_");
-        //    var fileName = $"{safeName}_{Guid.NewGuid():N}.png";
-        //    var outputPath = Path.Combine(_outputFolder, fileName);
-        //    image.Save(outputPath);
-
-        //    var fileUrl = $"public/certificate/{fileName}";
-        //    return Ok(new { message = "Sertifikat berhasil dibuat", fileUrl });
-        //}
-
-        //public class CertificateRequest
-        //{
-        //    public string RecipientName { get; set; }
-        //    public string ExtracurricularName { get; set; }
-        //}
-
 
     [Authorize]
     [HttpGet("download/{id}")]
@@ -165,7 +111,6 @@ public class CertificateController : ControllerBase
             if (cert == null)
                 return NotFound(new ApiResponse<object>(404, "Sertifikat tidak ditemukan", null));
 
-            // Authorization: siswa may only download their own certificates
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
                 return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
@@ -178,7 +123,6 @@ public class CertificateController : ControllerBase
             }
             else if (userRole == "pembina")
             {
-                // allow pembina only if they are the pembina of the extracurricular
                 if (cert.Member == null || cert.Member.Extracurricular == null || cert.Member.Extracurricular.PembinaId != userId)
                     return Forbid();
             }
@@ -186,7 +130,6 @@ public class CertificateController : ControllerBase
             if (string.IsNullOrWhiteSpace(cert.CertificateUrl))
                 return NotFound(new ApiResponse<object>(404, "File sertifikat tidak tersedia", null));
 
-            // CertificateUrl stored like "public/certificate/filename.png"
             var relativePath = cert.CertificateUrl.Replace('/', Path.DirectorySeparatorChar);
             var fullPath = Path.Combine(_environment.WebRootPath, relativePath.TrimStart(Path.DirectorySeparatorChar));
 

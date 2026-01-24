@@ -536,12 +536,6 @@ namespace EkstrakurikulerSekolah.Controllers
 
             var result = await _certificateService.GenerateCertificateWithRecordAsync(name, extracurricularId, userId);
 
-            //Console.WriteLine($"member: {member}");
-            //Console.WriteLine($"member.User: {member?.User}");
-            //Console.WriteLine($"member.User.Name: {member?.User?.Name}");
-            //Console.WriteLine($"member.ExtracurricularId: {member?.ExtracurricularId}");
-            //Console.WriteLine($"_certificateService: {_certificateService}");
-
             if (result.Status == "success")
             {
                 return result.Message;

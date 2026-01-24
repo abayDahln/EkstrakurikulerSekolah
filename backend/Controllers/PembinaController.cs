@@ -255,7 +255,7 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (schedule == null)
                     return NotFound(new ApiResponse<object>(404, "Jadwal tidak ditemukan atau tidak ada akses", null));
 
-                if (File.Length > 10 * 1024 * 1024) // 10MB
+                if (File.Length > 20 * 1024 * 1024)
                     return BadRequest(new ApiResponse<object>(400, "Ukuran file maksimal 10MB", null));
 
                 var allowedExtensions = new[] { ".png", ".jpg", ".jpeg" };
@@ -273,7 +273,6 @@ namespace EkstrakurikulerSekolah.Controllers
 
                     var fullPath = Path.Combine(folderPath, fileName);
 
-                    // Save file
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                         await File.CopyToAsync(stream);
 
