@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EkstrakurikulerSekolah.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -175,9 +176,17 @@ public class CertificateService : ICertificateService
         if (!Directory.Exists(_outputFolder))
             Directory.CreateDirectory(_outputFolder);
 
-        var safeName = string.IsNullOrWhiteSpace(recipientName)
-            ? "certificate"
-            : string.Concat(recipientName.Split(Path.GetInvalidFileNameChars())).Replace(" ", "_");
+        string safeName = "certificate";
+        if (!string.IsNullOrWhiteSpace(recipientName))
+        {
+            var name = recipientName.Trim();
+            name = string.Concat(name.Split(Path.GetInvalidFileNameChars()));
+            name = Regex.Replace(name, "[^A-Za-z0-9_-]", "_");
+            if (name.Length > 50) name = name.Substring(0, 50);
+            name = name.Trim('_', '-');
+            if (!string.IsNullOrWhiteSpace(name))
+                safeName = name;
+        }
 
         var fileName = $"{safeName}_{Guid.NewGuid():N}.png";
         var outputPath = Path.Combine(_outputFolder, fileName);
