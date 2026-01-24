@@ -218,6 +218,25 @@ namespace EkstrakurikulerSekolah.Controllers
                                 }
                             }).ToList(),
 
+                        Certificates = u.Members
+                            .SelectMany(m => m.Certificates)
+                            .Select(c => new
+                            {
+                                c.Id,
+                                c.CertificateName,
+                                c.CertificateUrl,
+                                c.IssuedAt,
+                                Extracurricular = c.Member != null && c.Member.ExtracurricularId != null ? new
+                                {
+                                    Id = c.Member.ExtracurricularId,
+                                    Name = _context.Extracurriculars
+                                        .Where(e => e.Id == c.Member.ExtracurricularId)
+                                        .Select(e => e.Name)
+                                        .FirstOrDefault()
+                                } : null
+                            })
+                            .ToList(),
+
                         ActivityStats = new
                         {
                             TotalAttendances = _context.Attendances

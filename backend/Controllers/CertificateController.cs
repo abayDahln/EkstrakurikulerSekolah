@@ -5,6 +5,8 @@ using EkstrakurikulerSekolah.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Hosting;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -16,9 +18,11 @@ using SixLabors.ImageSharp.Processing;
 public class CertificateController : ControllerBase
 {
     private readonly EkskulDbContext _context;
-    public CertificateController(EkskulDbContext context)
+    private readonly IWebHostEnvironment _environment;
+    public CertificateController(EkskulDbContext context, IWebHostEnvironment environment)
     {
         _context = context;
+        _environment = environment;
     }
     [Authorize(Roles = "siswa")]
     [HttpGet]
@@ -79,7 +83,7 @@ public class CertificateController : ControllerBase
 
         var a = new EkstrakurikulerSekolah.Models.Point()
         {
-            MemberId = b.Id,
+            MemberId = 4,
             Points = req.point,
             Title = req.title,
             CreatedAt = DateTime.Now
@@ -145,4 +149,64 @@ public class CertificateController : ControllerBase
         //}
 
 
+    [Authorize]
+    [HttpGet("download/{id}")]
+    public async Task<IActionResult> DownloadCertificate(int id)
+    {
+        try
+        {
+            var cert = await _context.Certificates
+                .Include(c => c.Member)
+                    .ThenInclude(m => m.User)
+                .Include(c => c.Member)
+                    .ThenInclude(m => m.Extracurricular)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cert == null)
+                return NotFound(new ApiResponse<object>(404, "Sertifikat tidak ditemukan", null));
+
+            // Authorization: siswa may only download their own certificates
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
+                return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
+
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            if (userRole == "siswa")
+            {
+                if (cert.Member == null || cert.Member.UserId != userId)
+                    return Forbid();
+            }
+            else if (userRole == "pembina")
+            {
+                // allow pembina only if they are the pembina of the extracurricular
+                if (cert.Member == null || cert.Member.Extracurricular == null || cert.Member.Extracurricular.PembinaId != userId)
+                    return Forbid();
+            }
+
+            if (string.IsNullOrWhiteSpace(cert.CertificateUrl))
+                return NotFound(new ApiResponse<object>(404, "File sertifikat tidak tersedia", null));
+
+            // CertificateUrl stored like "public/certificate/filename.png"
+            var relativePath = cert.CertificateUrl.Replace('/', Path.DirectorySeparatorChar);
+            var fullPath = Path.Combine(_environment.WebRootPath, relativePath.TrimStart(Path.DirectorySeparatorChar));
+
+            if (!System.IO.File.Exists(fullPath))
+                return NotFound(new ApiResponse<object>(404, "File sertifikat tidak ditemukan di server", null));
+
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(fullPath, out var contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            var fileStream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var fileDownloadName = Path.GetFileName(fullPath);
+
+            return File(fileStream, contentType, fileDownloadName);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new ApiResponse<object>(500, $"Internal server error: {ex.Message}", null));
+        }
     }
+}

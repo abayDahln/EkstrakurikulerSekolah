@@ -16,7 +16,7 @@ namespace EkstrakurikulerSekolah.Controllers
         private readonly EkskulDbContext _context;
         private readonly IWebHostEnvironment _environment;
         private readonly string _outputFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "public", "certificate");
-        
+
 
         public PembinaController(EkskulDbContext context, IWebHostEnvironment environment)
         {
@@ -33,7 +33,7 @@ namespace EkstrakurikulerSekolah.Controllers
         }
 
         [HttpPost("certificate")]
-        public async Task<IActionResult> UploadCertificate(IFormFile image,[FromForm] string name)
+        public async Task<IActionResult> UploadCertificate(IFormFile image, [FromForm] string name, [FromForm] int memberId)
         {
             try
             {
@@ -43,7 +43,10 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (string.IsNullOrWhiteSpace(name))
                     return BadRequest(new ApiResponse<object>(400, "Nama penerima harus diisi", null));
 
-                var allowedExtensions = new[] { ".png" };
+                if (memberId <= 0)
+                    return BadRequest(new ApiResponse<object>(400, "Member ID harus diisi dengan nilai valid", null));
+
+                var allowedExtensions = new[] { ".png", ".jpg", ".jpeg" };
                 var fileExtension = Path.GetExtension(image.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(fileExtension))
                     return BadRequest(new ApiResponse<object>(400, "Format file harus PNG", null));
@@ -52,6 +55,24 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (image.Length > maxFileSize)
                     return BadRequest(new ApiResponse<object>(400, "Ukuran file maksimal 15MB", null));
 
+                var pembinaId = GetPembinaId();
+
+                var pembinaExtracurricularIds = await _context.Extracurriculars
+                    .Where(e => e.PembinaId == pembinaId)
+                    .Select(e => e.Id)
+                    .ToListAsync();
+
+                var member = await _context.Members
+                    .Include(m => m.User)
+                    .Include(m => m.Extracurricular)
+                    .Where(m => m.Id == memberId)
+                    .Where(m => pembinaExtracurricularIds.Any(eid => eid == m.ExtracurricularId))
+                    .FirstOrDefaultAsync();
+
+                if (member == null)
+                    return BadRequest(new ApiResponse<object>(400,
+                        "Member tidak ditemukan atau Anda tidak memiliki akses terhadap member ini", null));
+
                 if (!Directory.Exists(_outputFolder))
                     Directory.CreateDirectory(_outputFolder);
 
@@ -59,21 +80,55 @@ namespace EkstrakurikulerSekolah.Controllers
                 var fileName = $"{safeName}_{Guid.NewGuid():N}.png";
                 var outputPath = Path.Combine(_outputFolder, fileName);
 
-                using var stream = System.IO.File.Create(outputPath);
-                await image.CopyToAsync(stream);
+                using (var stream = System.IO.File.Create(outputPath))
+                {
+                    await image.CopyToAsync(stream);
+                }
 
                 var fileUrl = $"public/certificate/{fileName}";
-                return Ok(new ApiResponse<object>(200, "Sertifikat berhasil diunggah", new { fileUrl }));
+
+                var certificate = new Certificate
+                {
+                    MemberId = memberId,
+                    CertificateName = name.Trim(),
+                    CertificateUrl = fileUrl,
+                    IssuedAt = DateTime.Now
+                };
+
+                _context.Certificates.Add(certificate);
+                await _context.SaveChangesAsync();
+
+                var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                var fullFileUrl = $"{baseUrl}/{fileUrl}";
+
+                return Ok(new ApiResponse<object>(200, "Sertifikat berhasil diunggah", new
+                {
+                    Id = certificate.Id,
+                    CertificateName = certificate.CertificateName,
+                    CertificateUrl = certificate.CertificateUrl,
+                    FullCertificateUrl = fullFileUrl,
+                    MemberId = certificate.MemberId,
+                    MemberName = member.User.Name,
+                    IssuedAt = certificate.IssuedAt,
+                    Extracurricular = new
+                    {
+                        Id = member.Extracurricular.Id,
+                        Name = member.Extracurricular.Name
+                    }
+                }));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengunggah sertifikat", null));
+                Console.WriteLine($"Error uploading certificate: {ex.Message}");
+
+                return StatusCode(500, new ApiResponse<object>(500,
+                    "Terjadi kesalahan saat mengunggah sertifikat", null));
             }
         }
 
         private async Task<List<int>> GetPembinaExtracurricularIds()
         {
-            var pembinaId = GetPembinaId(); 
+            var pembinaId = GetPembinaId();
             return await _context.Extracurriculars
                 .Where(e => e.PembinaId == pembinaId)
                 .Select(e => e.Id)
@@ -98,7 +153,6 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (req == null)
                     return BadRequest(new ApiResponse<object>(400, "Request tidak valid", null));
 
-                // Validasi input
                 if (req.ExtracurricularId <= 0)
                     return BadRequest(new ApiResponse<object>(400, "Extracurricular ID tidak valid", null));
 
@@ -117,14 +171,12 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (req.ScheduleDate <= DateTime.Now)
                     return BadRequest(new ApiResponse<object>(400, "Schedule date harus di masa depan", null));
 
-                // Get user info
                 var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
                 {
                     return Unauthorized(new ApiResponse<object>(401, "Unauthorized", null));
                 }
 
-                // Validasi apakah extracurricular exists dan pembina memiliki akses
                 var extracurricular = await _context.Extracurriculars
                     .FirstOrDefaultAsync(e => e.Id == req.ExtracurricularId && e.PembinaId == userId);
 
@@ -166,7 +218,7 @@ namespace EkstrakurikulerSekolah.Controllers
         public class DocumentationRequest
         {
             public int ScheduleId { get; set; }
-            public string Title { get; set; } // Changed from string? to string
+            public string Title { get; set; }
         }
 
         [HttpPost("documentation")]
@@ -174,7 +226,6 @@ namespace EkstrakurikulerSekolah.Controllers
         {
             try
             {
-                // Validasi input
                 if (File == null || File.Length == 0)
                     return BadRequest(new ApiResponse<object>(400, "File harus diisi", null));
 
@@ -184,7 +235,6 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (string.IsNullOrWhiteSpace(req.Title))
                     return BadRequest(new ApiResponse<object>(400, "Title harus diisi", null));
 
-                // Get user info
                 var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
                 {
@@ -197,7 +247,6 @@ namespace EkstrakurikulerSekolah.Controllers
                     return Forbid();
                 }
 
-                // Validasi schedule dan akses pembina
                 var schedule = await _context.Schedules
                     .Include(s => s.Extracurricular)
                     .FirstOrDefaultAsync(s => s.Id == req.ScheduleId &&
@@ -206,7 +255,6 @@ namespace EkstrakurikulerSekolah.Controllers
                 if (schedule == null)
                     return NotFound(new ApiResponse<object>(404, "Jadwal tidak ditemukan atau tidak ada akses", null));
 
-                // Validasi file
                 if (File.Length > 10 * 1024 * 1024) // 10MB
                     return BadRequest(new ApiResponse<object>(400, "Ukuran file maksimal 10MB", null));
 
@@ -219,7 +267,6 @@ namespace EkstrakurikulerSekolah.Controllers
 
                 try
                 {
-                    // Generate unique filename
                     fileName = $"{Guid.NewGuid():N}{fileExtension}";
                     var folderPath = Path.Combine(_environment.WebRootPath, "public", "documentation");
                     Directory.CreateDirectory(folderPath);
@@ -277,7 +324,7 @@ namespace EkstrakurikulerSekolah.Controllers
                         }
                         catch
                         {
-                            
+
                         }
                     }
                     throw;
@@ -314,7 +361,7 @@ namespace EkstrakurikulerSekolah.Controllers
 
                 if (!string.IsNullOrEmpty(search))
                     members = members.Where(x => x.User.Name.ToLower().Contains(search.ToLower())).ToList();
-    
+
 
                 var attendances = await _context.Attendances
                     .Where(a => a.ScheduleId == scheduleId)
@@ -346,7 +393,8 @@ namespace EkstrakurikulerSekolah.Controllers
                         Extracurricular = new
                         {
                             schedule.Extracurricular.Id,
-                            schedule.Extracurricular.Name
+                            schedule.Extracurricular.Name,
+                            schedule.Extracurricular.ImageUrl
                         }
                     },
                     AttendanceSummary = new
@@ -482,69 +530,110 @@ namespace EkstrakurikulerSekolah.Controllers
         }
 
         [HttpGet("member")]
-        public async Task<IActionResult> GetMembers() 
-        { 
-            try { 
-                var pembinaId = GetPembinaId(); 
+        public async Task<IActionResult> GetMembers()
+        {
+            try
+            {
+                var pembinaId = GetPembinaId();
                 var pembinaExtracurricularIds = await GetPembinaExtracurricularIds();
-                
+
                 var members = await _context.Members
                     .Where(m => pembinaExtracurricularIds.Any(id => id == m.ExtracurricularId) && m.Status == "active")
                     .Include(m => m.User)
                     .Include(m => m.Extracurricular)
                     .Include(m => m.Point)
-                    .Select(m => new { 
-                        m.User.Id, 
-                        m.User.Name, 
-                        m.User.Email, 
+                    .Select(m => new
+                    {
+                        m.User.Id,
+                        MemberId = m.Id,
+                        m.User.Name,
+                        m.User.Email,
                         m.User.ProfileUrl,
                         TotalPoints = _context.Points
                                     .Where(p => p.MemberId == m.Id)
                                     .Sum(p => (int?)p.Points) ?? 0,
-                        Extracurricular = new { 
-                            m.Extracurricular.Id, 
-                            m.Extracurricular.Name, 
-                            m.Extracurricular.ImageUrl 
-                        }, 
-                        m.JoinDate 
-                    }).ToListAsync(); 
-                return Ok(new ApiResponse<object>(200, "success", members)); 
-            } 
-            catch (Exception ex) 
-            { 
-                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data", null)); 
+                        Extracurricular = new
+                        {
+                            m.Extracurricular.Id,
+                            m.Extracurricular.Name,
+                            m.Extracurricular.ImageUrl
+                        },
+                        m.JoinDate
+                    }).ToListAsync();
+                return Ok(new ApiResponse<object>(200, "success", members));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data", null));
             }
         }
-        [HttpGet("schedule")] 
-        public async Task<IActionResult> GetSchedules() 
-        { 
-            try { 
-                var pembinaId = GetPembinaId(); 
+        [HttpGet("schedule")]
+        public async Task<IActionResult> GetSchedules()
+        {
+            try
+            {
+                var pembinaId = GetPembinaId();
                 var pembinaExtracurricularIds = await GetPembinaExtracurricularIds();
-                
+
                 var schedules = await _context.Schedules
                     .Where(s => pembinaExtracurricularIds.Any(id => id == s.ExtracurricularId))
                     .Include(s => s.Extracurricular)
                     .OrderBy(s => s.ScheduleDate)
-                    .Select(s => new { 
+                    .Select(s => new
+                    {
                         s.Id,
-                        s.Title, 
+                        s.Title,
                         s.Description,
-                        s.ScheduleDate, 
-                        s.Location, 
-                        Extracurricular = new { 
-                            s.Extracurricular.Id, 
-                            s.Extracurricular.Name, 
-                            s.Extracurricular.ImageUrl 
-                        } 
-                    }).ToListAsync(); 
-                return Ok(new ApiResponse<object>(200, "success", schedules)); 
-            } 
-            catch (Exception ex) 
-            { 
-                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data", null)); 
-            } 
+                        s.ScheduleDate,
+                        s.Location,
+                        Extracurricular = new
+                        {
+                            s.Extracurricular.Id,
+                            s.Extracurricular.Name,
+                            s.Extracurricular.ImageUrl
+                        }
+                    }).ToListAsync();
+                return Ok(new ApiResponse<object>(200, "success", schedules));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data", null));
+            }
         }
 
+        [HttpGet("certificate")]
+        public async Task<IActionResult> GetCertificates()
+        {
+            try
+            {
+                var pembinaId = GetPembinaId();
+                var pembinaExtracurricularIds = await GetPembinaExtracurricularIds();
+                var certificates = await _context.Certificates
+                    .Where(c => c.Member != null && pembinaExtracurricularIds.Any(id => id == c.Member.ExtracurricularId))
+                    .Include(c => c.Member)
+                    .ThenInclude(m => m.User)
+                    .Select(c => new
+                    {
+                        c.Id,
+                        c.CertificateName,
+                        c.CertificateUrl,
+                        c.IssuedAt,
+                        Member = new
+                        {
+                            c.Member.Id,
+                            c.Member.User.Name,
+                            c.Member.User.Email,
+                            c.Member.User.ProfileUrl
+                        }
+                    })
+                    .ToListAsync();
+                return Ok(new ApiResponse<object>(200, "success", certificates));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>(500, "Terjadi kesalahan saat mengambil data", null));
+            }
+
+        }
     }
 }
