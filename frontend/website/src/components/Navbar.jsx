@@ -20,7 +20,7 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
     if (token) {
       setActiveMenu(1);
       navigate("/home");
-      
+
     } else {
       navigate("/");
     }
@@ -40,9 +40,8 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
 
   return (
     <header
-      className={`fixed top-0 w-full z-50 px-4 backdrop-blur-md shadow-sm transition-colors duration-300 ${
-        darkMode ? "bg-slate-800/90" : "bg-white/80"
-      }`}
+      className={`fixed top-0 w-full z-50 px-4 backdrop-blur-md shadow-sm transition-colors duration-300 ${darkMode ? "bg-slate-800/90" : "bg-white/80"
+        }`}
     >
       <div className="w-full flex justify-between items-center px-2 sm:px-4 py-4">
         <motion.div
@@ -52,18 +51,16 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
           onClick={handleLogoClick}
         >
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
-              darkMode
+            className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${darkMode
                 ? "bg-gradient-to-br from-sky-700 to-cyan-700"
                 : "bg-gradient-to-br from-sky-400 to-cyan-500"
-            }`}
+              }`}
           >
             <span className="text-white text-xl font-bold">E</span>
           </div>
           <span
-            className={`text-xl font-bold ${
-              darkMode ? "text-white" : "text-slate-800"
-            }`}
+            className={`text-xl font-bold ${darkMode ? "text-white" : "text-slate-800"
+              }`}
           >
             Ekskul Sekolah
           </span>
@@ -74,11 +71,10 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleDarkMode}
-            className={`p-2.5 rounded-lg transition-colors duration-300 ${
-              darkMode
+            className={`p-2.5 rounded-lg transition-colors duration-300 ${darkMode
                 ? "bg-slate-700 hover:bg-slate-600"
                 : "bg-sky-100 hover:bg-sky-200"
-            }`}
+              }`}
           >
             {darkMode ? (
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-white">
@@ -100,68 +96,7 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
             </motion.button>
 
           )}
-          {token && (
-            <div className="relative" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={toggleDropdown}
-                className={`p-2.5 rounded-lg transition-colors duration-300 ${
-                  darkMode
-                    ? "bg-slate-700 hover:bg-slate-600"
-                    : "bg-sky-100 hover:bg-sky-200"
-                }`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                  />
-                </svg>
-              </motion.button>
 
-              {showDropdown && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ${
-                    darkMode ? "bg-slate-700" : "bg-white"
-                  } ring-1 ring-black ring-opacity-5`}
-                >
-                  <button
-                    onClick={() => navigate("/profile")}
-                    className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
-                      darkMode
-                        ? "text-white hover:bg-slate-600"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    Profile
-                  </button>
-
-                  <button
-                    onClick={handleLogout}
-                    className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
-                      darkMode
-                        ? "text-white hover:bg-slate-600"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    Logout
-                  </button>
-                </motion.div>
-              )}
-            </div>
-          )}
 
         </div>
       </div>

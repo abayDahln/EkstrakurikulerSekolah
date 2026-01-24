@@ -7,6 +7,7 @@ import {
 	FaUsers,
 	FaChartBar,
 	FaUserCircle,
+	FaAward,
 } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -80,6 +81,9 @@ export default function Sidebar({ darkMode, initialMenu }) {
 			case 3:
 				navigate("/jadwal");
 				break;
+			case 4:
+				navigate("/certificates");
+				break;
 			default:
 				navigate("/home");
 		}
@@ -89,15 +93,16 @@ export default function Sidebar({ darkMode, initialMenu }) {
 		{ id: 1, icon: <FaHome />, label: "Dashboard" },
 		{ id: 2, icon: <FaTasks />, label: "Ekstrakurikuler" },
 		{ id: 3, icon: <FaCalendarAlt />, label: "Jadwal" },
+		{ id: 4, icon: <FaAward />, label: "Sertifikat" },
 	];
 
 	const indicatorVariants = {
 		initial: hasAnimated
 			? false
 			: {
-					opacity: 0,
-					scale: 0.8,
-			  },
+				opacity: 0,
+				scale: 0.8,
+			},
 		animate: {
 			opacity: 1,
 			scale: 1,
@@ -134,34 +139,40 @@ export default function Sidebar({ darkMode, initialMenu }) {
 			currentPath.startsWith("/ekskul/")
 		) {
 			setActiveMenuState(2);
+		} else if (
+			currentPath === "/jadwal" ||
+			currentPath.startsWith("/jadwal/")
+		) {
+			setActiveMenuState(3);
+		} else if (
+			currentPath === "/certificates" ||
+			currentPath.startsWith("/certificate/")
+		) {
+			setActiveMenuState(4);
 		}
 	}, [location.pathname]);
 
 	return (
 		<aside
 			className={`fixed top-0 left-0 h-screen w-64 flex flex-col justify-between z-40 shadow-lg border-r 
-      ${
-				darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
-			}`}
+      ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
+				}`}
 		>
 			<div className="flex items-center gap-3 p-5 border-b border-inherit">
 				<div
-					className={`w-10 h-9 rounded-xl flex items-center justify-center shadow-md ${
-						darkMode ? "bg-slate-700" : "bg-slate-100"
-					}`}
+					className={`w-10 h-9 rounded-xl flex items-center justify-center shadow-md ${darkMode ? "bg-slate-700" : "bg-slate-100"
+						}`}
 				>
 					<span
-						className={`font-bold ${
-							darkMode ? "text-white" : "text-slate-800"
-						}`}
+						className={`font-bold ${darkMode ? "text-white" : "text-slate-800"
+							}`}
 					>
 						E
 					</span>
 				</div>
 				<h1
-					className={`font-bold text-lg ${
-						darkMode ? "text-white" : "text-slate-800"
-					}`}
+					className={`font-bold text-lg ${darkMode ? "text-white" : "text-slate-800"
+						}`}
 				>
 					EkskulApp
 				</h1>
@@ -176,15 +187,14 @@ export default function Sidebar({ darkMode, initialMenu }) {
 						whileHover="hover"
 						whileTap="tap"
 						className={`relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left
-        ${
-					darkMode
-						? activeMenu === item.id
-							? "text-white"
-							: "text-slate-300 hover:bg-slate-700 hover:text-white"
-						: activeMenu === item.id
-						? "text-white"
-						: "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-				}
+        ${darkMode
+								? activeMenu === item.id
+									? "text-white"
+									: "text-slate-300 hover:bg-slate-700 hover:text-white"
+								: activeMenu === item.id
+									? "text-white"
+									: "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+							}
         ${activeMenu === item.id ? "font-semibold" : ""}
       `}
 					>
@@ -197,11 +207,10 @@ export default function Sidebar({ darkMode, initialMenu }) {
 									stiffness: 400,
 									damping: 30,
 								}}
-								className={`absolute inset-0 rounded-xl -z-10 ${
-									darkMode
-										? "bg-gradient-to-r from-sky-700 to-cyan-700 shadow-lg"
-										: "bg-gradient-to-r from-sky-500 to-cyan-500 shadow-lg"
-								}`}
+								className={`absolute inset-0 rounded-xl -z-10 ${darkMode
+									? "bg-gradient-to-r from-sky-700 to-cyan-700 shadow-lg"
+									: "bg-gradient-to-r from-sky-500 to-cyan-500 shadow-lg"
+									}`}
 							/>
 						)}
 
@@ -216,18 +225,16 @@ export default function Sidebar({ darkMode, initialMenu }) {
 			<div
 				onClick={() => navigate("/profile")}
 				className={`p-4 md:p-5 border-t flex items-center gap-3 cursor-pointer hover:bg-opacity-10 transition-colors mx-2 mb-2 rounded-xl
-					${
-						darkMode
-							? "border-slate-700 hover:bg-slate-700/40"
-							: "border-slate-200 hover:bg-slate-100/60"
+					${darkMode
+						? "border-slate-700 hover:bg-slate-700/40"
+						: "border-slate-200 hover:bg-slate-100/60"
 					}`}
 			>
 				{loading ? (
 					<motion.div
 						variants={indicatorVariants}
-						className={`w-10 h-10 md:w-11 md:h-11 rounded-full ${
-							darkMode ? "bg-slate-700" : "bg-slate-200"
-						}`}
+						className={`w-10 h-10 md:w-11 md:h-11 rounded-full ${darkMode ? "bg-slate-700" : "bg-slate-200"
+							}`}
 					/>
 				) : profile?.profileUrl ? (
 					<motion.img
@@ -254,16 +261,14 @@ export default function Sidebar({ darkMode, initialMenu }) {
 					className="flex-1 min-w-0 ml-2"
 				>
 					<p
-						className={`font-semibold text-sm truncate ${
-							darkMode ? "text-white" : "text-slate-800"
-						}`}
+						className={`font-semibold text-sm truncate ${darkMode ? "text-white" : "text-slate-800"
+							}`}
 					>
 						{loading ? "Memuat..." : profile?.name || "Pembina Ekskul"}
 					</p>
 					<p
-						className={`text-xs truncate ${
-							darkMode ? "text-slate-400" : "text-slate-500"
-						}`}
+						className={`text-xs truncate ${darkMode ? "text-slate-400" : "text-slate-500"
+							}`}
 					>
 						{loading ? "Loading..." : profile?.role || "Admin"}
 					</p>

@@ -12,78 +12,66 @@ import { useNavigate } from "react-router-dom";
 
 const SkeletonCard = ({ darkMode }) => (
 	<div
-		className={`rounded-xl p-6 shadow-lg h-full flex flex-col ${
-			darkMode ? "bg-slate-800" : "bg-white"
-		}`}
+		className={`rounded-xl p-6 shadow-lg h-full flex flex-col ${darkMode ? "bg-slate-800" : "bg-white"
+			}`}
 	>
 		<div className="flex items-start gap-4 mb-4 flex-shrink-0">
 			<div
-				className={`w-16 h-16 rounded-xl animate-pulse ${
-					darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
+				className={`w-16 h-16 rounded-xl animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+					}`}
 			/>
 			<div className="flex-1">
 				<div
-					className={`h-6 w-3/4 rounded animate-pulse mb-2 ${
-						darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
+					className={`h-6 w-3/4 rounded animate-pulse mb-2 ${darkMode ? "bg-slate-700" : "bg-slate-200"
+						}`}
 				/>
 				<div
-					className={`h-4 w-1/2 rounded animate-pulse ${
-						darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
+					className={`h-4 w-1/2 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+						}`}
 				/>
 			</div>
 		</div>
 
 		<div className="flex-grow space-y-2 mb-4">
 			<div
-				className={`h-4 w-full rounded animate-pulse ${
-					darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
+				className={`h-4 w-full rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+					}`}
 			/>
 			<div
-				className={`h-4 w-5/6 rounded animate-pulse ${
-					darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
+				className={`h-4 w-5/6 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+					}`}
 			/>
 		</div>
 
 		<div className="space-y-2 flex-shrink-0">
 			<div className="flex items-center gap-2">
 				<div
-					className={`h-4 w-4 rounded animate-pulse ${
-						darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
+					className={`h-4 w-4 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+						}`}
 				/>
 				<div
-					className={`h-4 w-2/3 rounded animate-pulse ${
-						darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
+					className={`h-4 w-2/3 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+						}`}
 				/>
 			</div>
 			<div className="flex items-center gap-2">
 				<div
-					className={`h-4 w-4 rounded animate-pulse ${
-						darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
+					className={`h-4 w-4 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+						}`}
 				/>
 				<div
-					className={`h-4 w-1/2 rounded animate-pulse ${
-						darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
+					className={`h-4 w-1/2 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+						}`}
 				/>
 			</div>
 			<div className="flex items-center gap-2">
 				<div
-					className={`h-4 w-4 rounded animate-pulse ${
-						darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
+					className={`h-4 w-4 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+						}`}
 				/>
 				<div
-					className={`h-4 w-2/5 rounded animate-pulse ${
-						darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
+					className={`h-4 w-2/5 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
+						}`}
 				/>
 			</div>
 		</div>
@@ -107,9 +95,8 @@ const AnimatedScheduleCard = ({
 		>
 			<div
 				onClick={() => onCardClick(schedule.id)}
-				className={`cursor-pointer rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col h-full ${
-					darkMode ? "bg-slate-800" : "bg-white"
-				}`}
+				className={`cursor-pointer rounded-xl p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col h-full ${darkMode ? "bg-slate-800" : "bg-white"
+					}`}
 			>
 				<div className="flex items-start gap-4 mb-4 flex-shrink-0">
 					<img
@@ -117,25 +104,21 @@ const AnimatedScheduleCard = ({
 						alt={schedule.extracurricular.name}
 						className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
 						onError={(e) => {
-							e.target.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect fill='%23${
-								darkMode ? "475569" : "e2e8f0"
-							}' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='12' fill='%23${
-								darkMode ? "94a3b8" : "64748b"
-							}'%3E${schedule.extracurricular.name}%3C/text%3E%3C/svg%3E`;
+							e.target.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect fill='%23${darkMode ? "475569" : "e2e8f0"
+								}' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='12' fill='%23${darkMode ? "94a3b8" : "64748b"
+								}'%3E${schedule.extracurricular.name}%3C/text%3E%3C/svg%3E`;
 						}}
 					/>
 					<div className="flex-1 min-w-0">
 						<h3
-							className={`font-bold text-lg mb-1 line-clamp-2 ${
-								darkMode ? "text-white" : "text-slate-900"
-							}`}
+							className={`font-bold text-lg mb-1 line-clamp-2 ${darkMode ? "text-white" : "text-slate-900"
+								}`}
 						>
 							{schedule.title}
 						</h3>
 						<p
-							className={`text-sm line-clamp-1 ${
-								darkMode ? "text-slate-400" : "text-slate-500"
-							}`}
+							className={`text-sm line-clamp-1 ${darkMode ? "text-slate-400" : "text-slate-500"
+								}`}
 						>
 							{schedule.extracurricular.name}
 						</p>
@@ -144,9 +127,8 @@ const AnimatedScheduleCard = ({
 
 				<div className="flex-grow mb-4">
 					<p
-						className={`text-sm ${
-							darkMode ? "text-slate-300" : "text-slate-600"
-						}`}
+						className={`text-sm ${darkMode ? "text-slate-300" : "text-slate-600"
+							}`}
 					>
 						{schedule.description}
 					</p>
@@ -154,9 +136,8 @@ const AnimatedScheduleCard = ({
 
 				<div className="space-y-2 flex-shrink-0">
 					<div
-						className={`flex items-center gap-2 text-sm ${
-							darkMode ? "text-slate-400" : "text-slate-500"
-						}`}
+						className={`flex items-center gap-2 text-sm ${darkMode ? "text-slate-400" : "text-slate-500"
+							}`}
 					>
 						<FiClock className="flex-shrink-0" />
 						<span className="truncate">
@@ -171,18 +152,16 @@ const AnimatedScheduleCard = ({
 					</div>
 
 					<div
-						className={`flex items-center gap-2 text-sm ${
-							darkMode ? "text-slate-400" : "text-slate-500"
-						}`}
+						className={`flex items-center gap-2 text-sm ${darkMode ? "text-slate-400" : "text-slate-500"
+							}`}
 					>
 						<FiMapPin className="flex-shrink-0" />
 						<span className="truncate">{schedule.location}</span>
 					</div>
 
 					<div
-						className={`flex items-center gap-2 text-sm ${
-							darkMode ? "text-slate-400" : "text-slate-500"
-						}`}
+						className={`flex items-center gap-2 text-sm ${darkMode ? "text-slate-400" : "text-slate-500"
+							}`}
 					>
 						<FiUser className="flex-shrink-0" />
 						<span className="truncate">
@@ -279,28 +258,24 @@ const CreateScheduleModal = ({
 				initial={{ scale: 0.9, opacity: 0 }}
 				animate={{ scale: 1, opacity: 1 }}
 				exit={{ scale: 0.9, opacity: 0 }}
-				className={`w-full max-w-2xl rounded-2xl shadow-2xl ${
-					darkMode ? "bg-slate-800" : "bg-white"
-				}`}
+				className={`w-full max-w-2xl rounded-2xl shadow-2xl ${darkMode ? "bg-slate-800" : "bg-white"
+					}`}
 			>
 				<div className="flex items-center justify-between p-6 border-b border-slate-700">
 					<h2
-						className={`text-2xl font-bold ${
-							darkMode ? "text-white" : "text-slate-900"
-						}`}
+						className={`text-2xl font-bold ${darkMode ? "text-white" : "text-slate-900"
+							}`}
 					>
 						Buat Jadwal Baru
 					</h2>
 					<button
 						onClick={onClose}
-						className={`p-2 rounded-lg ${
-							darkMode ? "hover:bg-slate-700" : "hover:bg-slate-100"
-						}`}
+						className={`p-2 rounded-lg ${darkMode ? "hover:bg-slate-700" : "hover:bg-slate-100"
+							}`}
 					>
 						<FiX
-							className={`text-xl ${
-								darkMode ? "text-white" : "text-slate-900"
-							}`}
+							className={`text-xl ${darkMode ? "text-white" : "text-slate-900"
+								}`}
 						/>
 					</button>
 				</div>
@@ -308,11 +283,10 @@ const CreateScheduleModal = ({
 				<form onSubmit={handleSubmit} className="p-6 space-y-4">
 					{error && (
 						<div
-							className={`p-3 rounded-lg ${
-								darkMode
-									? "bg-red-900/50 text-red-200 border border-red-700"
-									: "bg-red-100 text-red-700 border border-red-300"
-							}`}
+							className={`p-3 rounded-lg ${darkMode
+								? "bg-red-900/50 text-red-200 border border-red-700"
+								: "bg-red-100 text-red-700 border border-red-300"
+								}`}
 						>
 							{error}
 						</div>
@@ -320,9 +294,8 @@ const CreateScheduleModal = ({
 
 					<div>
 						<label
-							className={`block text-sm font-semibold mb-2 ${
-								darkMode ? "text-slate-300" : "text-slate-700"
-							}`}
+							className={`block text-sm font-semibold mb-2 ${darkMode ? "text-slate-300" : "text-slate-700"
+								}`}
 						>
 							Ekstrakurikuler
 						</label>
@@ -331,15 +304,12 @@ const CreateScheduleModal = ({
 							onChange={(e) =>
 								setFormData({ ...formData, extracurricularId: e.target.value })
 							}
-							className={`w-full p-3 rounded-xl border-2 ${
-								darkMode
-									? "bg-slate-700 border-slate-600 text-white"
-									: "bg-white border-slate-200"
-							} focus:outline-none focus:ring-4 ${
-								darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
-							} ${
-								ekskulList.length === 0 ? "opacity-50 cursor-not-allowed" : ""
-							}`}
+							className={`w-full p-3 rounded-xl border-2 ${darkMode
+								? "bg-slate-700 border-slate-600 text-white"
+								: "bg-white border-slate-200"
+								} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
+								} ${ekskulList.length === 0 ? "opacity-50 cursor-not-allowed" : ""
+								}`}
 							required
 							disabled={ekskulList.length === 0}
 						>
@@ -356,9 +326,8 @@ const CreateScheduleModal = ({
 						</select>
 						{ekskulList.length === 0 && (
 							<p
-								className={`text-sm mt-2 ${
-									darkMode ? "text-slate-400" : "text-slate-500"
-								}`}
+								className={`text-sm mt-2 ${darkMode ? "text-slate-400" : "text-slate-500"
+									}`}
 							>
 								Anda belum memiliki ekstrakurikuler yang dikelola. Hubungi
 								administrator untuk ditambahkan sebagai pembina.
@@ -366,9 +335,8 @@ const CreateScheduleModal = ({
 						)}
 						{ekskulList.length > 0 && (
 							<p
-								className={`text-sm mt-2 ${
-									darkMode ? "text-slate-400" : "text-slate-500"
-								}`}
+								className={`text-sm mt-2 ${darkMode ? "text-slate-400" : "text-slate-500"
+									}`}
 							>
 								{ekskulList.length} ekstrakurikuler tersedia
 							</p>
@@ -377,9 +345,8 @@ const CreateScheduleModal = ({
 
 					<div>
 						<label
-							className={`block text-sm font-semibold mb-2 ${
-								darkMode ? "text-slate-300" : "text-slate-700"
-							}`}
+							className={`block text-sm font-semibold mb-2 ${darkMode ? "text-slate-300" : "text-slate-700"
+								}`}
 						>
 							Judul Kegiatan
 						</label>
@@ -389,13 +356,11 @@ const CreateScheduleModal = ({
 							onChange={(e) =>
 								setFormData({ ...formData, title: e.target.value })
 							}
-							className={`w-full p-3 rounded-xl border-2 ${
-								darkMode
-									? "bg-slate-700 border-slate-600 text-white"
-									: "bg-white border-slate-200"
-							} focus:outline-none focus:ring-4 ${
-								darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
-							}`}
+							className={`w-full p-3 rounded-xl border-2 ${darkMode
+								? "bg-slate-700 border-slate-600 text-white"
+								: "bg-white border-slate-200"
+								} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
+								}`}
 							required
 							placeholder="Contoh: Latihan Mingguan, Pertandingan Persahabatan, dll."
 						/>
@@ -403,9 +368,8 @@ const CreateScheduleModal = ({
 
 					<div>
 						<label
-							className={`block text-sm font-semibold mb-2 ${
-								darkMode ? "text-slate-300" : "text-slate-700"
-							}`}
+							className={`block text-sm font-semibold mb-2 ${darkMode ? "text-slate-300" : "text-slate-700"
+								}`}
 						>
 							Deskripsi
 						</label>
@@ -415,13 +379,11 @@ const CreateScheduleModal = ({
 								setFormData({ ...formData, description: e.target.value })
 							}
 							rows={3}
-							className={`w-full p-3 rounded-xl border-2 ${
-								darkMode
-									? "bg-slate-700 border-slate-600 text-white"
-									: "bg-white border-slate-200"
-							} focus:outline-none focus:ring-4 ${
-								darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
-							}`}
+							className={`w-full p-3 rounded-xl border-2 ${darkMode
+								? "bg-slate-700 border-slate-600 text-white"
+								: "bg-white border-slate-200"
+								} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
+								}`}
 							required
 							placeholder="Jelaskan detail kegiatan yang akan dilakukan..."
 						/>
@@ -430,9 +392,8 @@ const CreateScheduleModal = ({
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label
-								className={`block text-sm font-semibold mb-2 ${
-									darkMode ? "text-slate-300" : "text-slate-700"
-								}`}
+								className={`block text-sm font-semibold mb-2 ${darkMode ? "text-slate-300" : "text-slate-700"
+									}`}
 							>
 								Tanggal & Waktu
 							</label>
@@ -442,13 +403,11 @@ const CreateScheduleModal = ({
 								onChange={(e) =>
 									setFormData({ ...formData, scheduleDate: e.target.value })
 								}
-								className={`w-full p-3 rounded-xl border-2 ${
-									darkMode
-										? "bg-slate-700 border-slate-600 text-white"
-										: "bg-white border-slate-200"
-								} focus:outline-none focus:ring-4 ${
-									darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
-								}`}
+								className={`w-full p-3 rounded-xl border-2 ${darkMode
+									? "bg-slate-700 border-slate-600 text-white"
+									: "bg-white border-slate-200"
+									} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
+									}`}
 								required
 								min={new Date().toISOString().slice(0, 16)}
 							/>
@@ -456,9 +415,8 @@ const CreateScheduleModal = ({
 
 						<div>
 							<label
-								className={`block text-sm font-semibold mb-2 ${
-									darkMode ? "text-slate-300" : "text-slate-700"
-								}`}
+								className={`block text-sm font-semibold mb-2 ${darkMode ? "text-slate-300" : "text-slate-700"
+									}`}
 							>
 								Lokasi
 							</label>
@@ -468,13 +426,11 @@ const CreateScheduleModal = ({
 								onChange={(e) =>
 									setFormData({ ...formData, location: e.target.value })
 								}
-								className={`w-full p-3 rounded-xl border-2 ${
-									darkMode
-										? "bg-slate-700 border-slate-600 text-white"
-										: "bg-white border-slate-200"
-								} focus:outline-none focus:ring-4 ${
-									darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
-								}`}
+								className={`w-full p-3 rounded-xl border-2 ${darkMode
+									? "bg-slate-700 border-slate-600 text-white"
+									: "bg-white border-slate-200"
+									} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
+									}`}
 								required
 								placeholder="Contoh: Lapangan Sekolah, Aula Utama, dll."
 							/>
@@ -486,22 +442,20 @@ const CreateScheduleModal = ({
 							type="button"
 							onClick={onClose}
 							disabled={loading}
-							className={`flex-1 py-3 rounded-xl font-semibold ${
-								darkMode
-									? "bg-slate-700 hover:bg-slate-600 text-white"
-									: "bg-slate-200 hover:bg-slate-300 text-slate-700"
-							} ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+							className={`flex-1 py-3 rounded-xl font-semibold ${darkMode
+								? "bg-slate-700 hover:bg-slate-600 text-white"
+								: "bg-slate-200 hover:bg-slate-300 text-slate-700"
+								} ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
 						>
 							Batal
 						</button>
 						<button
 							type="submit"
 							disabled={loading || ekskulList.length === 0}
-							className={`flex-1 py-3 rounded-xl font-semibold text-white ${
-								loading || ekskulList.length === 0
-									? "bg-slate-400 cursor-not-allowed"
-									: "bg-gradient-to-r from-sky-500 to-cyan-500 hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
-							}`}
+							className={`flex-1 py-3 rounded-xl font-semibold text-white ${loading || ekskulList.length === 0
+								? "bg-slate-400 cursor-not-allowed"
+								: "bg-gradient-to-r from-sky-500 to-cyan-500 hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+								}`}
 						>
 							{loading ? "Memproses..." : "Buat Jadwal"}
 						</button>
@@ -675,120 +629,109 @@ const Jadwal = ({ darkMode }) => {
 	return (
 		<div>
 			<div className="p-8">
-				<div className="max-w-7xl mx-auto">
-					<div className="flex items-center justify-between mb-8">
-						<div>
-							<h1
-								className={`text-3xl font-bold mb-2 flex items-center gap-3 ${
-									darkMode ? "text-white" : "text-slate-900"
+				<div className="flex items-center justify-between mb-8">
+					<div>
+						<h1
+							className={`text-3xl font-bold mb-2 flex items-center gap-3 ${darkMode ? "text-white" : "text-slate-900"
 								}`}
-							>
-								Jadwal Kegiatan
-							</h1>
-							<p
-								className={`text-sm ${
-									darkMode ? "text-slate-400" : "text-slate-500"
+						>
+							Jadwal Kegiatan
+						</h1>
+						<p
+							className={`text-sm ${darkMode ? "text-slate-400" : "text-slate-500"
 								}`}
+						>
+							Kelola jadwal ekstrakurikuler
+						</p>
+					</div>
+
+					<button
+						onClick={() => setIsCreateModalOpen(true)}
+						className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-sky-500 to-cyan-500 hover:shadow-lg transition-all"
+					>
+						<FiPlus className="text-xl" />
+						Buat Jadwal
+					</button>
+				</div>
+
+				<div className="mb-6">
+					<div className="relative max-w-md">
+						<FiSearch
+							className={`absolute left-4 top-1/2 -translate-y-1/2 text-xl ${darkMode ? "text-slate-400" : "text-slate-500"
+								}`}
+						/>
+						<input
+							type="text"
+							placeholder="Cari jadwal..."
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 transition-all ${darkMode
+									? "bg-slate-800 border-slate-700 text-white placeholder-slate-500"
+									: "bg-white border-slate-200 text-slate-900 placeholder-slate-400"
+								} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
+								}`}
+						/>
+					</div>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{showLoading ? (
+						<>
+							<SkeletonCard darkMode={darkMode} />
+							<SkeletonCard darkMode={darkMode} />
+							<SkeletonCard darkMode={darkMode} />
+						</>
+					) : showErrorState ? (
+						<div className="col-span-3 text-center py-12">
+							<div
+								className={`text-6xl mb-4 ${darkMode ? "text-slate-600" : "text-slate-300"
+									}`}
 							>
-								Kelola jadwal ekstrakurikuler
+								⚠️
+							</div>
+							<h3
+								className={`text-xl font-bold mb-2 ${darkMode ? "text-white" : "text-slate-900"
+									}`}
+							>
+								Server Tidak Dapat Diakses
+							</h3>
+							<p className={darkMode ? "text-slate-400" : "text-slate-500"}>
+								Silakan coba lagi beberapa saat.
 							</p>
 						</div>
-
-						<button
-							onClick={() => setIsCreateModalOpen(true)}
-							className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-sky-500 to-cyan-500 hover:shadow-lg transition-all"
-						>
-							<FiPlus className="text-xl" />
-							Buat Jadwal
-						</button>
-					</div>
-
-					<div className="mb-6">
-						<div className="relative max-w-md">
-							<FiSearch
-								className={`absolute left-4 top-1/2 -translate-y-1/2 text-xl ${
-									darkMode ? "text-slate-400" : "text-slate-500"
-								}`}
-							/>
-							<input
-								type="text"
-								placeholder="Cari jadwal..."
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
-								className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 transition-all ${
-									darkMode
-										? "bg-slate-800 border-slate-700 text-white placeholder-slate-500"
-										: "bg-white border-slate-200 text-slate-900 placeholder-slate-400"
-								} focus:outline-none focus:ring-4 ${
-									darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
-								}`}
-							/>
+					) : showEmptyState ? (
+						<div className="col-span-3 text-center py-12">
+							<div
+								className={`text-6xl mb-4 ${darkMode ? "text-slate-600" : "text-slate-300"
+									}`}
+							>
+								📅
+							</div>
+							<h3
+								className={`text-xl font-bold mb-2 ${darkMode ? "text-white" : "text-slate-900"
+									}`}
+							>
+								{searchQuery ? "Jadwal Tidak Ditemukan" : "Belum Ada Jadwal"}
+							</h3>
+							<p className={darkMode ? "text-slate-400" : "text-slate-500"}>
+								{searchQuery
+									? `Tidak ada jadwal yang sesuai dengan "${searchQuery}"`
+									: "Buat jadwal pertama untuk memulai"}
+							</p>
 						</div>
-					</div>
-
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{showLoading ? (
-							<>
-								<SkeletonCard darkMode={darkMode} />
-								<SkeletonCard darkMode={darkMode} />
-								<SkeletonCard darkMode={darkMode} />
-							</>
-						) : showErrorState ? (
-							<div className="col-span-3 text-center py-12">
-								<div
-									className={`text-6xl mb-4 ${
-										darkMode ? "text-slate-600" : "text-slate-300"
-									}`}
-								>
-									⚠️
-								</div>
-								<h3
-									className={`text-xl font-bold mb-2 ${
-										darkMode ? "text-white" : "text-slate-900"
-									}`}
-								>
-									Server Tidak Dapat Diakses
-								</h3>
-								<p className={darkMode ? "text-slate-400" : "text-slate-500"}>
-									Silakan coba lagi beberapa saat.
-								</p>
-							</div>
-						) : showEmptyState ? (
-							<div className="col-span-3 text-center py-12">
-								<div
-									className={`text-6xl mb-4 ${
-										darkMode ? "text-slate-600" : "text-slate-300"
-									}`}
-								>
-									📅
-								</div>
-								<h3
-									className={`text-xl font-bold mb-2 ${
-										darkMode ? "text-white" : "text-slate-900"
-									}`}
-								>
-									{searchQuery ? "Jadwal Tidak Ditemukan" : "Belum Ada Jadwal"}
-								</h3>
-								<p className={darkMode ? "text-slate-400" : "text-slate-500"}>
-									{searchQuery
-										? `Tidak ada jadwal yang sesuai dengan "${searchQuery}"`
-										: "Buat jadwal pertama untuk memulai"}
-								</p>
-							</div>
-						) : (
-							scheduleList.map((schedule, index) => (
-								<AnimatedScheduleCard
-									key={schedule.id}
-									schedule={schedule}
-									darkMode={darkMode}
-									index={index}
-									hasAnimated={hasAnimated}
-									onCardClick={handleCardClick}
-									API_URL={API_URL}
-								/>
-							))
-						)}
-					</div>
+					) : (
+						scheduleList.map((schedule, index) => (
+							<AnimatedScheduleCard
+								key={schedule.id}
+								schedule={schedule}
+								darkMode={darkMode}
+								index={index}
+								hasAnimated={hasAnimated}
+								onCardClick={handleCardClick}
+								API_URL={API_URL}
+							/>
+						))
+					)}
 				</div>
 			</div>
 
@@ -803,7 +746,7 @@ const Jadwal = ({ darkMode }) => {
 					/>
 				)}
 			</AnimatePresence>
-		</div>
+		</div >
 	);
 };
 

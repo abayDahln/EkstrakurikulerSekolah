@@ -9,6 +9,7 @@ import {
 import Navbar from "./components/Navbar.jsx";
 import Landing from "./pages/Landing.jsx";
 import Login from "./pages/Login.jsx";
+import Download from "./pages/Download.jsx";
 import Home from "./pages/Home.jsx";
 import sessionManager from "./utils/utils.jsx";
 import Ekstrakurikuler from "./pages/Ekstrakurikuler.jsx";
@@ -17,11 +18,13 @@ import MyProfile from "./pages/MyProfile.jsx";
 import Profile from "./pages/Profile.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import Jadwal from "./pages/Jadwal.jsx";
+import JadwalDetail from "./pages/JadwalDetail.jsx";
+import Certificate from "./pages/Certificate.jsx";
 
 
 const useTokenValidation = () => {
 	const navigate = useNavigate();
-	
+
 	useEffect(() => {
 		const validateToken = async () => {
 			const token = sessionManager.getToken();
@@ -54,28 +57,41 @@ const ProtectedRoute = ({ children }) => {
 	return token ? children : <Navigate to="/" replace />;
 };
 
+const ScrollToTop = () => {
+	const { pathname } = useLocation();
+
+	useEffect(() => {
+		// Jika navigasi adalah PUSH (halaman baru), scroll ke atas
+		// Browser secara default menangani restorasi scroll untuk tombol back/forward
+		// Namun untuk memastikan, kita bisa mengecek window.history.state
+		window.scrollTo(0, 0);
+	}, [pathname]);
+
+	return null;
+};
+
 const PublicRoute = ({ children }) => {
 	const token = sessionManager.getToken();
 	return !token ? children : <Navigate to="/home" replace />;
 };
 
 function App() {
-    const [activeMenu, setActiveMenu] = useState(1);
+	const [activeMenu, setActiveMenu] = useState(1);
 	const [darkMode, setDarkMode] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
-	
+
 	const location = useLocation();
 
-    const hideSidebarRoutes = ["/", "/login"];
-    const shouldShowSidebar =
-        sessionManager.getToken() && !hideSidebarRoutes.includes(location.pathname);
+	const hideSidebarRoutes = ["/", "/login"];
+	const shouldShowSidebar =
+		sessionManager.getToken() && !hideSidebarRoutes.includes(location.pathname);
 
 	useEffect(() => {
 		initializeApp();
 	}, []);
 
 	const initializeApp = () => {
-		
+
 		try {
 
 			const savedTheme = sessionManager.getTheme();
@@ -147,12 +163,12 @@ function App() {
 	}
 
 	return (
-		
+
 		<div className={darkMode ? "dark" : "light"}>
+			<ScrollToTop />
 			<div
-				className={`min-h-screen overflow-auto transition-colors duration-300 ${
-					darkMode ? "bg-slate-900 text-white" : "bg-white text-slate-900"
-				}`}
+				className={`min-h-screen overflow-auto transition-colors duration-300 ${darkMode ? "bg-slate-900 text-white" : "bg-white text-slate-900"
+					}`}
 			>
 				<Navbar
 					darkMode={darkMode}
@@ -160,11 +176,11 @@ function App() {
 					toggleDarkMode={toggleDarkMode}
 					onLogout={handleLogout}
 				/>
-				
+
 				{shouldShowSidebar && (
 					<Sidebar darkMode={darkMode} initialMenu={activeMenu} />
 				)}
-				<main 
+				<main
 					className="pt-16"
 					style={{
 						marginLeft: shouldShowSidebar ? "280px" : "0",
@@ -184,6 +200,14 @@ function App() {
 							element={
 								<PublicRoute>
 									<Login darkMode={darkMode} onLogin={handleLogin} />
+								</PublicRoute>
+							}
+						/>
+						<Route
+							path="/download"
+							element={
+								<PublicRoute>
+									<Download darkMode={darkMode} />
 								</PublicRoute>
 							}
 						/>
@@ -215,7 +239,7 @@ function App() {
 							path="/profile"
 							element={
 								<ProtectedRoute>
-									<MyProfile darkMode={darkMode} />
+									<MyProfile darkMode={darkMode} onLogout={handleLogout} />
 								</ProtectedRoute>
 							}
 						/>
@@ -228,10 +252,26 @@ function App() {
 							}
 						/>
 						<Route
+							path="/certificates"
+							element={
+								<ProtectedRoute>
+									<Certificate darkMode={darkMode} />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
 							path="/jadwal"
 							element={
 								<ProtectedRoute>
 									<Jadwal darkMode={darkMode} />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/jadwal/:id"
+							element={
+								<ProtectedRoute>
+									<JadwalDetail darkMode={darkMode} />
 								</ProtectedRoute>
 							}
 						/>

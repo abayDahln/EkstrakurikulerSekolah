@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom"
-import { motion } from "framer-motion";
-import { FiUser, FiMail, FiAward, FiCalendar, FiUsers, FiTrendingUp, FiArrowLeft, FiTarget, FiCheckCircle } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiUser, FiMail, FiAward, FiCalendar, FiUsers, FiTrendingUp, FiArrowLeft, FiTarget, FiCheckCircle, FiFileText, FiEye, FiX } from "react-icons/fi";
 
 const SkeletonProfile = ({ darkMode }) => (
   <div className="space-y-6">
@@ -72,6 +72,7 @@ const UserProfile = ({ darkMode }) => {
   const [profileData, setProfileData] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isServerDown, setIsServerDown] = useState(false);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -81,11 +82,11 @@ const UserProfile = ({ darkMode }) => {
   const fetchProfileData = async () => {
     try {
       const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/profile/${id}`, { 
+      const response = await fetch(`${API_URL}/api/profile/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await response.json();
-      
+
       if (result.status === 200) {
         setProfileData(result.data);
         setIsServerDown(false);
@@ -101,10 +102,10 @@ const UserProfile = ({ darkMode }) => {
 
   useEffect(() => {
     setTimeout(() => {
-			fetchProfileData();
-		}, 1000);
-    
-    intervalRef.current = setInterval(fetchProfileData, 1000);
+      fetchProfileData();
+    }, 1000);
+
+    intervalRef.current = setInterval(fetchProfileData, 30000);
     return () => clearInterval(intervalRef.current);
   }, [id]);
 
@@ -116,7 +117,7 @@ const UserProfile = ({ darkMode }) => {
     navigate(`/ekskul/${ekskulId}`);
   };
 
-  const AnimatedWrapper = ({ children, delay = 0 }) => 
+  const AnimatedWrapper = ({ children, delay = 0 }) =>
     !isInitialLoad ? children : (
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay }}>
         {children}
@@ -126,14 +127,12 @@ const UserProfile = ({ darkMode }) => {
   const isPembina = profileData?.role === 'pembina';
 
   return (
-    
     <div className="p-8">
       <div className="max-w-6xl mx-auto">
         <button
           onClick={handleBack}
-          className={`flex items-center gap-2 mb-6 px-4 py-2 rounded-lg transition-colors ${
-            darkMode ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-100 text-slate-600'
-          }`}
+          className={`flex items-center gap-2 mb-6 px-4 py-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-100 text-slate-600'
+            }`}
         >
           <FiArrowLeft className="text-xl" />
           <span className="font-semibold">Kembali</span>
@@ -156,28 +155,26 @@ const UserProfile = ({ darkMode }) => {
                   <h1 className={`text-3xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                     {profileData.name}
                   </h1>
-                  
+
                   <p className={`text-lg mb-3 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                     {profileData.email}
                   </p>
 
-                  <div className={`inline-block px-6 py-2 rounded-full font-semibold text-lg ${
-                    isPembina
-                      ? darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-600'
-                      : darkMode ? 'bg-sky-900/50 text-sky-300' : 'bg-sky-100 text-sky-600'
-                  }`}>
+                  <div className={`inline-block px-6 py-2 rounded-full font-semibold text-lg ${isPembina
+                    ? darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-600'
+                    : darkMode ? 'bg-sky-900/50 text-sky-300' : 'bg-sky-100 text-sky-600'
+                    }`}>
                     <FiAward className="inline mr-2 mb-1" />
                     {isPembina ? 'Pembina' : 'Siswa'}
                   </div>
 
-                  <div className={`mt-6 flex items-center justify-center gap-2 text-sm ${
-                    darkMode ? 'text-slate-400' : 'text-slate-500'
-                  }`}>
+                  <div className={`mt-6 flex items-center justify-center gap-2 text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'
+                    }`}>
                     <FiCalendar />
-                    Bergabung sejak {new Date(profileData.createdAt).toLocaleDateString('id-ID', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
+                    Bergabung sejak {new Date(profileData.createdAt).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
                     })}
                   </div>
                 </div>
@@ -193,15 +190,13 @@ const UserProfile = ({ darkMode }) => {
 
                   <div className="space-y-5">
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        darkMode ? 'bg-sky-900/50' : 'bg-sky-100'
-                      }`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${darkMode ? 'bg-sky-900/50' : 'bg-sky-100'
+                        }`}>
                         <FiUser className="text-sky-500" />
                       </div>
                       <div className="flex-1">
-                        <label className={`block text-sm font-semibold mb-1 ${
-                          darkMode ? 'text-slate-400' : 'text-slate-500'
-                        }`}>
+                        <label className={`block text-sm font-semibold mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'
+                          }`}>
                           Nama Lengkap
                         </label>
                         <p className={`text-lg font-medium ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -211,15 +206,13 @@ const UserProfile = ({ darkMode }) => {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        darkMode ? 'bg-purple-900/50' : 'bg-purple-100'
-                      }`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${darkMode ? 'bg-purple-900/50' : 'bg-purple-100'
+                        }`}>
                         <FiMail className="text-purple-500" />
                       </div>
                       <div className="flex-1">
-                        <label className={`block text-sm font-semibold mb-1 ${
-                          darkMode ? 'text-slate-400' : 'text-slate-500'
-                        }`}>
+                        <label className={`block text-sm font-semibold mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'
+                          }`}>
                           Email
                         </label>
                         <p className={`text-lg font-medium ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -229,15 +222,13 @@ const UserProfile = ({ darkMode }) => {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        darkMode ? 'bg-green-900/50' : 'bg-green-100'
-                      }`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${darkMode ? 'bg-green-900/50' : 'bg-green-100'
+                        }`}>
                         <FiAward className="text-green-500" />
                       </div>
                       <div className="flex-1">
-                        <label className={`block text-sm font-semibold mb-1 ${
-                          darkMode ? 'text-slate-400' : 'text-slate-500'
-                        }`}>
+                        <label className={`block text-sm font-semibold mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'
+                          }`}>
                           Role
                         </label>
                         <p className={`text-lg font-medium capitalize ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -251,9 +242,8 @@ const UserProfile = ({ darkMode }) => {
 
               <AnimatedWrapper delay={0.2}>
                 <div className={`rounded-2xl shadow-lg p-6 h-full ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
-                  <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${
-                    darkMode ? 'text-white' : 'text-slate-900'
-                  }`}>
+                  <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-900'
+                    }`}>
                     <FiTrendingUp /> Statistik Aktivitas
                   </h3>
 
@@ -261,9 +251,8 @@ const UserProfile = ({ darkMode }) => {
                     {isPembina ? (
                       <>
                         <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
-                            darkMode ? 'bg-sky-900/50' : 'bg-sky-100'
-                          }`}>
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${darkMode ? 'bg-sky-900/50' : 'bg-sky-100'
+                            }`}>
                             <FiTarget className="text-xl text-sky-500" />
                           </div>
                           <p className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -275,9 +264,8 @@ const UserProfile = ({ darkMode }) => {
                         </div>
 
                         <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
-                            darkMode ? 'bg-purple-900/50' : 'bg-purple-100'
-                          }`}>
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${darkMode ? 'bg-purple-900/50' : 'bg-purple-100'
+                            }`}>
                             <FiCalendar className="text-xl text-purple-500" />
                           </div>
                           <p className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -289,9 +277,8 @@ const UserProfile = ({ darkMode }) => {
                         </div>
 
                         <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
-                            darkMode ? 'bg-green-900/50' : 'bg-green-100'
-                          }`}>
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${darkMode ? 'bg-green-900/50' : 'bg-green-100'
+                            }`}>
                             <FiUsers className="text-xl text-green-500" />
                           </div>
                           <p className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -303,9 +290,8 @@ const UserProfile = ({ darkMode }) => {
                         </div>
 
                         <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
-                            darkMode ? 'bg-orange-900/50' : 'bg-orange-100'
-                          }`}>
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${darkMode ? 'bg-orange-900/50' : 'bg-orange-100'
+                            }`}>
                             <span className="text-2xl">⏰</span>
                           </div>
                           <p className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -319,9 +305,8 @@ const UserProfile = ({ darkMode }) => {
                     ) : (
                       <>
                         <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
-                            darkMode ? 'bg-sky-900/50' : 'bg-sky-100'
-                          }`}>
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${darkMode ? 'bg-sky-900/50' : 'bg-sky-100'
+                            }`}>
                             <FiTarget className="text-xl text-sky-500" />
                           </div>
                           <p className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -333,9 +318,8 @@ const UserProfile = ({ darkMode }) => {
                         </div>
 
                         <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
-                            darkMode ? 'bg-yellow-900/50' : 'bg-yellow-100'
-                          }`}>
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${darkMode ? 'bg-yellow-900/50' : 'bg-yellow-100'
+                            }`}>
                             <span className="text-2xl">⭐</span>
                           </div>
                           <p className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -347,9 +331,8 @@ const UserProfile = ({ darkMode }) => {
                         </div>
 
                         <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
-                            darkMode ? 'bg-green-900/50' : 'bg-green-100'
-                          }`}>
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${darkMode ? 'bg-green-900/50' : 'bg-green-100'
+                            }`}>
                             <FiCheckCircle className="text-xl text-green-500" />
                           </div>
                           <p className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -361,9 +344,8 @@ const UserProfile = ({ darkMode }) => {
                         </div>
 
                         <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
-                            darkMode ? 'bg-purple-900/50' : 'bg-purple-100'
-                          }`}>
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${darkMode ? 'bg-purple-900/50' : 'bg-purple-100'
+                            }`}>
                             <span className="text-2xl">📝</span>
                           </div>
                           <p className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -390,9 +372,8 @@ const UserProfile = ({ darkMode }) => {
                   {(isPembina ? profileData.managedExtracurriculars : profileData.extracurriculars)?.map((ekskul) => (
                     <div
                       key={ekskul.id}
-                      className={`rounded-xl overflow-hidden transition-all hover:scale-105 cursor-pointer ${
-                        darkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-slate-50 hover:bg-slate-100'
-                      }`}
+                      className={`rounded-xl overflow-hidden transition-all cursor-pointer ${darkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-slate-50 hover:bg-slate-100'
+                        }`}
                       onClick={() => handleEkskulClick(ekskul.id)}
                     >
                       <img
@@ -410,18 +391,16 @@ const UserProfile = ({ darkMode }) => {
                         <p className={`text-sm mb-3 line-clamp-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                           {ekskul.description}
                         </p>
-                        
+
                         {isPembina ? (
                           <div className="flex flex-wrap gap-2">
-                            <span className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1 ${
-                              darkMode ? 'bg-sky-900/50 text-sky-300' : 'bg-sky-100 text-sky-600'
-                            }`}>
+                            <span className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1 ${darkMode ? 'bg-sky-900/50 text-sky-300' : 'bg-sky-100 text-sky-600'
+                              }`}>
                               <FiUsers className="text-xs" />
                               {ekskul.totalMembers} anggota
                             </span>
-                            <span className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1 ${
-                              darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-600'
-                            }`}>
+                            <span className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1 ${darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-600'
+                              }`}>
                               <FiCalendar className="text-xs" />
                               {ekskul.totalSchedules} jadwal
                             </span>
@@ -429,33 +408,30 @@ const UserProfile = ({ darkMode }) => {
                         ) : (
                           <div className="space-y-2">
                             <div className="flex flex-wrap gap-2">
-                              <span className={`text-xs px-3 py-1.5 rounded-full ${
-                                darkMode ? 'bg-yellow-900/50 text-yellow-300' : 'bg-yellow-100 text-yellow-600'
-                              }`}>
+                              <span className={`text-xs px-3 py-1.5 rounded-full ${darkMode ? 'bg-yellow-900/50 text-yellow-300' : 'bg-yellow-100 text-yellow-600'
+                                }`}>
                                 ⭐ {ekskul.totalPoints} poin
                               </span>
-                              <span className={`text-xs px-3 py-1.5 rounded-full capitalize ${
-                                ekskul.status === 'active'
-                                  ? darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-600'
-                                  : darkMode ? 'bg-gray-900/50 text-gray-300' : 'bg-gray-100 text-gray-600'
-                              }`}>
+                              <span className={`text-xs px-3 py-1.5 rounded-full capitalize ${ekskul.status === 'active'
+                                ? darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-600'
+                                : darkMode ? 'bg-gray-900/50 text-gray-300' : 'bg-gray-100 text-gray-600'
+                                }`}>
                                 {ekskul.status}
                               </span>
                             </div>
                             {ekskul.pembina && (
-                              <div className={`text-xs flex items-center gap-1 ${
-                                darkMode ? 'text-slate-400' : 'text-slate-500'
-                              }`}>
+                              <div className={`text-xs flex items-center gap-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'
+                                }`}>
                                 <FiUser className="text-xs" />
                                 {ekskul.pembina.name}
                               </div>
                             )}
                             <div className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                               <FiCalendar className="inline text-xs mr-1" />
-                              {new Date(ekskul.joinDate).toLocaleDateString('id-ID', { 
-                                day: 'numeric', 
-                                month: 'short', 
-                                year: 'numeric' 
+                              {new Date(ekskul.joinDate).toLocaleDateString('id-ID', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
                               })}
                             </div>
                           </div>
@@ -466,6 +442,126 @@ const UserProfile = ({ darkMode }) => {
                 </div>
               </div>
             </AnimatedWrapper>
+
+            {!isPembina && profileData.certificates?.length > 0 && (
+              <AnimatedWrapper delay={0.4}>
+                <div className={`rounded-2xl shadow-lg p-6 ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                  <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                    <FiFileText /> Sertifikat Penghargaan
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {profileData.certificates.map((cert) => (
+                      <div
+                        key={cert.id}
+                        className={`group relative rounded-2xl overflow-hidden border-2 transition-all duration-300 ${darkMode
+                          ? 'bg-slate-700/30 border-slate-700/50 hover:border-sky-500/50 hover:bg-slate-700/50'
+                          : 'bg-slate-50 border-slate-200 hover:border-sky-200 hover:bg-white'
+                          }`}
+                      >
+                        <div className="aspect-[1.414/1] relative overflow-hidden">
+                          <img
+                            src={`${API_URL}/${cert.certificateUrl}`}
+                            alt={cert.certificateName}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = "https://placehold.co/600x400/0ea5e9/ffffff?text=Sertifikat";
+                            }}
+                          />
+                          <div className={`absolute inset-0 bg-gradient-to-t opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 ${darkMode ? 'from-slate-900/80 via-slate-900/40 to-transparent' : 'from-slate-900/60 via-slate-900/20 to-transparent'
+                            }`}>
+                            <button
+                              onClick={() => setSelectedCertificate(cert)}
+                              className="p-3 rounded-full bg-white text-sky-600 shadow-xl transform scale-90 group-hover:scale-100 transition-transform duration-300 hover:bg-sky-50"
+                            >
+                              <FiEye className="text-xl" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="p-4">
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h4 className={`font-bold leading-tight line-clamp-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                              {cert.certificateName}
+                            </h4>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap font-bold uppercase tracking-wider ${darkMode ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30' : 'bg-sky-100 text-sky-600 border border-sky-200'
+                              }`}>
+                              {cert.extracurricular?.name || 'Umum'}
+                            </span>
+                          </div>
+
+                          <div className={`flex items-center gap-1.5 text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                            <FiCalendar className="text-[10px]" />
+                            {new Date(cert.issuedAt).toLocaleDateString('id-ID', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric'
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </AnimatedWrapper>
+            )}
+
+            <AnimatePresence>
+              {selectedCertificate && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setSelectedCertificate(null)}
+                    className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm"
+                  />
+
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className={`relative w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl ${darkMode ? 'bg-slate-800' : 'bg-white'
+                      }`}
+                  >
+                    <div className={`flex items-center justify-between p-4 border-b ${darkMode ? 'border-slate-700' : 'border-slate-100'
+                      }`}>
+                      <div>
+                        <h3 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                          {selectedCertificate.certificateName}
+                        </h3>
+                        <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                          {selectedCertificate.extracurricular?.name} • Diberikan pada {new Date(selectedCertificate.issuedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setSelectedCertificate(null)}
+                        className={`p-2 rounded-full transition-colors ${darkMode ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'
+                          }`}
+                      >
+                        <FiX className="text-xl" />
+                      </button>
+                    </div>
+
+                    <div className="p-4 bg-slate-100 dark:bg-slate-900 flex items-center justify-center min-h-[400px]">
+                      <img
+                        src={`${API_URL}/${selectedCertificate.certificateUrl}`}
+                        alt={selectedCertificate.certificateName}
+                        className="max-w-full max-h-[70vh] rounded-lg shadow-lg"
+                        onContextMenu={(e) => e.preventDefault()} // Disable right-click for simple protection
+                      />
+                    </div>
+
+                    <div className={`p-4 text-center border-t ${darkMode ? 'border-slate-700' : 'border-slate-100'
+                      }`}>
+                      <p className={`text-sm italic ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                        * Sertifikat ini hanya dapat dilihat dan tidak dapat diunduh.
+                      </p>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>

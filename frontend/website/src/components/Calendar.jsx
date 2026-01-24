@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const toUTCDateStr = (dateInput) => {
+const toLocalDateStr = (dateInput) => {
 	const d = new Date(dateInput);
-	const year = d.getUTCFullYear();
-	const month = String(d.getUTCMonth() + 1).padStart(2, "0");
-	const day = String(d.getUTCDate()).padStart(2, "0");
+	const year = d.getFullYear();
+	const month = String(d.getMonth() + 1).padStart(2, "0");
+	const day = String(d.getDate()).padStart(2, "0");
 	return `${year}-${month}-${day}`;
 };
 
@@ -12,9 +12,15 @@ export default function Calendar({
 	darkMode,
 	onDateSelect,
 	selectedDate,
+	selectedMonth,
+	selectedYear,
 	scheduleData,
 }) {
-	const [currentDate, setCurrentDate] = useState(new Date());
+	const [currentDate, setCurrentDate] = useState(new Date(selectedYear, selectedMonth, 1));
+
+	useEffect(() => {
+		setCurrentDate(new Date(selectedYear, selectedMonth, 1));
+	}, [selectedMonth, selectedYear]);
 
 	const daysInMonth = new Date(
 		currentDate.getFullYear(),
@@ -44,59 +50,60 @@ export default function Calendar({
 	];
 
 	const hasSchedule = (day) => {
-		const dateStr = toUTCDateStr(
-			Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), day)
+		const dateStr = toLocalDateStr(
+			new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
 		);
-		return scheduleData?.some((jadwal) => jadwal.utcDate === dateStr);
+		return scheduleData?.some((jadwal) => jadwal.localDate === dateStr);
 	};
 
 	return (
 		<div
-			className={`rounded-2xl shadow-lg p-6 ${
-				darkMode ? "bg-slate-800" : "bg-white"
-			}`}
+			className={`rounded-2xl shadow-lg p-6 ${darkMode ? "bg-slate-800" : "bg-white"
+				}`}
 		>
 			<div className="flex items-center justify-between mb-6">
 				<h3
-					className={`text-xl font-bold ${
-						darkMode ? "text-white" : "text-slate-800"
-					}`}
+					className={`text-xl font-bold ${darkMode ? "text-white" : "text-slate-800"
+						}`}
 				>
 					Calendar
 				</h3>
 				<div className="flex gap-2">
 					<button
-						onClick={() =>
-							setCurrentDate(
-								new Date(currentDate.setMonth(currentDate.getMonth() - 1))
-							)
-						}
-						className={`p-2 rounded-lg ${
-							darkMode
-								? "hover:bg-slate-700 text-white"
-								: "hover:bg-slate-100 text-slate-600"
-						}`}
+						onClick={() => {
+							const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+							const newMonth = newDate.getMonth();
+							const newYear = newDate.getFullYear();
+							const daysInNewMonth = new Date(newYear, newMonth + 1, 0).getDate();
+							const clampedDay = Math.min(selectedDate, daysInNewMonth);
+							onDateSelect(clampedDay, newMonth, newYear);
+						}}
+						className={`p-2 rounded-lg ${darkMode
+							? "hover:bg-slate-700 text-white"
+							: "hover:bg-slate-100 text-slate-600"
+							}`}
 					>
 						←
 					</button>
 					<span
-						className={`px-3 py-2 text-sm font-semibold ${
-							darkMode ? "text-slate-300" : "text-slate-600"
-						}`}
+						className={`px-3 py-2 text-sm font-semibold ${darkMode ? "text-slate-300" : "text-slate-600"
+							}`}
 					>
 						{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
 					</span>
 					<button
-						onClick={() =>
-							setCurrentDate(
-								new Date(currentDate.setMonth(currentDate.getMonth() + 1))
-							)
-						}
-						className={`p-2 rounded-lg ${
-							darkMode
-								? "hover:bg-slate-700 text-white"
-								: "hover:bg-slate-100 text-slate-600"
-						}`}
+						onClick={() => {
+							const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+							const newMonth = newDate.getMonth();
+							const newYear = newDate.getFullYear();
+							const daysInNewMonth = new Date(newYear, newMonth + 1, 0).getDate();
+							const clampedDay = Math.min(selectedDate, daysInNewMonth);
+							onDateSelect(clampedDay, newMonth, newYear);
+						}}
+						className={`p-2 rounded-lg ${darkMode
+							? "hover:bg-slate-700 text-white"
+							: "hover:bg-slate-100 text-slate-600"
+							}`}
 					>
 						→
 					</button>
@@ -107,9 +114,8 @@ export default function Calendar({
 				{["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"].map((day) => (
 					<div
 						key={day}
-						className={`text-center text-xs font-semibold ${
-							darkMode ? "text-slate-400" : "text-slate-500"
-						}`}
+						className={`text-center text-xs font-semibold ${darkMode ? "text-slate-400" : "text-slate-500"
+							}`}
 					>
 						{day}
 					</div>
@@ -122,7 +128,10 @@ export default function Calendar({
 				))}
 				{[...Array(daysInMonth)].map((_, i) => {
 					const day = i + 1;
-					const isSelected = selectedDate === day;
+					const isSelected =
+						selectedDate === day &&
+						currentDate.getMonth() === selectedMonth &&
+						currentDate.getFullYear() === selectedYear;
 					const hasEvent = hasSchedule(day);
 
 					return (
@@ -135,26 +144,24 @@ export default function Calendar({
 									currentDate.getFullYear()
 								)
 							}
-							className={`aspect-square rounded-lg text-sm font-medium transition-all relative ${
-								isSelected
-									? darkMode
-										? "bg-gradient-to-br from-sky-700 to-cyan-700 text-white shadow-lg"
-										: "bg-gradient-to-br from-sky-500 to-cyan-500 text-white shadow-lg"
-									: darkMode
+							className={`aspect-square rounded-lg text-sm font-medium transition-all relative ${isSelected
+								? darkMode
+									? "bg-gradient-to-br from-sky-700 to-cyan-700 text-white shadow-lg"
+									: "bg-gradient-to-br from-sky-500 to-cyan-500 text-white shadow-lg"
+								: darkMode
 									? "hover:bg-slate-700 text-slate-300"
 									: "hover:bg-slate-100 text-slate-700"
-							}`}
+								}`}
 						>
 							{day}
 							{hasEvent && (
 								<span
-									className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${
-										isSelected
-											? "bg-white"
-											: darkMode
+									className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${isSelected
+										? "bg-white"
+										: darkMode
 											? "bg-sky-400"
 											: "bg-sky-500"
-									}`}
+										}`}
 								/>
 							)}
 						</button>
