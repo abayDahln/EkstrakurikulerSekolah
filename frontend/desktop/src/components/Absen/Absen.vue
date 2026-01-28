@@ -15,7 +15,10 @@
     const scheduleAbsen = ref({})
     const selectedSchedule = ref("")
 
-    const attendees = computed(() => scheduleAbsen.value?.attendees || [])
+    const defaultImg = "/src/assets/orang.png"
+
+    const attendanceData = computed(() => scheduleAbsen.value?.attendanceData || [])
+    const attendanceSummary = computed(() => scheduleAbsen.value?.attendanceSummary || {})
 
 
     const Ekskul = async () => {
@@ -68,7 +71,7 @@
 
     const Absen = async () => {
         try{
-            const res = await fetch(`${API_URL}/api/schedule/${selectedSchedule.value}`, {
+            const res = await fetch(`${API_URL}/api/pembina/schedule/${selectedSchedule.value}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -119,22 +122,10 @@
         return map[status] || 'text-gray-400'
     }
 
-    const summaryAbsen = computed(() => {
-        const summary = {
-            hadir: 0,
-            izin: 0,
-            sakit: 0,
-            alfa: 0
-        }
+    const image = (url) => {
+        return url ? `${API_URL}/${url}` : defaultImg
+    }
 
-        attendees.value.forEach(a => {
-            if(summary[a.status] !== undefined){
-                summary[a.status]++
-            }
-        })
-
-        return summary
-    })
 
 </script>
 
@@ -175,11 +166,11 @@
                         </div>
                     </div>
                 </div>
-                    <div class="grid lg:grid-cols-4 grid-cols-2">
-                        <h3 class="text-green-400">Hadir: {{ summaryAbsen.hadir }}</h3>
-                        <h3 class="text-yellow-400">Sakit: {{ summaryAbsen.sakit }}</h3>
-                        <h3 class="text-sky-300">Izin: {{ summaryAbsen.izin }}</h3>
-                        <h3 class="text-red-400">Alfa: {{ summaryAbsen.alfa }}</h3>
+                    <div v-if="attendanceSummary" class="grid lg:grid-cols-4 grid-cols-2 pl-2">
+                        <h3 class="text-green-400">Hadir: {{ attendanceSummary.present }}</h3>
+                        <h3 class="text-yellow-400">Sakit:  {{ attendanceSummary.sick }}</h3>
+                        <h3 class="text-sky-300">Izin: {{ attendanceSummary.izin }} </h3>
+                        <h3 class="text-red-400">Alfa: {{ attendanceSummary.alpha }}</h3>
                     </div>
                 <div>
                     <div class="overflow-x-auto p-2">
@@ -193,13 +184,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-if="attendees.length" v-for="(e, i) in attendees">
+                                <tr v-if="attendanceData.length" v-for="(e, i) in attendanceData">
                                     <td class="text-center py-2 border-r border-b border-gray-400/50">{{ i + 1 }}</td>
-                                    <td class="pl-5 flex items-center gap-5 py-2 border-r border-b border-gray-400/50">
-                                        <img class="rounded-full w-15" :src="`${API_URL}/${e.member.profile}`">
-                                        <span class="font-bold">{{ e.member.name }}</span>
+                                    <td class="border-r border-b border-gray-400/50 pl-5 py-2">
+                                        <div class="flex items-center gap-5">
+                                            <img class="rounded-full w-15" :src="image(e.profileUrl)">
+                                            <span class="font-semibold">{{ e.name }}</span>
+                                        </div>
                                     </td>
-                                    <td class="text-center py-2 border-r border-b border-gray-400/50">{{ formatDate(e.attendanceTime) }}</td>
+                                    <td v-if="e.attendanceTime != null" class="text-center py-2 border-r border-b border-gray-400/50">{{ formatDate(e.attendanceTime) }}</td>
+                                    <td v-else class="text-center py-2 border-r border-b border-gray-400/50">---</td>
                                     <td class="text-center py-2 border-b border-gray-400/50">
                                         <span class="capitalize" :class="Keterangan(e.status)">
                                             {{ e.status }}

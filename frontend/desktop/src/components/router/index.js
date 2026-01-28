@@ -5,6 +5,7 @@ import Home from "../Home/Home.vue";
 import Dokumentasi from "../Dokumentasi/Dokumentasi.vue";
 import Absen from "../Absen/Absen.vue";
 import Schedule from "../Jadwal/Schedule.vue";
+import Member from "../Member/Member.vue";
 
 const routes = [
     { 
@@ -36,6 +37,11 @@ const routes = [
         path: '/absen',
         name: "Absen",
         component: Absen
+    },
+    {
+        path: '/member',
+        name: "Member",
+        component: Member
     }
 ]
 

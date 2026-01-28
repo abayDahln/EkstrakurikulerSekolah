@@ -19,6 +19,8 @@
     const schedule = ref({})
     const Documentations = computed(() => schedule.value?.documentations || [])
 
+    const defaultImg = "/src/assets/orang.png"
+
     const Dashboard = async () => {
         try{
             loading.value = true
@@ -92,6 +94,10 @@
         })
     })
 
+    const image = (url) => {
+        return url ? `${API_URL}/${url}` : defaultImg
+    }
+
     onMounted(() => {
         Dashboard(),
         Schedule()
@@ -156,7 +162,7 @@
 
                     <div v-for="e in Documentations" class="bg-gray-400/50 rounded-md p-5">
                         <div class="relative h-75 rounded-md overflow-hidden group">
-                            <img :src="`${API_URL}/${e.fileUrl}`" class="w-full h-full object-cover" alt="Entah" />
+                            <img :src="image(e.fileUrl)" class="w-full h-full object-cover"/>
                             
                             <div class="absolute inset-0 bg-black/60 flex items-end justify-center opacity-0 group-hover:opacity-100 transition duration-300">
                                 <h3 class="text-white text-lg font-semibold mb-4">{{ e.documentationTitle }}</h3>

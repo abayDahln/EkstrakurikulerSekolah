@@ -62,7 +62,7 @@
                 </div>
                 <div class="flex justify-between">
                     <div>
-                        <h3 v-if="loading" class="text-white text-sm">Sedang Memuat</h3>
+                        <h3 v-if="loading" class="text-blue-600 font-semibold text-sm">Sedang Memuat</h3>
                         <h3 v-else-if="error" class="text-red-600 text-sm">{{ error }}</h3>
                     </div>
                     <button class="text-white font-semibold bg-linear-to-b from-blue-800 to-blue-500 w-2/5 py-1 rounded-md">Login</button>

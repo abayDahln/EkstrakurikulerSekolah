@@ -47,6 +47,11 @@ const LogOut = () => {
                     <i class="pi pi-list-check text-lg font-semibold"></i>
                     <h3 class="font-semibold text-lg">Absensi</h3>
                 </router-link>
+                <router-link active-class="!text-black bg-yellow-300 text-black rounded-md"
+                    class="text-white flex pl-4 py-3 items-center gap-3" to="/member">
+                    <i class="pi pi-user text-lg font-semibold"></i>
+                    <h3 class="font-semibold text-lg">Member</h3>
+                </router-link>
             </div>
         </div>
         <div class="flex gap-5 items-center justify-center">
@@ -86,9 +91,13 @@ const LogOut = () => {
                 to="/absen">
                 <h3 class="font-bold">Absensi</h3>
             </router-link>
+            <router-link active-class="bg-yellow-400 !text-black" class="text-white rounded-md py-2 flex justify-center"
+                to="/member">
+                <h3 class="font-bold">Member</h3>
+            </router-link>
             <div class="flex gap-5 items-center justify-center">
-                <i class="pi pi-sign-out text-white text-xl font-bold"></i>
                 <button @click="LogOut">
+                    <i class="pi pi-sign-out text-white text-xl font-bold"></i>
                     <h3 class="font-bold text-white text-xl">Logout</h3>
                 </button>
             </div>
