@@ -80,7 +80,9 @@ namespace EkstrakurikulerSekolah.Controllers
                         {
                             Id = s.Extracurricular.PembinaId,
                             Name = _context.Users.Where(u => u.Id == s.Extracurricular.PembinaId)
-                                   .Select(u => u.Name).FirstOrDefault()
+                                   .Select(u => u.Name).FirstOrDefault(),
+                            ProfileUrl = _context.Users.Where(u => u.Id == s.Extracurricular.PembinaId)
+                                   .Select(u => u.ProfileUrl).FirstOrDefault()
                         }
                     }
                 })
@@ -232,6 +234,13 @@ namespace EkstrakurikulerSekolah.Controllers
                         (bool?)_context.Attendances
                             .Any(a => a.ScheduleId == s.Id &&
                                      _context.Members.Any(m => m.Id == a.MemberId && m.UserId == userId)) :
+                        null,
+                    Absent = userRole == "siswa" ?
+                        _context.Attendances
+                            .Where(a => a.ScheduleId == s.Id &&
+                                       _context.Members.Any(m => m.Id == a.MemberId && m.UserId == userId))
+                            .Select(a => a.Status)
+                            .FirstOrDefault() :
                         null,
                     IsReported = userRole == "siswa" ?
                         (bool?)_context.ActivityReports
