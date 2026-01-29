@@ -194,12 +194,12 @@ onMounted(() => {
                 </div>
 
                 <!-- Jadwal -->
-                <div v-else class="bg-gray-100/70 p-5 rounded-xl flex flex-col gap-3">
+                <div v-else class="bg-white p-5 rounded-xl flex flex-col gap-3">
                     <div class="flex justify-center">
                         <h3 class="text-2xl font-bold text-center">Jadwal Ekskul yang Akan Datang</h3>
                     </div>
                     <div class="flex justify-start">
-                        <button @click="active()"  class="bg-blue-800/70 text-white font-bold rounded-lg w-1/5 py-1">Buat Jadwal</button>
+                        <button @click="active()"  class="bg-blue-800/70 text-white font-bold rounded-lg w-full sm:w-1/5 py-1">Buat Jadwal</button>
                     </div>
                     <div class="">
                         <select v-model="filterEkskul"
@@ -208,8 +208,7 @@ onMounted(() => {
                             <option v-for="e in ekskulList" :key="e.id" :value="e.id">{{ e.name }}</option>
                         </select>
                     </div>
-                    <div v-if="filteredSchedule.length"
-                        class="max-h-[400px] overflow-y-auto pr-5 pl-5 grid grid-cols-2 gap-5">
+                    <div v-if="filteredSchedule.length" class="max-h-[400px] overflow-y-auto pr-5 pl-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div v-for="s in filteredSchedule" class="shadow-lg bg-gray-400/20 p-3" :key="s.id">
                             <h3 class="text-blue-500 font-bold capitalize">{{ s.title }}</h3>
                             <h3 class="text-sm">{{ formatTanggal(s.scheduleDate) }}</h3>

@@ -61,21 +61,23 @@
                 </div>
 
                 <!-- Card Member -->
-                <div class="overflow-y-auto">
-                    <div class="h-105 grid grid-cols-2 pl-5 pr-5 gap-10">  
+                <div class="overflow-y-auto overflow-x-auto">
+                    <div class="h-105 grid grid-cols-1 sm:grid-cols-2 pr-10 pl-10 gap-10">  
                         <div v-for="e in member" :key="e.id" class="shadow-lg p-2">
-                            <div class="flex gap-5 items-center">
+                            <div class="flex items-center flex-col lg:flex-row">
                                 <div>
-                                    <img :src="memberImage(e.profileUrl)" class="border-3 border-blue-900/80 w-25 h-20 rounded-full">
+                                    <img :src="memberImage(e.profileUrl)" class="border-3 border-blue-900/80 w-25 h-25 rounded-full">
                                 </div>
-                                <div class="w-full grid grid-cols-2">
-                                    <div class="w-full">
-                                        <h3 class="capitalize text-blue-500/70 font-bold">{{ e.name }}</h3>
-                                        <h3 class="bg-yellow-500 rounded-xl text-center w-1/2">{{ e.extracurricular.name }}</h3>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold">{{ e.email }}</h3>
-                                        <h3 class="text-gray-400 font-semibold">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                    <div class="w-full flex flex-col gap-1">
+                                        <h3 class="capitalize text-blue-500/70 font-bold text-center">{{ e.name }}</h3>
+                                        <div class="flex justify-center">
+                                            <h3 class="bg-yellow-500 rounded-xl px-5">{{ e.extracurricular.name }}</h3>
+                                        </div>
+                                    </div class="w-full">
+                                    <div class="flex flex-col gap-1">
+                                        <h3 class="font-semibold text-center">{{ e.email }}</h3>
+                                        <h3 class="text-gray-400 font-semibold text-center">
                                             Total Point: 
                                             <span class="text-blue-800 font-bold">
                                                 {{ e.totalPoints }}

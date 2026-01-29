@@ -95,12 +95,10 @@ const LogOut = () => {
                 to="/member">
                 <h3 class="font-bold">Member</h3>
             </router-link>
-            <div class="flex gap-5 items-center justify-center">
-                <button @click="LogOut">
-                    <i class="pi pi-sign-out text-white text-xl font-bold"></i>
-                    <h3 class="font-bold text-white text-xl">Logout</h3>
-                </button>
-            </div>
+            <button @click="LogOut" class="flex items-center gap-5 justify-center">
+                <i class="pi pi-sign-out text-white text-xl font-bold"></i>
+                <h3 class="font-bold text-white text-xl">Logout</h3>
+            </button>
         </div>
     </div>
 

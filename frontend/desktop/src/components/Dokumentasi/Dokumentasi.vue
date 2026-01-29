@@ -21,6 +21,8 @@
 
     const defaultImg = "/src/assets/orang.png"
 
+    const isCreate = ref(false)
+
     const Dashboard = async () => {
         try{
             loading.value = true
@@ -98,6 +100,59 @@
         return url ? `${API_URL}/${url}` : defaultImg
     }
 
+    const active = () => {
+        isCreate.value = !isCreate.value
+    }
+
+    const form = ref({
+        Title: '',
+        ScheduleId: null,
+        File: null
+    })
+
+    const handleFile = (e) => {
+        form.value.File = e.target.files[0]
+    }
+
+    const createDokum = async () => {
+        try{
+            loading.value = true
+
+            const formData = new FormData()
+            formData.append('Title', form.value.Title)
+            formData.append('ScheduleId', form.value.ScheduleId)
+            formData.append('File', form.value.File)
+
+            const res = await fetch(`${API_URL}/api/pembina/documentation`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: formData
+            })
+
+            if(!res){
+                throw new Error('Gagal')
+            }
+
+            form.value = {
+                Title: '',
+                ScheduleId: null,
+                File: null
+            }
+
+            isCreate.value = !isCreate.value
+            Documentation()
+        }
+        catch(err){
+            console.log(err)
+            err.value = err
+        }
+        finally{
+            loading.value = false
+        }
+    }
+
     onMounted(() => {
         Dashboard(),
         Schedule()
@@ -133,11 +188,16 @@
         </div>
 
         <div v-else class="p-10 lg:ml-[16%]">
-            <div class="bg-white w-full rounded-lg h-full shadow-lg pb-5">
+
+            <div v-if="isCreate == false" class="bg-white w-full rounded-lg h-full shadow-lg pb-5">
                 <div class="grid grid-cols-1">
 
                     <!-- Title -->
                     <h3 class="text-center font-bold text-3xl pt-2">Dokumentasi Ekstrakurikuler</h3>
+
+                    <div class="w-1/2 pl-5">
+                        <button @click="active" class="bg-blue-500 rounded-lg py-2 font-bold text-sm text-white w-1/3">Tambah Dokumentasi</button>
+                    </div>
 
                     <!-- Filter -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5 p-5">
@@ -176,7 +236,32 @@
                         <h3 class="text-center text-2xl font-bold text-gray-400 border-t border-b border-gray-400/40 p-2">Tidak Ada Documentation</h3>
                     </div>
                 </div>
+            </div>
 
+            <!-- Form Dokum -->
+            <div v-else class="bg-white w-full rounded-lg h-full shadow-lg pb-5">
+                <div class="flex flex-col gap-5">
+                    <div class="flex justify-center">
+                        <h3 class="font-bold text-3xl pt-2">Tambah Dokumentasi</h3>
+                    </div>
+                    <div class="pl-5 pr-5">
+                        <form @submit.prevent="createDokum" class="flex flex-col gap-4">
+                            <input v-model="form.Title" class="w-full py-2 border-2 shadow-md border-gray-400/40 rounded-md pl-5" type="text" placeholder="Masukkan Nama Kegiatan">                 
+                            <select v-model="form.ScheduleId" class="w-full py-2 border-2 shadow-md border-gray-400/40 rounded-md pl-5">
+                                <option disabled>-- Pilih Jadwal --</option>
+                                <option v-for="e in scheduleList" :value="e.id">{{ e.title }} 
+                                    <span class="font-bold">{{ e.extracurricular.name }}
+                                    </span>
+                                </option>
+                            </select>
+                            <input @change="handleFile" class="w-full py-2 border-2 shadow-md border-gray-400/40 rounded-md pl-5" type="file">
+                            <div class="grid grid-cols-2 gap-10">
+                                <button class="bg-blue-500 py-2 rounded-md font-bold text-white">Tambah</button>
+                                <button @click="active" class="bg-gray-400 py-2 rounded-md font-bold text-white">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
