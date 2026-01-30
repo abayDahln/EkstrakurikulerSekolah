@@ -1,8 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiCheck, FiChevronRight, FiSmartphone, FiMonitor, FiCpu, FiAward, FiGlobe } from "react-icons/fi";
+import { FiArrowLeft, FiChevronRight, FiSmartphone, FiMonitor, FiCpu, FiAward, FiGlobe } from "react-icons/fi";
 import { FaAndroid, FaApple, FaWindows } from "react-icons/fa";
+import config from "../config/config";
 
 const Download = ({ darkMode }) => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const Download = ({ darkMode }) => {
                 "Sertifikat Keaktifan Ekskul"
             ],
             action: "Download APK",
-            fileName: "Ekstrakurikuler.apk",
+            link: config.DOWNLOAD_LINKS.ANDROID,
             popular: true
         },
         {
@@ -29,15 +30,15 @@ const Download = ({ darkMode }) => {
             title: "iOS",
             user: "Siswa",
             tagline: "Eksklusif untuk iPhone",
-            icon: <FaApple className="text-4xl text-slate-400" />,
+            icon: <FaApple className="text-4xl text-slate-800 dark:text-slate-200" />,
             features: [
                 "Antarmuka Premium iOS",
                 "Integrasi Apple Calendar",
                 "Notifikasi Push Cepat",
-                "Segera Hadir di App Store"
+                "Tersedia di App Store"
             ],
-            action: "Coming Soon",
-            disabled: true
+            action: "Download di App Store",
+            link: config.DOWNLOAD_LINKS.IOS
         },
         {
             id: "desktop",
@@ -52,7 +53,7 @@ const Download = ({ darkMode }) => {
                 "Login Dengan Akun Pembina"
             ],
             action: "Download .exe",
-            fileName: "Ekstrakurikuler_Pembina.exe"
+            link: config.DOWNLOAD_LINKS.DESKTOP
         },
         {
             id: "web",
@@ -67,21 +68,20 @@ const Download = ({ darkMode }) => {
                 "Login Dengan Akun Pembina"
             ],
             action: "Buka Browser",
-            link: "/login"
+            isInternal: true,
+            link: config.DOWNLOAD_LINKS.WEB
         }
     ];
 
     const handleDownload = (option) => {
-        if (option.disabled) return;
-        if (option.link) {
+        if (!option.link) return;
+
+        if (option.isInternal) {
             navigate(option.link);
             return;
         }
 
-        const link = document.createElement("a");
-        link.href = `../assets/${option.fileName}`;
-        link.download = option.fileName;
-        link.click();
+        window.open(option.link, "_blank");
     };
 
     return (
@@ -90,7 +90,6 @@ const Download = ({ darkMode }) => {
                 ? "bg-slate-900"
                 : "bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50"
                 }`}
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
             <div className="container mx-auto max-w-7xl px-4">
                 <motion.button
@@ -167,37 +166,32 @@ const Download = ({ darkMode }) => {
 
                             <button
                                 onClick={() => handleDownload(option)}
-                                disabled={option.disabled}
-                                className={`w-full py-4 px-6 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${option.disabled
-                                    ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                                    : darkMode
-                                        ? "bg-gradient-to-r from-sky-600 to-cyan-600 hover:shadow-lg hover:shadow-sky-500/20 text-white"
-                                        : "bg-gradient-to-r from-sky-500 to-cyan-400 hover:shadow-lg hover:shadow-sky-300/30 text-white"
+                                className={`w-full py-4 px-6 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${darkMode
+                                    ? "bg-gradient-to-r from-sky-600 to-cyan-600 hover:shadow-lg hover:shadow-sky-500/20 text-white"
+                                    : "bg-gradient-to-r from-sky-500 to-cyan-400 hover:shadow-lg hover:shadow-sky-300/30 text-white"
                                     }`}
                             >
                                 <span>{option.action}</span>
-                                {!option.disabled && (
-                                    option.id === "web" ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
-                                            <path d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z" />
-                                        </svg>
-                                    ) : (
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="20"
-                                            height="20"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                            <polyline points="7 10 12 15 17 10" />
-                                            <line x1="12" y1="15" x2="12" y2="3" />
-                                        </svg>
-                                    )
+                                {option.id === "web" ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                                        <path d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z" />
+                                    </svg>
+                                ) : (
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
                                 )}
                             </button>
                         </motion.div>

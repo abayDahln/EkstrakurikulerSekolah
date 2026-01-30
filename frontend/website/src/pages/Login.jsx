@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import config from "../config/config";
+import { fetchWithTimeout } from "../utils/utils";
 
 const Login = ({ darkMode, onLogin }) => {
 	const navigate = useNavigate();
@@ -10,7 +12,7 @@ const Login = ({ darkMode, onLogin }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const API_URL = "http://localhost:5000/api/auth/login/pembina";
+	const API_URL = `${config.API_URL}/auth/login/pembina`;
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -18,7 +20,7 @@ const Login = ({ darkMode, onLogin }) => {
 		setError(null);
 
 		try {
-			const response = await fetch(`${API_URL}`, {
+			const response = await fetchWithTimeout(`${API_URL}`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -53,12 +55,10 @@ const Login = ({ darkMode, onLogin }) => {
 
 	return (
 		<div
-			className={`fixed inset-0 flex items-center justify-between overflow-hidden transition-colors duration-300 ${
-				darkMode
-					? "bg-slate-900"
-					: "bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50"
-			}`}
-			style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+			className={`fixed inset-0 flex items-center justify-between overflow-hidden transition-colors duration-300 ${darkMode
+				? "bg-slate-900"
+				: "bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50"
+				}`}
 		>
 			<div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 xl:px-32 z-10 h-full pt-20">
 				<motion.div
@@ -67,15 +67,14 @@ const Login = ({ darkMode, onLogin }) => {
 					transition={{ duration: 0.8, ease: "easeOut" }}
 					className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-md"
 				>
-					
+
 
 					<motion.h1
 						initial={{ y: -20, opacity: 0 }}
 						animate={{ y: 0, opacity: 1 }}
 						transition={{ delay: 0.2 }}
-						className={`text-4xl sm:text-5xl font-extrabold mb-3 ${
-							darkMode ? "text-white" : "text-slate-900"
-						}`}
+						className={`text-4xl sm:text-5xl font-extrabold mb-3 ${darkMode ? "text-white" : "text-slate-900"
+							}`}
 					>
 						Selamat Datang
 					</motion.h1>
@@ -84,9 +83,8 @@ const Login = ({ darkMode, onLogin }) => {
 						initial={{ y: -20, opacity: 0 }}
 						animate={{ y: 0, opacity: 1 }}
 						transition={{ delay: 0.3 }}
-						className={`text-lg mb-8 ${
-							darkMode ? "text-slate-300" : "text-slate-600"
-						}`}
+						className={`text-lg mb-8 ${darkMode ? "text-slate-300" : "text-slate-600"
+							}`}
 					>
 						Login sebagai pembina ekstrakurikuler
 					</motion.p>
@@ -101,9 +99,8 @@ const Login = ({ darkMode, onLogin }) => {
 						<div>
 							<label
 								htmlFor="email"
-								className={`block text-sm font-semibold mb-2 ${
-									darkMode ? "text-slate-300" : "text-slate-700"
-								}`}
+								className={`block text-sm font-semibold mb-2 ${darkMode ? "text-slate-300" : "text-slate-700"
+									}`}
 							>
 								Email
 							</label>
@@ -113,13 +110,11 @@ const Login = ({ darkMode, onLogin }) => {
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								placeholder="nama@email.com"
-								className={`w-full p-4 rounded-xl shadow-sm border-2 transition-all duration-300 ${
-									darkMode
-										? "bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-sky-600"
-										: "bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-sky-400"
-								} focus:outline-none focus:ring-4 ${
-									darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
-								}`}
+								className={`w-full p-4 rounded-xl shadow-sm border-2 transition-all duration-300 ${darkMode
+									? "bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-sky-600"
+									: "bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-sky-400"
+									} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
+									}`}
 								whileFocus={{ scale: 1.01 }}
 								disabled={loading}
 								required
@@ -129,9 +124,8 @@ const Login = ({ darkMode, onLogin }) => {
 						<div>
 							<label
 								htmlFor="password"
-								className={`block text-sm font-semibold mb-2 ${
-									darkMode ? "text-slate-300" : "text-slate-700"
-								}`}
+								className={`block text-sm font-semibold mb-2 ${darkMode ? "text-slate-300" : "text-slate-700"
+									}`}
 							>
 								Password
 							</label>
@@ -141,13 +135,11 @@ const Login = ({ darkMode, onLogin }) => {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								placeholder="••••••••"
-								className={`w-full p-4 rounded-xl shadow-sm border-2 transition-all duration-300 ${
-									darkMode
-										? "bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-sky-600"
-										: "bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-sky-400"
-								} focus:outline-none focus:ring-4 ${
-									darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
-								}`}
+								className={`w-full p-4 rounded-xl shadow-sm border-2 transition-all duration-300 ${darkMode
+									? "bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-sky-600"
+									: "bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-sky-400"
+									} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
+									}`}
 								whileFocus={{ scale: 1.01 }}
 								disabled={loading}
 								required
@@ -161,18 +153,16 @@ const Login = ({ darkMode, onLogin }) => {
 									id="rememberMe"
 									checked={rememberMe}
 									onChange={(e) => setRememberMe(e.target.checked)}
-									className={`w-4 h-4 rounded transition-colors ${
-										darkMode
-											? "bg-slate-800 border-slate-700"
-											: "bg-white border-slate-300"
-									}`}
+									className={`w-4 h-4 rounded transition-colors ${darkMode
+										? "bg-slate-800 border-slate-700"
+										: "bg-white border-slate-300"
+										}`}
 									disabled={loading}
 								/>
 								<label
 									htmlFor="rememberMe"
-									className={`ml-2 text-sm font-medium ${
-										darkMode ? "text-slate-300" : "text-slate-700"
-									}`}
+									className={`ml-2 text-sm font-medium ${darkMode ? "text-slate-300" : "text-slate-700"
+										}`}
 								>
 									Ingat saya
 								</label>
@@ -180,11 +170,10 @@ const Login = ({ darkMode, onLogin }) => {
 
 							<a
 								href="#"
-								className={`text-sm font-semibold ${
-									darkMode
-										? "text-sky-400 hover:text-sky-300"
-										: "text-sky-600 hover:text-sky-700"
-								} transition-colors`}
+								className={`text-sm font-semibold ${darkMode
+									? "text-sky-400 hover:text-sky-300"
+									: "text-sky-600 hover:text-sky-700"
+									} transition-colors`}
 							>
 								Lupa password?
 							</a>
@@ -202,13 +191,12 @@ const Login = ({ darkMode, onLogin }) => {
 
 						<motion.button
 							type="submit"
-							className={`w-full py-4 px-6 rounded-xl font-bold text-white text-lg shadow-lg transition-all duration-300 ${
-								loading
-									? "bg-slate-400 cursor-not-allowed"
-									: darkMode
+							className={`w-full py-4 px-6 rounded-xl font-bold text-white text-lg shadow-lg transition-all duration-300 ${loading
+								? "bg-slate-400 cursor-not-allowed"
+								: darkMode
 									? "bg-gradient-to-r from-sky-700 to-cyan-700 hover:shadow-sky-700/50"
 									: "bg-gradient-to-r from-sky-500 to-cyan-500 hover:shadow-sky-500/50 hover:shadow-xl"
-							}`}
+								}`}
 							whileHover={!loading ? { scale: 1.02, y: -2 } : {}}
 							whileTap={!loading ? { scale: 0.98 } : {}}
 							disabled={loading}
@@ -240,18 +228,16 @@ const Login = ({ darkMode, onLogin }) => {
 					</motion.form>
 
 					<p
-						className={`mt-8 text-center text-sm ${
-							darkMode ? "text-slate-400" : "text-slate-600"
-						}`}
+						className={`mt-8 text-center text-sm ${darkMode ? "text-slate-400" : "text-slate-600"
+							}`}
 					>
 						Belum punya akun?{" "}
 						<a
 							href="#"
-							className={`font-semibold ${
-								darkMode
-									? "text-sky-400 hover:text-sky-300"
-									: "text-sky-600 hover:text-sky-700"
-							} transition-colors`}
+							className={`font-semibold ${darkMode
+								? "text-sky-400 hover:text-sky-300"
+								: "text-sky-600 hover:text-sky-700"
+								} transition-colors`}
 						>
 							Hubungi admin
 						</a>
@@ -284,11 +270,10 @@ const Login = ({ darkMode, onLogin }) => {
 								delay: index * 0.05,
 								ease: "easeOut",
 							}}
-							className={`absolute rounded-full border-[1.5px] transition-all duration-900 ${
-								darkMode
-									? "border-cyan-500/10 bg-gradient-to-b from-blue-800/10 via-cyan-500/10 to-blue-800/10"
-									: "border-cyan-500/10 bg-blue-500/10"
-							}`}
+							className={`absolute rounded-full border-[1.5px] transition-all duration-900 ${darkMode
+								? "border-cyan-500/10 bg-gradient-to-b from-blue-800/10 via-cyan-500/10 to-blue-800/10"
+								: "border-cyan-500/10 bg-blue-500/10"
+								}`}
 							style={{
 								width: `${ring.size * 2}px`,
 								height: `${ring.size}px`,
@@ -305,9 +290,8 @@ const Login = ({ darkMode, onLogin }) => {
 					initial={{ scale: 0, opacity: 0 }}
 					animate={{ scale: 1, opacity: 1 }}
 					transition={{ duration: 1 }}
-					className={`absolute w-[300px] h-[300px] rounded-full ${
-						darkMode ? "bg-sky-900/20" : "bg-sky-200/30"
-					}`}
+					className={`absolute w-[300px] h-[300px] rounded-full ${darkMode ? "bg-sky-900/20" : "bg-sky-200/30"
+						}`}
 					style={{ right: "-150px", top: "-150px" }}
 				/>
 
@@ -315,9 +299,8 @@ const Login = ({ darkMode, onLogin }) => {
 					initial={{ scale: 0, opacity: 0 }}
 					animate={{ scale: 1, opacity: 1 }}
 					transition={{ duration: 1.2, delay: 0.1 }}
-					className={`absolute w-[250px] h-[250px] rounded-full ${
-						darkMode ? "bg-blue-800/30" : "bg-blue-300/40"
-					}`}
+					className={`absolute w-[250px] h-[250px] rounded-full ${darkMode ? "bg-blue-800/30" : "bg-blue-300/40"
+						}`}
 					style={{ right: "-100px", bottom: "-125px" }}
 				/>
 			</div>

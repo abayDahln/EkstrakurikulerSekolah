@@ -8,6 +8,29 @@ const toLocalDateStr = (dateInput) => {
 	return `${year}-${month}-${day}`;
 };
 
+export const SkeletonCalendar = ({ darkMode }) => (
+	<div className={`rounded-2xl shadow-lg p-6 animate-pulse ${darkMode ? "bg-slate-800" : "bg-white"}`}>
+		<div className="flex items-center justify-between mb-8">
+			<div className={`h-6 w-32 rounded-lg ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+			<div className="flex gap-2">
+				<div className={`w-8 h-8 rounded-lg ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+				<div className={`w-20 h-8 rounded-lg ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+				<div className={`w-8 h-8 rounded-lg ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+			</div>
+		</div>
+		<div className="grid grid-cols-7 gap-3 mb-6">
+			{[...Array(7)].map((_, i) => (
+				<div key={i} className={`h-3 rounded-full ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+			))}
+		</div>
+		<div className="grid grid-cols-7 gap-3">
+			{[...Array(31)].map((_, i) => (
+				<div key={i} className={`aspect-square rounded-xl ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+			))}
+		</div>
+	</div>
+);
+
 export default function Calendar({
 	darkMode,
 	onDateSelect,

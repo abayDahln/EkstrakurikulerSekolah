@@ -58,10 +58,9 @@ export default function Landing({ darkMode }) {
 	return (
 		<div
 			className={`min-h-screen transition-colors duration-500 ${darkMode
-					? "bg-slate-900"
-					: "bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50"
+				? "bg-slate-900"
+				: "bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50"
 				}`}
-			style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
 		>
 			<section id="hero" className="pt-32 pb-20 px-4 sm:px-6">
 				<div className="container mx-auto max-w-6xl">
@@ -73,8 +72,8 @@ export default function Landing({ darkMode }) {
 					>
 						<div
 							className={`inline-block mb-4 px-4 py-2 rounded-full text-sm font-semibold ${darkMode
-									? "bg-sky-900/50 text-sky-300"
-									: "bg-sky-100 text-sky-600"
+								? "bg-sky-900/50 text-sky-300"
+								: "bg-sky-100 text-sky-600"
 								}`}
 						>
 							✨ Platform Manajemen Ekstrakurikuler Modern
@@ -88,8 +87,8 @@ export default function Landing({ darkMode }) {
 							<br />
 							<span
 								className={`bg-clip-text text-transparent ${darkMode
-										? "bg-gradient-to-r from-sky-400 to-cyan-300"
-										: "bg-gradient-to-r from-sky-500 to-cyan-400"
+									? "bg-gradient-to-r from-sky-400 to-cyan-300"
+									: "bg-gradient-to-r from-sky-500 to-cyan-400"
 									}`}
 							>
 								Ekstrakurikuler Sekolah
@@ -117,7 +116,7 @@ export default function Landing({ darkMode }) {
 									}`}
 							>
 								<span>Download Sekarang</span>
-								
+
 							</motion.button>
 						</div>
 					</motion.div>
@@ -141,8 +140,8 @@ export default function Landing({ darkMode }) {
 							>
 								<div
 									className={`text-4xl font-bold bg-clip-text text-transparent mb-2 ${darkMode
-											? "bg-gradient-to-r from-sky-400 to-cyan-300"
-											: "bg-gradient-to-r from-sky-500 to-cyan-400"
+										? "bg-gradient-to-r from-sky-400 to-cyan-300"
+										: "bg-gradient-to-r from-sky-500 to-cyan-400"
 										}`}
 								>
 									{stat.number}
@@ -192,8 +191,8 @@ export default function Landing({ darkMode }) {
 								viewport={{ once: true }}
 								whileHover={{ y: -10 }}
 								className={`p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 ${darkMode
-										? "bg-slate-800 border-slate-700 hover:border-sky-600"
-										: "bg-white border-transparent hover:border-sky-300"
+									? "bg-slate-800 border-slate-700 hover:border-sky-600"
+									: "bg-white border-transparent hover:border-sky-300"
 									}`}
 							>
 								<div className="text-5xl mb-4">{feature.icon}</div>
@@ -217,8 +216,8 @@ export default function Landing({ darkMode }) {
 
 			<section
 				className={`py-20 px-4 sm:px-6 text-white ${darkMode
-						? "bg-gradient-to-br from-sky-800 to-cyan-800"
-						: "bg-gradient-to-br from-sky-500 to-cyan-500"
+					? "bg-gradient-to-br from-sky-800 to-cyan-800"
+					: "bg-gradient-to-br from-sky-500 to-cyan-500"
 					}`}
 			>
 				<div className="container mx-auto max-w-6xl">
@@ -301,8 +300,8 @@ export default function Landing({ darkMode }) {
 							whileInView={{ opacity: 1, x: 0 }}
 							viewport={{ once: true }}
 							className={`p-8 rounded-3xl shadow-2xl text-white ${darkMode
-									? "bg-gradient-to-br from-sky-700 to-cyan-700"
-									: "bg-gradient-to-br from-sky-500 to-cyan-500"
+								? "bg-gradient-to-br from-sky-700 to-cyan-700"
+								: "bg-gradient-to-br from-sky-500 to-cyan-500"
 								}`}
 						>
 							<div className="text-6xl mb-4">👨‍🎓</div>
@@ -329,8 +328,8 @@ export default function Landing({ darkMode }) {
 							whileInView={{ opacity: 1, x: 0 }}
 							viewport={{ once: true }}
 							className={`p-8 rounded-3xl shadow-2xl text-white ${darkMode
-									? "bg-gradient-to-br from-cyan-700 to-sky-700"
-									: "bg-gradient-to-br from-cyan-500 to-sky-500"
+								? "bg-gradient-to-br from-cyan-700 to-sky-700"
+								: "bg-gradient-to-br from-cyan-500 to-sky-500"
 								}`}
 						>
 							<div className="text-6xl mb-4">👨‍🏫</div>
@@ -443,8 +442,8 @@ export default function Landing({ darkMode }) {
 
 					<div
 						className={`border-t pt-8 text-center ${darkMode
-								? "border-slate-700 text-slate-300"
-								: "border-slate-700 text-slate-400"
+							? "border-slate-700 text-slate-300"
+							: "border-slate-700 text-slate-400"
 							}`}
 					>
 						<p>© 2024 EkskulApp</p>

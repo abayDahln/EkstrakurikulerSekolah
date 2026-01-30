@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-secondary: #64748b;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@layer base {
+  .dark {
+    background-color: #0f172a;
+    /* slate-900 */
+    color: white;
+  }
+}
+
+:root {
+  --ion-safe-area-top: env(safe-area-inset-top);
+  --ion-safe-area-bottom: env(safe-area-inset-bottom);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+  padding-top: var(--ion-safe-area-top);
+  padding-bottom: var(--ion-safe-area-bottom);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}

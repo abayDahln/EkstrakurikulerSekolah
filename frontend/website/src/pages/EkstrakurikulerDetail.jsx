@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaUsers, FaStar, FaChartBar, FaTrophy } from "react-icons/fa";
+import config from "../config/config";
+import { fetchWithTimeout } from "../utils/utils";
+import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonDetail = ({ darkMode }) => (
 	<div className="space-y-8 w-full">
@@ -127,13 +130,13 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
 	const { id } = useParams();
 	const [ekskulDetail, setEkskulDetail] = useState(null);
 	const [isInitialLoad, setIsInitialLoad] = useState(true);
-	const [isServerDown, setIsServerDown] = useState(false);
+	const { setIsServerDown } = useConnection();
 	const [isLoading, setIsLoading] = useState(true);
 	const [sortBy, setSortBy] = useState("name");
 
 
 	const navigate = useNavigate();
-	const API_URL = "http://localhost:5000";
+	const API_URL = config.BASE_URL;
 	const intervalRef = useRef(null);
 
 	const fetchEkskulDetail = async () => {
@@ -142,7 +145,7 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
 				localStorage.getItem("token") || sessionStorage.getItem("token");
 			const headers = { Authorization: `Bearer ${token}` };
 
-			const response = await fetch(`${API_URL}/api/extracurricular/${id}`, {
+			const response = await fetchWithTimeout(`${API_URL}/api/extracurricular/${id}`, {
 				headers,
 			});
 
@@ -176,21 +179,20 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
 			return;
 		}
 
-		setTimeout(() => {
+		fetchEkskulDetail();
+
+		const handleRetry = () => {
 			fetchEkskulDetail();
-		}, 1000);
-
-
-		intervalRef.current = setInterval(() => {
-			fetchEkskulDetail();
-		}, 2000);
-
-		return () => {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current);
-			}
 		};
-	}, []);
+
+		window.addEventListener("retry-connection", handleRetry);
+
+		intervalRef.current = setInterval(fetchEkskulDetail, 60000);
+		return () => {
+			if (intervalRef.current) clearInterval(intervalRef.current);
+			window.removeEventListener("retry-connection", handleRetry);
+		};
+	}, [id]);
 
 	const sortedMembers = React.useMemo(() => {
 		if (!ekskulDetail?.members) return [];

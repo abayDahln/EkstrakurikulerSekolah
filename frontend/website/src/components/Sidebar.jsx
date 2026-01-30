@@ -10,6 +10,9 @@ import {
 	FaAward,
 } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
+import config from "../config/config";
+import { fetchWithTimeout } from "../utils/utils";
+import { useConnection } from "../context/ConnectionContext";
 
 export default function Sidebar({ darkMode, initialMenu }) {
 	const [profile, setProfile] = useState(null);
@@ -18,6 +21,7 @@ export default function Sidebar({ darkMode, initialMenu }) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const intervalRef = useRef(null);
+	const { setIsServerDown } = useConnection();
 	const [activeMenu, setActiveMenuState] = useState(initialMenu);
 
 	useEffect(() => {
@@ -31,40 +35,40 @@ export default function Sidebar({ darkMode, initialMenu }) {
 	const fetchProfile = async () => {
 		try {
 			const token = localStorage.getItem("token");
-			const response = await fetch("http://localhost:5000/api/profile", {
+			const response = await fetchWithTimeout(`${config.BASE_URL}/api/profile`, {
 				headers: { Authorization: `Bearer ${token}`, accept: "*/*" },
 			});
 
 			if (response.ok) {
 				const data = await response.json();
 				setProfile(data.data);
+				setIsServerDown(false);
 			} else {
 				console.error("Failed to fetch profile:", response.status);
+				if (response.status >= 500) setIsServerDown(true);
 			}
 		} catch (error) {
 			console.error("Error fetching profile:", error);
+			setIsServerDown(true);
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
-		if (hasAnimated) {
-			fetchProfile();
-		} else {
-			setTimeout(() => {
-				fetchProfile();
-			}, 2000);
-		}
+		fetchProfile();
 
-		intervalRef.current = setInterval(() => {
+		const handleRetry = () => {
 			fetchProfile();
-		}, 2000);
+		};
+
+		window.addEventListener("retry-connection", handleRetry);
+
+		intervalRef.current = setInterval(fetchProfile, 60000);
 
 		return () => {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current);
-			}
+			if (intervalRef.current) clearInterval(intervalRef.current);
+			window.removeEventListener("retry-connection", handleRetry);
 		};
 	}, []);
 
@@ -239,7 +243,7 @@ export default function Sidebar({ darkMode, initialMenu }) {
 				) : profile?.profileUrl ? (
 					<motion.img
 						variants={indicatorVariants}
-						src={`http://localhost:5000/${profile.profileUrl}`}
+						src={`${config.BASE_URL}/${profile.profileUrl}`}
 						alt={profile?.name || "Profile"}
 						className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover border-2 border-sky-400"
 						onError={(e) => {

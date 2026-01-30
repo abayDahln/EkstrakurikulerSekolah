@@ -20,6 +20,8 @@ import Sidebar from "./components/Sidebar.jsx";
 import Jadwal from "./pages/Jadwal.jsx";
 import JadwalDetail from "./pages/JadwalDetail.jsx";
 import Certificate from "./pages/Certificate.jsx";
+import { ConnectionProvider, useConnection } from "./context/ConnectionContext.jsx";
+import ErrorStatus from "./components/ErrorStatus.jsx";
 
 
 const useTokenValidation = () => {
@@ -61,9 +63,6 @@ const ScrollToTop = () => {
 	const { pathname } = useLocation();
 
 	useEffect(() => {
-		// Jika navigasi adalah PUSH (halaman baru), scroll ke atas
-		// Browser secara default menangani restorasi scroll untuk tombol back/forward
-		// Namun untuk memastikan, kita bisa mengecek window.history.state
 		window.scrollTo(0, 0);
 	}, [pathname]);
 
@@ -151,6 +150,37 @@ function App() {
 		sessionManager.setRememberMe(false);
 	};
 
+	return (
+		<ConnectionProvider>
+			<AppContent
+				darkMode={darkMode}
+				setDarkMode={setDarkMode}
+				isLoading={isLoading}
+				activeMenu={activeMenu}
+				setActiveMenu={setActiveMenu}
+				toggleDarkMode={toggleDarkMode}
+				handleLogin={handleLogin}
+				handleLogout={handleLogout}
+				shouldShowSidebar={shouldShowSidebar}
+				location={location}
+			/>
+		</ConnectionProvider>
+	);
+}
+
+function AppContent({
+	darkMode,
+	isLoading,
+	activeMenu,
+	setActiveMenu,
+	toggleDarkMode,
+	handleLogout,
+	handleLogin,
+	shouldShowSidebar,
+	location
+}) {
+	const { isServerDown, isOffline, retryConnection } = useConnection();
+
 	if (isLoading) {
 		return (
 			<div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-slate-900">
@@ -163,9 +193,22 @@ function App() {
 	}
 
 	return (
-
 		<div className={darkMode ? "dark" : "light"}>
 			<ScrollToTop />
+			{isOffline && (
+				<ErrorStatus
+					darkMode={darkMode}
+					type="offline"
+					onRetry={() => window.location.reload()}
+				/>
+			)}
+			{isServerDown && !isOffline && (
+				<ErrorStatus
+					darkMode={darkMode}
+					type="server"
+					onRetry={retryConnection}
+				/>
+			)}
 			<div
 				className={`min-h-screen overflow-auto transition-colors duration-300 ${darkMode ? "bg-slate-900 text-white" : "bg-white text-slate-900"
 					}`}

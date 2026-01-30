@@ -1,3 +1,4 @@
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -5,69 +6,42 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-.history/
 
+# Dependency directories
 node_modules/
-package-lock.json
-pnpm-lock.yaml
-yarn.lock
-
-capacitor.config.json.backup
-**/capacitor.config*.backup
-
 dist/
-www/
+dist-ssr/
+*.local
 
-.android/
-.ios/
-.platform/
-
-.vite/
-vite.config.timestamp*
-vite.config.js.timestamp*
-
-.env
-.env.*
-!.env.example
-
-.DS_Store
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-.vs
+# Editor/IDE
 .vscode/*
 !.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.history/
 
-ios/App/App.xcodeproj/
-ios/App/App.xcworkspace/
-ios/App/Pods/
-ios/build/
-*.xcuserstate
-*.xcuserdata/
-*.xcworkspace/
-DerivedData/
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
 
-android/app/build/
-android/.gradle/
-android/.idea/
-android/app/release/
-android/local.properties
-*.keystore
-*.jks
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-.postcss-cache/
-.tailwindcss/
+# Vite
+*.timestamp-*
 
-*.tmp
-*.temp
-*.swp
-*.swo
-
-*.orig
-
-.npm/
-.cache/
-
+# Capacitor
+www/
+android/
+ios/
+App/
+capacitor.config.json.bak

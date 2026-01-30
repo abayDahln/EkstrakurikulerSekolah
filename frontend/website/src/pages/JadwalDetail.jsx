@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
+import config from "../config/config";
+import { fetchWithTimeout } from "../utils/utils";
+import { useConnection } from "../context/ConnectionContext";
 import {
     FiClock,
     FiMapPin,
@@ -11,7 +14,6 @@ import {
     FiImage,
     FiCalendar,
 } from "react-icons/fi";
-import { FaUsers, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const SkeletonDetail = ({ darkMode }) => (
     <div className="space-y-8 w-full">
@@ -95,7 +97,7 @@ const JadwalDetail = ({ darkMode }) => {
     const navigate = useNavigate();
     const [scheduleDetail, setScheduleDetail] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isServerDown, setIsServerDown] = useState(false);
+    const { setIsServerDown } = useConnection();
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -107,7 +109,7 @@ const JadwalDetail = ({ darkMode }) => {
     const fileInputRef = useRef(null);
     const intervalRef = useRef(null);
 
-    const API_URL = "http://localhost:5000";
+    const API_URL = config.BASE_URL;
 
     const hasDocumentation = scheduleDetail?.documentatioData && scheduleDetail.documentatioData.length > 0;
 
@@ -152,9 +154,9 @@ const JadwalDetail = ({ darkMode }) => {
                 localStorage.getItem("token") || sessionStorage.getItem("token");
             const headers = { Authorization: `Bearer ${token}` };
 
-            const response = await fetch(
+            const response = await fetchWithTimeout(
                 `${API_URL}/api/pembina/schedule/${id}`,
-                { headers }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             if (!response.ok) {
@@ -184,18 +186,20 @@ const JadwalDetail = ({ darkMode }) => {
             return;
         }
 
-        setTimeout(() => {
-            fetchScheduleDetail();
-        }, 1000);
+        fetchScheduleDetail();
 
-        intervalRef.current = setInterval(() => {
+        const handleRetry = () => {
             fetchScheduleDetail();
-        }, 3000);
+        };
 
+        window.addEventListener("retry-connection", handleRetry);
+
+        intervalRef.current = setInterval(fetchScheduleDetail, 60000);
         return () => {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
             }
+            window.removeEventListener("retry-connection", handleRetry);
         };
     }, [id]);
 
@@ -237,7 +241,7 @@ const JadwalDetail = ({ darkMode }) => {
             formData.append("scheduleId", id);
             formData.append("Title", documentationTitle);
 
-            const response = await fetch(
+            const response = await fetchWithTimeout(
                 `${API_URL}/api/pembina/documentation`,
                 {
                     method: "POST",
@@ -419,9 +423,7 @@ const JadwalDetail = ({ darkMode }) => {
                     className="w-full"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Main Content - Left Side */}
                         <div className="lg:col-span-2 space-y-6">
-                            {/* Schedule Info Card */}
                             <div
                                 className={`rounded-2xl shadow-lg p-6 ${darkMode ? "bg-slate-800" : "bg-white"
                                     }`}
@@ -563,7 +565,6 @@ const JadwalDetail = ({ darkMode }) => {
                                 </div>
                             </div>
 
-                            {/* Attendance Summary Card */}
                             <div
                                 className={`rounded-2xl shadow-lg p-6 ${darkMode ? "bg-slate-800" : "bg-white"
                                     }`}
@@ -784,7 +785,6 @@ const JadwalDetail = ({ darkMode }) => {
                             </div>
                         </div>
 
-                        {/* Sidebar - Right Side: Documentation */}
                         <div className="space-y-6">
                             <div
                                 className={`rounded-2xl shadow-lg p-6 ${darkMode ? "bg-slate-800" : "bg-white"
@@ -797,7 +797,6 @@ const JadwalDetail = ({ darkMode }) => {
                                     >
                                         Dokumentasi
                                     </h2>
-                                    {/* Only show upload button if no documentation yet */}
                                     {!hasDocumentation && (
                                         <button
                                             onClick={() => setShowUploadModal(true)}
@@ -809,7 +808,6 @@ const JadwalDetail = ({ darkMode }) => {
                                     )}
                                 </div>
 
-                                {/* Show documentation image if exists */}
                                 {hasDocumentation ? (
                                     <div className="space-y-4">
                                         {scheduleDetail.documentatioData.map((doc) => (
@@ -920,7 +918,6 @@ const JadwalDetail = ({ darkMode }) => {
                 </motion.div>
             )}
 
-            {/* Upload Modal */}
             <AnimatePresence>
                 {showUploadModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -1082,7 +1079,6 @@ const JadwalDetail = ({ darkMode }) => {
                 )}
             </AnimatePresence>
 
-            {/* View Image Modal */}
             <AnimatePresence>
                 {viewImageModal && (
                     <div
@@ -1126,7 +1122,6 @@ const JadwalDetail = ({ darkMode }) => {
                 )}
             </AnimatePresence>
 
-            {/* View Report Modal */}
             <AnimatePresence>
                 {viewReportModal && (
                     <div

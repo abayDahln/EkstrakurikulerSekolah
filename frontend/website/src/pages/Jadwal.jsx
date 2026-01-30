@@ -9,6 +9,9 @@ import {
 	FiUser,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import config from "../config/config";
+import { fetchWithTimeout } from "../utils/utils";
+import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonCard = ({ darkMode }) => (
 	<div
@@ -218,8 +221,8 @@ const CreateScheduleModal = ({
 		try {
 			const token =
 				localStorage.getItem("token") || sessionStorage.getItem("token");
-			const response = await fetch(
-				"http://localhost:5000/api/pembina/schedule",
+			const response = await fetchWithTimeout(
+				`${config.BASE_URL}/api/pembina/schedule`,
 				{
 					method: "POST",
 					headers: {
@@ -472,12 +475,12 @@ const Jadwal = ({ darkMode }) => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
-	const [isServerDown, setIsServerDown] = useState(false);
-	const [hasAnimated, setHasAnimated] = useState(false);
+	const { setIsServerDown } = useConnection();
 	const navigate = useNavigate();
 
-	const API_URL = "http://localhost:5000";
+	const API_URL = config.BASE_URL;
 	const searchTimeoutRef = useRef(null);
+	const intervalRef = useRef(null);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -498,7 +501,7 @@ const Jadwal = ({ darkMode }) => {
 				const token =
 					localStorage.getItem("token") || sessionStorage.getItem("token");
 
-				const scheduleResponse = await fetch(`${API_URL}/api/schedule`, {
+				const scheduleResponse = await fetchWithTimeout(`${API_URL}/api/schedule`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
 
@@ -510,7 +513,7 @@ const Jadwal = ({ darkMode }) => {
 					setScheduleList(scheduleResult.data || []);
 				}
 
-				const dashboardResponse = await fetch(
+				const dashboardResponse = await fetchWithTimeout(
 					`${API_URL}/api/pembina/dashboard`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
@@ -523,7 +526,7 @@ const Jadwal = ({ darkMode }) => {
 						setEkskulList(dashboardResult.data?.ekskulList || []);
 					}
 				} else {
-					const ekskulResponse = await fetch(
+					const ekskulResponse = await fetchWithTimeout(
 						`${API_URL}/api/pembina/my-extracurricular`,
 						{
 							headers: { Authorization: `Bearer ${token}` },
@@ -549,12 +552,19 @@ const Jadwal = ({ darkMode }) => {
 			}
 		};
 
-		setTimeout(() => {
+		fetchData();
+
+		const handleRetry = () => {
 			fetchData();
-		}, 1000);
+		};
+
+		window.addEventListener("retry-connection", handleRetry);
+
+		intervalRef.current = setInterval(fetchData, 60000);
 
 		return () => {
-			isMounted = false;
+			if (intervalRef.current) clearInterval(intervalRef.current);
+			window.removeEventListener("retry-connection", handleRetry);
 		};
 	}, []);
 
@@ -576,7 +586,7 @@ const Jadwal = ({ darkMode }) => {
 		try {
 			const token =
 				localStorage.getItem("token") || sessionStorage.getItem("token");
-			const response = await fetch(`${API_URL}/api/schedule`, {
+			const response = await fetchWithTimeout(`${API_URL}/api/schedule`, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 
@@ -595,7 +605,7 @@ const Jadwal = ({ darkMode }) => {
 		try {
 			const token =
 				localStorage.getItem("token") || sessionStorage.getItem("token");
-			const response = await fetch(
+			const response = await fetchWithTimeout(
 				`${API_URL}/api/schedule?search=${encodeURIComponent(search)}`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
@@ -666,8 +676,8 @@ const Jadwal = ({ darkMode }) => {
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
 							className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 transition-all ${darkMode
-									? "bg-slate-800 border-slate-700 text-white placeholder-slate-500"
-									: "bg-white border-slate-200 text-slate-900 placeholder-slate-400"
+								? "bg-slate-800 border-slate-700 text-white placeholder-slate-500"
+								: "bg-white border-slate-200 text-slate-900 placeholder-slate-400"
 								} focus:outline-none focus:ring-4 ${darkMode ? "focus:ring-sky-900/50" : "focus:ring-sky-100"
 								}`}
 						/>

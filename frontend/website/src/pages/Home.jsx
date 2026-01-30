@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Calendar from "../components/Calendar.jsx";
-import sessionManager from "../utils/utils.jsx";
+import Calendar, { SkeletonCalendar } from "../components/Calendar.jsx";
+import sessionManager, { fetchWithTimeout } from "../utils/utils.jsx";
+import { useConnection } from "../context/ConnectionContext.jsx";
 import {
 	BarChart,
 	Bar,
@@ -12,39 +13,23 @@ import {
 	ResponsiveContainer,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+import config from "../config/config";
 
 const SkeletonCard = ({ darkMode }) => (
-	<div
-		className={`rounded-2xl shadow-lg p-5 ${darkMode ? "bg-slate-800" : "bg-white"
-			}`}
-	>
-		<div
-			className={`h-8 w-16 rounded animate-pulse mb-2 ${darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
-		/>
-		<div
-			className={`h-3 w-24 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
-		/>
+	<div className={`rounded-2xl shadow-lg p-6 ${darkMode ? "bg-slate-800" : "bg-white"} flex flex-col gap-2`}>
+		<div className={`h-8 w-1/2 rounded-lg animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+		<div className={`h-3 w-3/4 rounded-md animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
 	</div>
 );
 
 const SkeletonEkskulItem = ({ darkMode }) => {
 	const skeletonColor = darkMode ? "bg-slate-700" : "bg-slate-200";
-
 	return (
-		<div className="w-full h-64 flex items-end justify-around">
-			{Array.from({ length: 3 }).map((_, i) => (
-				<div key={i} className="flex flex-col items-center space-y-2">
-					<div
-						className={`w-12 rounded-t-lg animate-pulse ${skeletonColor}`}
-						style={{
-							height: `${Math.random() * 80 + 60}px`,
-						}}
-					></div>
-					<div
-						className={`w-16 h-3 rounded-md animate-pulse ${skeletonColor}`}
-					/>
+		<div className="w-full h-64 flex items-end justify-around px-4 pb-4">
+			{[60, 100, 80, 120, 90].map((h, i) => (
+				<div key={i} className="flex flex-col items-center gap-3 w-full max-w-[40px]">
+					<div className={`w-full rounded-t-xl animate-pulse ${skeletonColor} transition-all duration-1000`} style={{ height: `${h}px` }} />
+					<div className={`w-full h-3 rounded-md animate-pulse ${skeletonColor}`} />
 				</div>
 			))}
 		</div>
@@ -52,53 +37,26 @@ const SkeletonEkskulItem = ({ darkMode }) => {
 };
 
 const SkeletonMemberRow = ({ darkMode }) => (
-	<div className="grid grid-cols-4 items-center py-3">
+	<div className="grid grid-cols-4 items-center py-4 px-2">
 		<div className="flex items-center gap-3">
-			<div
-				className={`w-10 h-10 rounded-full animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
-			/>
-			<div className="space-y-2">
-				<div
-					className={`h-3 w-24 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-						}`}
-				/>
-				<div
-					className={`h-2 w-32 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-						}`}
-				/>
+			<div className={`w-10 h-10 rounded-full animate-pulse flex-shrink-0 ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+			<div className="space-y-2 flex-1">
+				<div className={`h-3 w-2/3 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+				<div className={`h-2 w-full rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
 			</div>
 		</div>
-		<div
-			className={`h-6 w-20 rounded-full animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
-		/>
-		<div
-			className={`h-3 w-24 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
-		/>
-		<div
-			className={`h-6 w-16 rounded-full animate-pulse ml-auto ${darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
-		/>
+		<div className={`h-4 w-20 rounded-full animate-pulse mx-auto ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+		<div className={`h-3 w-24 rounded animate-pulse mx-auto ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+		<div className={`h-6 w-16 rounded-full animate-pulse ml-auto ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
 	</div>
 );
 
 const SkeletonScheduleItem = ({ darkMode }) => (
-	<li className="flex items-center gap-3">
-		<div
-			className={`w-10 h-10 rounded-lg animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-				}`}
-		/>
+	<li className="flex items-center gap-4 p-2">
+		<div className={`w-12 h-12 rounded-xl animate-pulse flex-shrink-0 ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
 		<div className="flex-1 space-y-2">
-			<div
-				className={`h-3 w-full rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
-			/>
-			<div
-				className={`h-2 w-3/4 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"
-					}`}
-			/>
+			<div className={`h-4 w-3/4 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
+			<div className={`h-3 w-1/2 rounded animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
 		</div>
 	</li>
 );
@@ -110,12 +68,12 @@ const Home = ({ darkMode }) => {
 	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 	const [dashboardData, setDashboardData] = useState(null);
-	const [isServerDown, setIsServerDown] = useState(false);
+	const { setIsServerDown } = useConnection();
 	const [allMembers, setAllMembers] = useState([]);
 	const [memberFilter, setMemberFilter] = useState("points");
 	const [isInitialLoad, setIsInitialLoad] = useState(true);
 	const navigate = useNavigate();
-	const API_URL = "http://localhost:5000";
+	const API_URL = config.BASE_URL;
 	const intervalRef = useRef(null);
 
 	const toLocalDateStr = (dateInput) => {
@@ -219,7 +177,7 @@ const Home = ({ darkMode }) => {
 		};
 
 		try {
-			const response = await fetch(url, { ...options, headers });
+			const response = await fetchWithTimeout(url, { ...options, headers });
 
 			if (response.status === 401) {
 				sessionManager.removeToken();
@@ -245,14 +203,21 @@ const Home = ({ darkMode }) => {
 			fetchAllData();
 		}, 2000);
 
+		const handleRetry = () => {
+			fetchAllData();
+		};
+
+		window.addEventListener("retry-connection", handleRetry);
+
 		intervalRef.current = setInterval(() => {
 			fetchAllData();
-		}, 2000);
+		}, 60000);
 
 		return () => {
 			if (intervalRef.current) {
 				clearInterval(intervalRef.current);
 			}
+			window.removeEventListener("retry-connection", handleRetry);
 		};
 	}, []);
 
@@ -661,18 +626,22 @@ const Home = ({ darkMode }) => {
 				</div>
 
 				<div className="space-y-6">
-					<Calendar
-						darkMode={darkMode}
-						selectedDate={selectedDate}
-						selectedMonth={selectedMonth}
-						selectedYear={selectedYear}
-						onDateSelect={(day, month, year) => {
-							setSelectedDate(day);
-							setSelectedMonth(month);
-							setSelectedYear(year);
-						}}
-						scheduleData={scheduleData}
-					/>
+					{!dashboardData ? (
+						<SkeletonCalendar darkMode={darkMode} />
+					) : (
+						<Calendar
+							darkMode={darkMode}
+							selectedDate={selectedDate}
+							selectedMonth={selectedMonth}
+							selectedYear={selectedYear}
+							onDateSelect={(day, month, year) => {
+								setSelectedDate(day);
+								setSelectedMonth(month);
+								setSelectedYear(year);
+							}}
+							scheduleData={scheduleData}
+						/>
+					)}
 
 					<div
 						className={`rounded-2xl shadow-lg p-6 ${darkMode ? "bg-slate-800" : "bg-white"
@@ -685,7 +654,7 @@ const Home = ({ darkMode }) => {
 							Kegiatan Pada {selectedDateLabel}
 						</h3>
 
-						{scheduleData.length === 0 ? (
+						{!dashboardData ? (
 							<ul className="space-y-3">
 								<SkeletonScheduleItem darkMode={darkMode} />
 								<SkeletonScheduleItem darkMode={darkMode} />

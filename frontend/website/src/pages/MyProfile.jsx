@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import config from "../config/config";
+import { fetchWithTimeout } from "../utils/utils";
+import { useConnection } from "../context/ConnectionContext";
 import {
 	FiEdit2,
 	FiSave,
@@ -194,21 +197,21 @@ const MyProfile = ({ darkMode, onLogout }) => {
 	const [isEditingInfo, setIsEditingInfo] = useState(false);
 	const [isEditingPhoto, setIsEditingPhoto] = useState(false);
 	const [isInitialLoad, setIsInitialLoad] = useState(true);
-	const [isServerDown, setIsServerDown] = useState(false);
+	const { setIsServerDown } = useConnection();
 	const [formData, setFormData] = useState({ name: "", email: "" });
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [previewImage, setPreviewImage] = useState(null);
 	const fileInputRef = useRef(null);
 	const navigate = useNavigate();
 
-	const API_URL = "http://localhost:5000";
+	const API_URL = config.BASE_URL;
 	const intervalRef = useRef(null);
 
 	const fetchProfileData = async () => {
 		try {
 			const token =
 				localStorage.getItem("token") || sessionStorage.getItem("token");
-			const response = await fetch(`${API_URL}/api/profile`, {
+			const response = await fetchWithTimeout(`${API_URL}/api/profile`, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 
@@ -232,16 +235,21 @@ const MyProfile = ({ darkMode, onLogout }) => {
 	};
 
 	useEffect(() => {
-		setTimeout(() => {
-			fetchProfileData();
-		}, 1300);
+		fetchProfileData();
 
-		intervalRef.current = setInterval(fetchProfileData, 30000);
+		const handleRetry = () => {
+			fetchProfileData();
+		};
+
+		window.addEventListener("retry-connection", handleRetry);
+
+		intervalRef.current = setInterval(fetchProfileData, 60000);
 
 		return () => {
 			if (intervalRef.current) {
 				clearInterval(intervalRef.current);
 			}
+			window.removeEventListener("retry-connection", handleRetry);
 		};
 	}, []);
 
@@ -250,7 +258,7 @@ const MyProfile = ({ darkMode, onLogout }) => {
 			const token =
 				localStorage.getItem("token") || sessionStorage.getItem("token");
 
-			const response = await fetch(`${API_URL}/api/profile`, {
+			const response = await fetchWithTimeout(`${API_URL}/api/profile`, {
 				method: "PUT",
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -285,7 +293,7 @@ const MyProfile = ({ darkMode, onLogout }) => {
 			const photoFormData = new FormData();
 			photoFormData.append("image", selectedImage);
 
-			const response = await fetch(`${API_URL}/api/profile/photo`, {
+			const response = await fetchWithTimeout(`${API_URL}/api/profile/photo`, {
 				method: "PUT",
 				headers: { Authorization: `Bearer ${token}` },
 				body: photoFormData,

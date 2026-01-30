@@ -10,6 +10,9 @@ import {
     FiX,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import config from "../config/config";
+import { fetchWithTimeout } from "../utils/utils";
+import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonCertificate = ({ darkMode }) => (
     <div
@@ -114,7 +117,7 @@ const CreateCertificateModal = ({
             postData.append("name", formData.name);
             postData.append("memberId", formData.memberId);
 
-            const response = await fetch(`${API_URL}/api/pembina/certificate`, {
+            const response = await fetchWithTimeout(`${API_URL}/api/pembina/certificate`, {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}` },
                 body: postData,
@@ -246,17 +249,17 @@ const Certificate = ({ darkMode }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
-    const [isServerDown, setIsServerDown] = useState(false);
+    const { setIsServerDown } = useConnection();
     const [viewImageModal, setViewImageModal] = useState(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const navigate = useNavigate();
-    const API_URL = "http://localhost:5000";
+    const API_URL = config.BASE_URL;
     const intervalRef = useRef(null);
 
     const fetchCertificates = async () => {
         try {
             const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const response = await fetch(`${API_URL}/api/pembina/certificate`, {
+            const response = await fetchWithTimeout(`${API_URL}/api/pembina/certificate`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -283,7 +286,7 @@ const Certificate = ({ darkMode }) => {
     const fetchMembers = async () => {
         try {
             const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const response = await fetch(`${API_URL}/api/pembina/member`, {
+            const response = await fetchWithTimeout(`${API_URL}/api/pembina/member`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (response.ok) {
@@ -294,21 +297,30 @@ const Certificate = ({ darkMode }) => {
             }
         } catch (err) {
             console.error("Error fetching members:", err);
+            setIsServerDown(true);
         }
     };
 
     useEffect(() => {
         setIsLoading(true);
-        setTimeout(() => {
+        fetchCertificates();
+        fetchMembers();
+
+        const handleRetry = () => {
             fetchCertificates();
             fetchMembers();
-        }, 1500);
+        };
+
+        window.addEventListener("retry-connection", handleRetry);
 
         intervalRef.current = setInterval(() => {
             fetchCertificates();
             fetchMembers();
-        }, 5000);
-        return () => clearInterval(intervalRef.current);
+        }, 60000);
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            window.removeEventListener("retry-connection", handleRetry);
+        };
     }, []);
 
     useEffect(() => {
@@ -323,7 +335,7 @@ const Certificate = ({ darkMode }) => {
     const handleDownload = async (id, filename) => {
         try {
             const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const response = await fetch(`${API_URL}/api/certificate/download/${id}`, {
+            const response = await fetchWithTimeout(`${API_URL}/api/certificate/download/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -334,7 +346,6 @@ const Certificate = ({ darkMode }) => {
 
             const link = document.createElement("a");
             link.href = url;
-            // Gunakan nama dari sertifikat atau default
             const cleanFilename = filename
                 ? (filename.toLowerCase().endsWith(".png") || filename.toLowerCase().endsWith(".jpg") ? filename : `${filename}.png`)
                 : "sertifikat.png";

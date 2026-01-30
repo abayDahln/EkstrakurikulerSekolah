@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import logo from "../assets/imgs/ekskul_logo.png";
 
 export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogout }) {
   const navigate = useNavigate();
@@ -50,14 +51,8 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
           className="flex items-center gap-2 cursor-pointer select-none"
           onClick={handleLogoClick}
         >
-          <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${darkMode
-                ? "bg-gradient-to-br from-sky-700 to-cyan-700"
-                : "bg-gradient-to-br from-sky-400 to-cyan-500"
-              }`}
-          >
-            <span className="text-white text-xl font-bold">E</span>
-          </div>
+          <img src={logo} alt="" className="w-8 h-8 object-cover" />
+          
           <span
             className={`text-xl font-bold ${darkMode ? "text-white" : "text-slate-800"
               }`}

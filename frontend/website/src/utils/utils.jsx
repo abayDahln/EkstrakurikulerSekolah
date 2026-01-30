@@ -1,5 +1,21 @@
 import React from "react";
 
+export const fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
+	const controller = new AbortController();
+	const id = setTimeout(() => controller.abort(), timeout);
+	try {
+		const response = await fetch(url, {
+			...options,
+			signal: controller.signal,
+		});
+		clearTimeout(id);
+		return response;
+	} catch (error) {
+		clearTimeout(id);
+		throw error;
+	}
+};
+
 const sessionManager = {
 	getToken: () => {
 		try {
@@ -55,7 +71,7 @@ const sessionManager = {
 		try {
 			localStorage.removeItem("token");
 			localStorage.removeItem("expiredAt");
-            localStorage.removeItem("rememberMe")
+			localStorage.removeItem("rememberMe")
 			sessionStorage.removeItem("token");
 			sessionStorage.removeItem("expiredAt");
 		} catch (error) {
@@ -86,10 +102,10 @@ const sessionManager = {
 		try {
 			const rememberMe = localStorage.getItem("rememberMe");
 
-            if (rememberMe === null || rememberMe === undefined) return false;
+			if (rememberMe === null || rememberMe === undefined) return false;
 
-            const result = rememberMe === "true";
-            return result;             
+			const result = rememberMe === "true";
+			return result;
 
 		} catch (error) {
 			console.error("Error getting remember me:", error);

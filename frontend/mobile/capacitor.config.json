@@ -1,0 +1,10 @@
+{
+  "appId": "com.ekskul.app",
+  "appName": "Ekskul App",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
+}

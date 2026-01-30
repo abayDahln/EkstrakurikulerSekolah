@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom"
+import config from "../config/config";
+import { fetchWithTimeout } from "../utils/utils";
+import { useConnection } from "../context/ConnectionContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiUser, FiMail, FiAward, FiCalendar, FiUsers, FiTrendingUp, FiArrowLeft, FiTarget, FiCheckCircle, FiFileText, FiEye, FiX } from "react-icons/fi";
 
@@ -71,18 +74,18 @@ const UserProfile = ({ darkMode }) => {
   const [activeMenu, setActiveMenu] = useState(4);
   const [profileData, setProfileData] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isServerDown, setIsServerDown] = useState(false);
+  const { setIsServerDown } = useConnection();
   const [selectedCertificate, setSelectedCertificate] = useState(null);
 
   const { id } = useParams();
   const navigate = useNavigate();
-  const API_URL = "http://localhost:5000";
+  const API_URL = config.BASE_URL;
   const intervalRef = useRef(null);
 
   const fetchProfileData = async () => {
     try {
       const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-      const response = await fetch(`${API_URL}/api/profile/${id}`, {
+      const response = await fetchWithTimeout(`${API_URL}/api/profile/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const result = await response.json();
@@ -101,12 +104,19 @@ const UserProfile = ({ darkMode }) => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      fetchProfileData();
-    }, 1000);
+    fetchProfileData();
 
-    intervalRef.current = setInterval(fetchProfileData, 30000);
-    return () => clearInterval(intervalRef.current);
+    const handleRetry = () => {
+      fetchProfileData();
+    };
+
+    window.addEventListener("retry-connection", handleRetry);
+
+    intervalRef.current = setInterval(fetchProfileData, 60000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      window.removeEventListener("retry-connection", handleRetry);
+    };
   }, [id]);
 
   const handleBack = () => {
@@ -548,7 +558,7 @@ const UserProfile = ({ darkMode }) => {
                         src={`${API_URL}/${selectedCertificate.certificateUrl}`}
                         alt={selectedCertificate.certificateName}
                         className="max-w-full max-h-[70vh] rounded-lg shadow-lg"
-                        onContextMenu={(e) => e.preventDefault()} // Disable right-click for simple protection
+                        onContextMenu={(e) => e.preventDefault()}
                       />
                     </div>
 
