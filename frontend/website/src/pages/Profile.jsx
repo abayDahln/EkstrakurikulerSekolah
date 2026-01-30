@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import config from "../config/config";
-import { fetchWithTimeout } from "../utils/utils";
+import { fetchWithAuth } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiUser, FiMail, FiAward, FiCalendar, FiUsers, FiTrendingUp, FiArrowLeft, FiTarget, FiCheckCircle, FiFileText, FiEye, FiX } from "react-icons/fi";
@@ -84,10 +84,7 @@ const UserProfile = ({ darkMode }) => {
 
   const fetchProfileData = async () => {
     try {
-      const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-      const response = await fetchWithTimeout(`${API_URL}/api/profile/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await fetchWithAuth(`${API_URL}/api/profile/${id}`);
       const result = await response.json();
 
       if (result.status === 200) {

@@ -21,7 +21,7 @@ const Download = ({ darkMode }) => {
                 "Update Point Otomatis",
                 "Sertifikat Keaktifan Ekskul"
             ],
-            action: "Download APK",
+            action: "Download .apk",
             link: config.DOWNLOAD_LINKS.ANDROID,
             popular: true
         },
@@ -33,11 +33,11 @@ const Download = ({ darkMode }) => {
             icon: <FaApple className="text-4xl text-slate-800 dark:text-slate-200" />,
             features: [
                 "Antarmuka Premium iOS",
-                "Integrasi Apple Calendar",
+                "Fitur Calendar Canggih",
                 "Notifikasi Push Cepat",
-                "Tersedia di App Store"
+                "UX yang Lebih Baik"
             ],
-            action: "Download di App Store",
+            action: "Download .ipa",
             link: config.DOWNLOAD_LINKS.IOS
         },
         {

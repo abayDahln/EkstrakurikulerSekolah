@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Calendar, { SkeletonCalendar } from "../components/Calendar.jsx";
-import sessionManager, { fetchWithTimeout } from "../utils/utils.jsx";
+import { sessionManager, fetchWithAuth } from "../utils/utils.jsx";
 import { useConnection } from "../context/ConnectionContext.jsx";
 import {
 	BarChart,
@@ -68,7 +68,7 @@ const Home = ({ darkMode }) => {
 	const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 	const [dashboardData, setDashboardData] = useState(null);
-	const { setIsServerDown } = useConnection();
+	const { isServerDown, setIsServerDown } = useConnection();
 	const [allMembers, setAllMembers] = useState([]);
 	const [memberFilter, setMemberFilter] = useState("points");
 	const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -86,13 +86,6 @@ const Home = ({ darkMode }) => {
 
 	const fetchAllData = async () => {
 		try {
-			const token = sessionManager.getToken();
-			if (!token) {
-				sessionManager.removeToken();
-				window.location.href = "/";
-				return;
-			}
-
 			const dashboardResponse = await fetchWithAuth(
 				`${API_URL}/api/pembina/dashboard`
 			);
@@ -101,8 +94,6 @@ const Home = ({ darkMode }) => {
 			if (dashboardResult.status === 200) {
 				setDashboardData(dashboardResult.data);
 				setIsServerDown(false);
-			} else if (dashboardResult.status === 401) {
-				throw new Error("Unauthorized");
 			}
 
 			const memberResponse = await fetchWithAuth(
@@ -116,8 +107,6 @@ const Home = ({ darkMode }) => {
 					ekskul: member.extracurricular?.name || "-",
 				}));
 				setAllMembers(membersWithEkskul);
-			} else if (memberResult.status === 401) {
-				throw new Error("Unauthorized");
 			}
 
 			const scheduleResponse = await fetchWithAuth(
@@ -131,8 +120,6 @@ const Home = ({ darkMode }) => {
 					localDate: toLocalDateStr(item.scheduleDate),
 				}));
 				setScheduleData(localSchedules);
-			} else if (scheduleResult.status === 401) {
-				throw new Error("Unauthorized");
 			}
 
 			if (isInitialLoad) {
@@ -140,16 +127,6 @@ const Home = ({ darkMode }) => {
 			}
 		} catch (error) {
 			console.error("Error fetching data:", error);
-
-			if (
-				error.message.includes("Unauthorized") ||
-				error.message.includes("No token")
-			) {
-				sessionManager.removeToken();
-				window.location.href = "/";
-				return;
-			}
-
 			setIsServerDown(true);
 			setDashboardData(null);
 			setAllMembers([]);
@@ -158,42 +135,6 @@ const Home = ({ darkMode }) => {
 			if (isInitialLoad) {
 				setIsInitialLoad(false);
 			}
-		}
-	};
-
-	const fetchWithAuth = async (url, options = {}) => {
-		const token = sessionManager.getToken();
-
-		if (!token) {
-			sessionManager.removeToken();
-			window.location.href = "/";
-			throw new Error("No token found");
-		}
-
-		const headers = {
-			Authorization: `Bearer ${token}`,
-			"Content-Type": "application/json",
-			...options.headers,
-		};
-
-		try {
-			const response = await fetchWithTimeout(url, { ...options, headers });
-
-			if (response.status === 401) {
-				sessionManager.removeToken();
-				window.location.href = "/";
-				throw new Error("Unauthorized - Token expired or invalid");
-			}
-
-			return response;
-		} catch (error) {
-			if (
-				error.message.includes("Unauthorized") ||
-				error.message.includes("No token")
-			) {
-				throw error;
-			}
-			throw error;
 		}
 	};
 

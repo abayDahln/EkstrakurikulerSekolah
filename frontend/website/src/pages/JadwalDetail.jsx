@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithTimeout } from "../utils/utils";
+import { fetchWithAuth } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 import {
     FiClock,
@@ -150,13 +150,8 @@ const JadwalDetail = ({ darkMode }) => {
 
     const fetchScheduleDetail = async () => {
         try {
-            const token =
-                localStorage.getItem("token") || sessionStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
-            const response = await fetchWithTimeout(
-                `${API_URL}/api/pembina/schedule/${id}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+            const response = await fetchWithAuth(
+                `${API_URL}/api/pembina/schedule/${id}`
             );
 
             if (!response.ok) {
@@ -241,13 +236,10 @@ const JadwalDetail = ({ darkMode }) => {
             formData.append("scheduleId", id);
             formData.append("Title", documentationTitle);
 
-            const response = await fetchWithTimeout(
+            const response = await fetchWithAuth(
                 `${API_URL}/api/pembina/documentation`,
                 {
                     method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
                     body: formData,
                 }
             );

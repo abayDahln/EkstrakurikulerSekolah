@@ -10,7 +10,7 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithTimeout } from "../utils/utils";
+import { fetchWithAuth } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonCard = ({ darkMode }) => (
@@ -219,16 +219,10 @@ const CreateScheduleModal = ({
 		}
 
 		try {
-			const token =
-				localStorage.getItem("token") || sessionStorage.getItem("token");
-			const response = await fetchWithTimeout(
+			const response = await fetchWithAuth(
 				`${config.BASE_URL}/api/pembina/schedule`,
 				{
 					method: "POST",
-					headers: {
-						Authorization: `Bearer ${token}`,
-						"Content-Type": "application/json",
-					},
 					body: JSON.stringify({
 						...formData,
 						extracurricularId: parseInt(formData.extracurricularId),
@@ -252,6 +246,7 @@ const CreateScheduleModal = ({
 			setLoading(false);
 		}
 	};
+
 
 	if (!isOpen) return null;
 
@@ -498,12 +493,7 @@ const Jadwal = ({ darkMode }) => {
 				setIsLoading(true);
 				setIsServerDown(false);
 
-				const token =
-					localStorage.getItem("token") || sessionStorage.getItem("token");
-
-				const scheduleResponse = await fetchWithTimeout(`${API_URL}/api/schedule`, {
-					headers: { Authorization: `Bearer ${token}` },
-				});
+				const scheduleResponse = await fetchWithAuth(`${API_URL}/api/schedule`);
 
 				if (!scheduleResponse.ok) throw new Error("Server tidak merespons");
 
@@ -513,11 +503,8 @@ const Jadwal = ({ darkMode }) => {
 					setScheduleList(scheduleResult.data || []);
 				}
 
-				const dashboardResponse = await fetchWithTimeout(
-					`${API_URL}/api/pembina/dashboard`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
+				const dashboardResponse = await fetchWithAuth(
+					`${API_URL}/api/pembina/dashboard`
 				);
 
 				if (dashboardResponse.ok) {
@@ -526,11 +513,8 @@ const Jadwal = ({ darkMode }) => {
 						setEkskulList(dashboardResult.data?.ekskulList || []);
 					}
 				} else {
-					const ekskulResponse = await fetchWithTimeout(
-						`${API_URL}/api/pembina/my-extracurricular`,
-						{
-							headers: { Authorization: `Bearer ${token}` },
-						}
+					const ekskulResponse = await fetchWithAuth(
+						`${API_URL}/api/pembina/my-extracurricular`
 					);
 
 					if (ekskulResponse.ok) {
@@ -584,11 +568,7 @@ const Jadwal = ({ darkMode }) => {
 
 	const fetchOriginalData = async () => {
 		try {
-			const token =
-				localStorage.getItem("token") || sessionStorage.getItem("token");
-			const response = await fetchWithTimeout(`${API_URL}/api/schedule`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
+			const response = await fetchWithAuth(`${API_URL}/api/schedule`);
 
 			if (response.ok) {
 				const result = await response.json();
@@ -603,13 +583,8 @@ const Jadwal = ({ darkMode }) => {
 
 	const handleSearch = async (search) => {
 		try {
-			const token =
-				localStorage.getItem("token") || sessionStorage.getItem("token");
-			const response = await fetchWithTimeout(
-				`${API_URL}/api/schedule?search=${encodeURIComponent(search)}`,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
+			const response = await fetchWithAuth(
+				`${API_URL}/api/schedule?search=${encodeURIComponent(search)}`
 			);
 
 			if (response.ok) {

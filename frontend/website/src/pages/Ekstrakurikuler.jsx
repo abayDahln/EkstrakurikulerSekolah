@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import config from "../config/config";
-import { fetchWithTimeout } from "../utils/utils";
+import { fetchWithAuth } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonCard = ({ darkMode }) => (
@@ -139,7 +139,7 @@ const Ekstrakurikuler = ({ darkMode }) => {
 	const [ekskulList, setEkskulList] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
-	const { setIsServerDown } = useConnection();
+	const { isServerDown, setIsServerDown } = useConnection();
 	const navigate = useNavigate();
 
 	const API_URL = config.BASE_URL;
@@ -152,12 +152,7 @@ const Ekstrakurikuler = ({ darkMode }) => {
 				setIsLoading(true);
 				setIsServerDown(false);
 
-				const token =
-					localStorage.getItem("token") || sessionStorage.getItem("token");
-
-				const response = await fetchWithTimeout(`${API_URL}/api/extracurricular`, {
-					headers: { Authorization: `Bearer ${token}` },
-				});
+				const response = await fetchWithAuth(`${API_URL}/api/extracurricular`);
 
 				if (!response.ok) throw new Error("Server tidak merespons");
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithTimeout } from "../utils/utils";
+import { fetchWithAuth } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 import {
 	FiEdit2,
@@ -209,11 +209,7 @@ const MyProfile = ({ darkMode, onLogout }) => {
 
 	const fetchProfileData = async () => {
 		try {
-			const token =
-				localStorage.getItem("token") || sessionStorage.getItem("token");
-			const response = await fetchWithTimeout(`${API_URL}/api/profile`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
+			const response = await fetchWithAuth(`${API_URL}/api/pembina/profile`);
 
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -255,13 +251,9 @@ const MyProfile = ({ darkMode, onLogout }) => {
 
 	const handleSaveInfo = async () => {
 		try {
-			const token =
-				localStorage.getItem("token") || sessionStorage.getItem("token");
-
-			const response = await fetchWithTimeout(`${API_URL}/api/profile`, {
+			const response = await fetchWithAuth(`${API_URL}/api/pembina/profile`, {
 				method: "PUT",
 				headers: {
-					Authorization: `Bearer ${token}`,
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(formData),
@@ -288,14 +280,11 @@ const MyProfile = ({ darkMode, onLogout }) => {
 		}
 
 		try {
-			const token =
-				localStorage.getItem("token") || sessionStorage.getItem("token");
 			const photoFormData = new FormData();
 			photoFormData.append("image", selectedImage);
 
-			const response = await fetchWithTimeout(`${API_URL}/api/profile/photo`, {
+			const response = await fetchWithAuth(`${API_URL}/api/pembina/profile/photo`, {
 				method: "PUT",
-				headers: { Authorization: `Bearer ${token}` },
 				body: photoFormData,
 			});
 

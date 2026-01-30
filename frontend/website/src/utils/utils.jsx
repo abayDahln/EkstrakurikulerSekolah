@@ -1,34 +1,13 @@
 import React from "react";
 
-export const fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
-	const controller = new AbortController();
-	const id = setTimeout(() => controller.abort(), timeout);
-	try {
-		const response = await fetch(url, {
-			...options,
-			signal: controller.signal,
-		});
-		clearTimeout(id);
-		return response;
-	} catch (error) {
-		clearTimeout(id);
-		throw error;
-	}
-};
-
-const sessionManager = {
+export const sessionManager = {
 	getToken: () => {
 		try {
-			// SELALU baca dari localStorage
 			const token = localStorage.getItem("token");
 			const expiredAt = localStorage.getItem("expiredAt");
-			const rememberMe = sessionManager.getRememberMe();
 
-			if (!token || !expiredAt) {
-				return null;
-			}
+			if (!token || !expiredAt) return null;
 
-			// Check expiration
 			const now = Date.now();
 			const exp = Date.parse(expiredAt);
 
@@ -45,7 +24,6 @@ const sessionManager = {
 
 	setToken: (token, expiredAt, rememberMe = false) => {
 		try {
-			// If expiredAt is not provided from API, set to 1 day from now
 			let finalExpiredAt = expiredAt;
 			if (!expiredAt) {
 				const oneDayFromNow = new Date();
@@ -71,7 +49,7 @@ const sessionManager = {
 		try {
 			localStorage.removeItem("token");
 			localStorage.removeItem("expiredAt");
-			localStorage.removeItem("rememberMe")
+			localStorage.removeItem("rememberMe");
 			sessionStorage.removeItem("token");
 			sessionStorage.removeItem("expiredAt");
 		} catch (error) {
@@ -101,12 +79,8 @@ const sessionManager = {
 	getRememberMe: () => {
 		try {
 			const rememberMe = localStorage.getItem("rememberMe");
-
 			if (rememberMe === null || rememberMe === undefined) return false;
-
-			const result = rememberMe === "true";
-			return result;
-
+			return rememberMe === "true";
 		} catch (error) {
 			console.error("Error getting remember me:", error);
 			return false;
@@ -140,4 +114,42 @@ const sessionManager = {
 	},
 };
 
-export default sessionManager;
+export const fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
+	const controller = new AbortController();
+	const id = setTimeout(() => controller.abort(), timeout);
+	try {
+		const response = await fetch(url, {
+			...options,
+			signal: controller.signal,
+		});
+		clearTimeout(id);
+
+		if ((response.status === 401 || response.status === 403) && !url.includes("/auth/")) {
+			sessionManager.removeToken();
+			window.location.href = "/";
+		}
+
+		return response;
+	} catch (error) {
+		clearTimeout(id);
+		throw error;
+	}
+};
+
+export const fetchWithAuth = async (url, options = {}, timeout = 10000) => {
+	const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+	const headers = { ...options.headers };
+
+	if (token) {
+		headers["Authorization"] = `Bearer ${token}`;
+	}
+
+	if (options.body && !(options.body instanceof FormData) && !headers["Content-Type"]) {
+		headers["Content-Type"] = "application/json";
+	}
+
+	return fetchWithTimeout(url, { ...options, headers }, timeout);
+};
+
+
+

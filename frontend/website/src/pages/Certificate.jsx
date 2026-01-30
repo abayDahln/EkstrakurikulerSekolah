@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithTimeout } from "../utils/utils";
+import { fetchWithAuth } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonCertificate = ({ darkMode }) => (
@@ -111,15 +111,13 @@ const CreateCertificateModal = ({
         setError("");
 
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
             const postData = new FormData();
             postData.append("image", image);
             postData.append("name", formData.name);
             postData.append("memberId", formData.memberId);
 
-            const response = await fetchWithTimeout(`${API_URL}/api/pembina/certificate`, {
+            const response = await fetchWithAuth(`${API_URL}/api/pembina/certificate`, {
                 method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
                 body: postData,
             });
 
@@ -249,7 +247,7 @@ const Certificate = ({ darkMode }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
-    const { setIsServerDown } = useConnection();
+    const { isServerDown, setIsServerDown } = useConnection();
     const [viewImageModal, setViewImageModal] = useState(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const navigate = useNavigate();
@@ -258,10 +256,7 @@ const Certificate = ({ darkMode }) => {
 
     const fetchCertificates = async () => {
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const response = await fetchWithTimeout(`${API_URL}/api/pembina/certificate`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await fetchWithAuth(`${API_URL}/api/pembina/certificate`);
 
             if (!response.ok) {
                 throw new Error("Failed to fetch certificates");
@@ -285,10 +280,7 @@ const Certificate = ({ darkMode }) => {
 
     const fetchMembers = async () => {
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const response = await fetchWithTimeout(`${API_URL}/api/pembina/member`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await fetchWithAuth(`${API_URL}/api/pembina/member`);
             if (response.ok) {
                 const result = await response.json();
                 if (result.status === 200) {
@@ -334,12 +326,10 @@ const Certificate = ({ darkMode }) => {
 
     const handleDownload = async (id, filename) => {
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const response = await fetchWithTimeout(`${API_URL}/api/certificate/download/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await fetchWithAuth(`${API_URL}/api/certificate/download/${id}`);
 
             if (!response.ok) throw new Error("Gagal mengunduh sertifikat");
+
 
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);

@@ -11,7 +11,7 @@ import Landing from "./pages/Landing.jsx";
 import Login from "./pages/Login.jsx";
 import Download from "./pages/Download.jsx";
 import Home from "./pages/Home.jsx";
-import sessionManager from "./utils/utils.jsx";
+import { sessionManager } from "./utils/utils.jsx";
 import Ekstrakurikuler from "./pages/Ekstrakurikuler.jsx";
 import EkstrakurikulerDetail from "./pages/EkstrakurikulerDetail.jsx";
 import MyProfile from "./pages/MyProfile.jsx";
@@ -90,26 +90,18 @@ function App() {
 	}, []);
 
 	const initializeApp = () => {
-
 		try {
-
 			const savedTheme = sessionManager.getTheme();
 			const systemPrefersDark = window.matchMedia(
 				"(prefers-color-scheme: dark)"
 			).matches;
-
 
 			if (savedTheme !== null) {
 				setDarkMode(savedTheme);
 			} else {
 				setDarkMode(systemPrefersDark);
 			}
-
 			setIsLoading(false);
-
-			return () => {
-				window.removeEventListener("beforeunload", handleBeforeUnload);
-			};
 		} catch (error) {
 			console.error("Error initializing app:", error);
 			setIsLoading(false);
@@ -118,9 +110,7 @@ function App() {
 
 	useEffect(() => {
 		if (!isLoading) {
-
 			sessionManager.setTheme(darkMode);
-
 			if (darkMode) {
 				document.body.classList.add("dark");
 				document.body.classList.remove("light");
@@ -134,6 +124,7 @@ function App() {
 			}
 		}
 	}, [darkMode, isLoading]);
+
 
 	const toggleDarkMode = () => {
 		setDarkMode(!darkMode);
