@@ -236,6 +236,7 @@ function App() {
     const handleLogout = () => {
         sessionManager.removeToken();
         sessionManager.setRememberMe(false);
+        sessionStorage.removeItem("isDemoMode");
     };
 
     if (isOffline || isServerDown) {

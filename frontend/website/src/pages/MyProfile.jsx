@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithAuth } from "../utils/utils";
+import { fetchWithAuth, getImageUrl } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 import {
 	FiEdit2,
@@ -197,10 +197,11 @@ const MyProfile = ({ darkMode, onLogout }) => {
 	const [isEditingInfo, setIsEditingInfo] = useState(false);
 	const [isEditingPhoto, setIsEditingPhoto] = useState(false);
 	const [isInitialLoad, setIsInitialLoad] = useState(true);
-	const { setIsServerDown } = useConnection();
+	const { isServerDown, setIsServerDown } = useConnection();
 	const [formData, setFormData] = useState({ name: "", email: "" });
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [previewImage, setPreviewImage] = useState(null);
+	const [hasAnimated, setHasAnimated] = useState(false);
 	const fileInputRef = useRef(null);
 	const navigate = useNavigate();
 
@@ -388,7 +389,7 @@ const MyProfile = ({ darkMode, onLogout }) => {
 							<div className="text-center">
 								<div className="relative inline-block mb-4">
 									<img
-										src={previewImage || `${API_URL}/${profileData.profileUrl}`}
+										src={previewImage || getImageUrl(profileData.profileUrl)}
 										alt={profileData.name}
 										className="w-32 h-32 rounded-full object-cover mx-auto border-4 border-sky-500"
 										onError={(e) => {

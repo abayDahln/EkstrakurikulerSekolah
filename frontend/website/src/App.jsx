@@ -138,6 +138,7 @@ function App() {
 
 	const handleLogout = () => {
 		sessionManager.removeToken();
+		sessionManager.setDemoMode(false);
 		sessionManager.setRememberMe(false);
 	};
 

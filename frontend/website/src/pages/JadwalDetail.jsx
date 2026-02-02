@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithAuth } from "../utils/utils";
+import { fetchWithAuth, getImageUrl } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 import {
     FiClock,
@@ -97,7 +97,7 @@ const JadwalDetail = ({ darkMode }) => {
     const navigate = useNavigate();
     const [scheduleDetail, setScheduleDetail] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const { setIsServerDown } = useConnection();
+    const { isServerDown, setIsServerDown } = useConnection();
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -422,7 +422,7 @@ const JadwalDetail = ({ darkMode }) => {
                             >
                                 <div className="flex items-start gap-4 mb-6">
                                     <img
-                                        src={`${API_URL}/${scheduleDetail.schedule?.extracurricular?.imageUrl}`}
+                                        src={getImageUrl(scheduleDetail.schedule?.extracurricular?.imageUrl)}
                                         alt={scheduleDetail.schedule?.extracurricular?.name}
                                         className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
                                         onError={(e) => {
@@ -693,7 +693,7 @@ const JadwalDetail = ({ darkMode }) => {
                                                             }`}
                                                     >
                                                         <img
-                                                            src={`${API_URL}/${attendance.profileUrl}`}
+                                                            src={getImageUrl(attendance.profileUrl)}
                                                             alt={attendance.name}
                                                             className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                                                             onError={(e) =>
@@ -811,7 +811,7 @@ const JadwalDetail = ({ darkMode }) => {
                                             >
                                                 <div className="aspect-video relative">
                                                     <img
-                                                        src={`${API_URL}/${doc.fileUrl}`}
+                                                        src={getImageUrl(doc.fileUrl)}
                                                         alt={doc.documentationTitle}
                                                         className="w-full h-full object-cover"
                                                         onError={(e) => handleImageError(e, "D")}
@@ -1091,7 +1091,7 @@ const JadwalDetail = ({ darkMode }) => {
                                 <FiX className="text-2xl" />
                             </button>
                             <img
-                                src={`${API_URL}/${viewImageModal.fileUrl}`}
+                                src={getImageUrl(viewImageModal.fileUrl)}
                                 alt={viewImageModal.documentationTitle}
                                 className="max-w-full max-h-[80vh] rounded-xl object-contain"
                             />

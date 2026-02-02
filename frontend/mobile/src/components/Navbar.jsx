@@ -64,6 +64,11 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
                         >
                             Ekskul Sekolah
                         </span>
+                        {sessionStorage.getItem("isDemoMode") === "true" && (
+                            <div className="px-2 py-0.5 bg-sky-500 text-[10px] font-black text-white rounded-md shadow-lg shadow-sky-500/20 translate-y-[-1px]">
+                                DEMO
+                            </div>
+                        )}
                     </motion.div>
                 </div>
 

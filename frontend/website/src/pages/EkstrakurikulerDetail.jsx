@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaUsers, FaStar, FaChartBar, FaTrophy } from "react-icons/fa";
 import config from "../config/config";
-import { fetchWithAuth } from "../utils/utils";
+import { fetchWithAuth, getImageUrl } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonDetail = ({ darkMode }) => (
@@ -144,7 +144,7 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 						<div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
 							<img
-								src={`${API_URL}/${ekskul.imageUrl}`}
+								src={getImageUrl(ekskul.imageUrl)}
 								alt={ekskul.name}
 								className="w-full h-full object-cover"
 								onError={(e) => { e.target.src = "https://placehold.co/800x600?text=No+Image"; }}
@@ -160,7 +160,7 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
 									<p className={`text-sm font-semibold mb-3 ${darkMode ? "text-slate-400" : "text-slate-500"}`}>Pembina</p>
 									<div className="flex items-center gap-4">
 										<img
-											src={`${API_URL}/${ekskul.pembina.profile}`}
+											src={getImageUrl(ekskul.pembina.profile)}
 											alt={ekskul.pembina.name}
 											className="w-16 h-16 rounded-full object-cover"
 											onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(ekskul.pembina.name); }}
@@ -191,7 +191,7 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
 									<div key={member.id} className={`rounded-xl p-4 transition-all hover:scale-105 cursor-pointer ${darkMode ? "bg-slate-700/50 hover:bg-slate-700" : "bg-slate-50 hover:bg-slate-100"}`} onClick={() => handleProfileClick(member.id)}>
 										<div className="flex items-center gap-4">
 											<img
-												src={`${API_URL}/${member.profile}`}
+												src={getImageUrl(member.profile)}
 												alt={member.name}
 												className="w-14 h-14 rounded-full object-cover flex-shrink-0"
 												onError={(e) => { e.target.src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(member.name); }}

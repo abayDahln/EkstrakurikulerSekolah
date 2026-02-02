@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import config from "../config/config";
-import { fetchWithAuth } from "../utils/utils";
+import { fetchWithAuth, getImageUrl } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonCard = ({ darkMode }) => (
@@ -67,7 +67,7 @@ const AnimatedEkskulCard = ({ ekskul, darkMode, index, navigate, API_URL }) => {
 			>
 				<div className="relative h-48 overflow-hidden group flex-shrink-0">
 					<img
-						src={`${API_URL}/${ekskul.imageUrl}`}
+						src={getImageUrl(ekskul.imageUrl)}
 						alt={ekskul.name}
 						className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
 						onError={(e) => {
@@ -104,7 +104,7 @@ const AnimatedEkskulCard = ({ ekskul, darkMode, index, navigate, API_URL }) => {
 					<div className="flex items-center gap-3 pt-3 border-t border-slate-700/30 mt-auto">
 						<div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
 							<img
-								src={`${API_URL}/${ekskul.pembina.profile}`}
+								src={getImageUrl(ekskul.pembina.profile)}
 								alt={ekskul.pembina.name}
 								className="w-full h-full object-cover"
 								onError={(e) => {

@@ -128,6 +128,14 @@ const sessionManager = {
             const token = localStorage.getItem("token");
             if (!token) return null;
 
+            if (token === "dummy-demo-token") {
+                return {
+                    id: 1,
+                    name: "Andiansyah",
+                    role: "siswa"
+                };
+            }
+
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {

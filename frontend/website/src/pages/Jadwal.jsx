@@ -10,7 +10,7 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithAuth } from "../utils/utils";
+import { fetchWithAuth, getImageUrl } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonCard = ({ darkMode }) => (
@@ -103,7 +103,7 @@ const AnimatedScheduleCard = ({
 			>
 				<div className="flex items-start gap-4 mb-4 flex-shrink-0">
 					<img
-						src={`${API_URL}/${schedule.extracurricular.imageUrl}`}
+						src={getImageUrl(schedule.extracurricular.imageUrl)}
 						alt={schedule.extracurricular.name}
 						className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
 						onError={(e) => {
@@ -168,7 +168,7 @@ const AnimatedScheduleCard = ({
 					>
 						<FiUser className="flex-shrink-0" />
 						<span className="truncate">
-							{schedule.extracurricular.pembina.name}
+							{schedule.extracurricular.pembina?.name || "Pembina"}
 						</span>
 					</div>
 				</div>
@@ -470,7 +470,8 @@ const Jadwal = ({ darkMode }) => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
-	const { setIsServerDown } = useConnection();
+	const [hasAnimated, setHasAnimated] = useState(false);
+	const { isServerDown, setIsServerDown } = useConnection();
 	const navigate = useNavigate();
 
 	const API_URL = config.BASE_URL;

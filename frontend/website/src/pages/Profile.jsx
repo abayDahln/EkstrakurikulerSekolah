@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import config from "../config/config";
-import { fetchWithAuth } from "../utils/utils";
+import { fetchWithAuth, getImageUrl } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiUser, FiMail, FiAward, FiCalendar, FiUsers, FiTrendingUp, FiArrowLeft, FiTarget, FiCheckCircle, FiFileText, FiEye, FiX } from "react-icons/fi";
@@ -74,7 +74,7 @@ const UserProfile = ({ darkMode }) => {
   const [activeMenu, setActiveMenu] = useState(4);
   const [profileData, setProfileData] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const { setIsServerDown } = useConnection();
+  const { isServerDown, setIsServerDown } = useConnection();
   const [selectedCertificate, setSelectedCertificate] = useState(null);
 
   const { id } = useParams();
@@ -151,7 +151,7 @@ const UserProfile = ({ darkMode }) => {
               <div className={`rounded-2xl shadow-lg p-8 ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="flex flex-col items-center text-center">
                   <img
-                    src={`${API_URL}/${profileData.profileUrl}`}
+                    src={getImageUrl(profileData.profileUrl)}
                     alt={profileData.name}
                     className="w-40 h-40 rounded-full object-cover border-4 border-sky-500 mb-4 shadow-xl"
                     onError={(e) => {
@@ -384,7 +384,7 @@ const UserProfile = ({ darkMode }) => {
                       onClick={() => handleEkskulClick(ekskul.id)}
                     >
                       <img
-                        src={`${API_URL}/${ekskul.imageUrl}`}
+                        src={getImageUrl(ekskul.imageUrl)}
                         alt={ekskul.name}
                         className="w-full h-40 object-cover"
                         onError={(e) => {
@@ -468,7 +468,7 @@ const UserProfile = ({ darkMode }) => {
                       >
                         <div className="aspect-[1.414/1] relative overflow-hidden">
                           <img
-                            src={`${API_URL}/${cert.certificateUrl}`}
+                            src={getImageUrl(cert.certificateUrl)}
                             alt={cert.certificateName}
                             className="w-full h-full object-cover"
                             onError={(e) => {
@@ -552,7 +552,7 @@ const UserProfile = ({ darkMode }) => {
 
                     <div className="p-4 bg-slate-100 dark:bg-slate-900 flex items-center justify-center min-h-[400px]">
                       <img
-                        src={`${API_URL}/${selectedCertificate.certificateUrl}`}
+                        src={getImageUrl(selectedCertificate.certificateUrl)}
                         alt={selectedCertificate.certificateName}
                         className="max-w-full max-h-[70vh] rounded-lg shadow-lg"
                         onContextMenu={(e) => e.preventDefault()}

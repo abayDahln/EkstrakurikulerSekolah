@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithTimeout } from "../utils/utils";
+import { fetchWithTimeout, getImageUrl } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 
 export default function Sidebar({ darkMode, initialMenu }) {
@@ -35,7 +35,7 @@ export default function Sidebar({ darkMode, initialMenu }) {
 	const fetchProfile = async () => {
 		try {
 			const token = localStorage.getItem("token");
-			const response = await fetchWithTimeout(`${config.BASE_URL}/api/profile`, {
+			const response = await fetchWithTimeout(`${config.BASE_URL}/api/pembina/profile`, {
 				headers: { Authorization: `Bearer ${token}`, accept: "*/*" },
 			});
 
@@ -243,7 +243,7 @@ export default function Sidebar({ darkMode, initialMenu }) {
 				) : profile?.profileUrl ? (
 					<motion.img
 						variants={indicatorVariants}
-						src={`${config.BASE_URL}/${profile.profileUrl}`}
+						src={getImageUrl(profile.profileUrl)}
 						alt={profile?.name || "Profile"}
 						className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover border-2 border-sky-400"
 						onError={(e) => {

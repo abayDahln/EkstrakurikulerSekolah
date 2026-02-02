@@ -59,6 +59,32 @@ const Login = ({ darkMode, onLogin }) => {
         }
     };
 
+    const handleDemoLogin = async () => {
+        sessionStorage.setItem("isDemoMode", "true");
+        setLoading(true);
+
+        try {
+            // Trigger interceptor with real fetch call
+            const response = await fetch(`${API_URL}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: "demo@demo.com", password: "demo" }),
+            });
+
+            const responseBody = await response.json();
+            const token = responseBody.data?.token;
+            const expiredAt = responseBody.data?.expiredAt;
+
+            if (onLogin) onLogin(token, expiredAt, true);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            navigate("/home");
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div
             className={`min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-300 ${darkMode
@@ -239,6 +265,20 @@ const Login = ({ darkMode, onLogin }) => {
                             Daftar Gratis
                         </button>
                     </p>
+
+                    <div className="mt-6 flex flex-col items-center gap-3">
+                        <div className={`w-full max-w-xs h-px ${darkMode ? "bg-slate-700" : "bg-slate-200"}`}></div>
+                        <button
+                            type="button"
+                            onClick={handleDemoLogin}
+                            className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${darkMode
+                                    ? "bg-slate-800 text-sky-400 hover:bg-slate-700"
+                                    : "bg-sky-50 text-sky-600 hover:bg-sky-100"
+                                }`}
+                        >
+                            ✨ Coba Versi Demo
+                        </button>
+                    </div>
                 </motion.div>
             </div>
 

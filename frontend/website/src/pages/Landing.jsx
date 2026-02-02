@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { sessionManager } from "../utils/utils";
 
 export default function Landing({ darkMode }) {
 	const features = [
@@ -55,6 +56,13 @@ export default function Landing({ darkMode }) {
 		navigate("/download");
 	};
 
+	const handleDemoLogin = () => {
+		sessionManager.setDemoMode(true);
+		sessionManager.setToken("demo-token");
+		navigate("/home");
+		window.location.reload();
+	};
+
 	return (
 		<div
 			className={`min-h-screen transition-colors duration-500 ${darkMode
@@ -104,19 +112,31 @@ export default function Landing({ darkMode }) {
 							sertifikat digital yang terintegrasi.
 						</p>
 
-						<div className="flex justify-center">
+						<div className="flex flex-wrap justify-center gap-4">
 							<motion.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 								onClick={handleDownloadPage}
-								className={`flex items-center gap-3 text-xl font-bold py-5 px-10 rounded-full shadow-2xl transition-all duration-300
+								className={`flex items-center gap-3 text-xl font-bold py-4 px-8 rounded-full shadow-2xl transition-all duration-300
                   ${darkMode
 										? "bg-gradient-to-r from-sky-600 to-cyan-600 hover:shadow-sky-800/50 text-white"
 										: "bg-gradient-to-r from-sky-500 to-cyan-400 hover:shadow-sky-300/50 text-white"
 									}`}
 							>
 								<span>Download Sekarang</span>
+							</motion.button>
 
+							<motion.button
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								onClick={handleDemoLogin}
+								className={`flex items-center gap-3 text-xl font-bold py-4 px-8 rounded-full shadow-2xl transition-all duration-300 border-2
+                  ${darkMode
+										? "border-sky-500 text-sky-400 hover:bg-sky-900/20"
+										: "border-sky-500 text-sky-600 hover:bg-sky-50"
+									}`}
+							>
+								<span>Coba Versi Demo</span>
 							</motion.button>
 						</div>
 					</motion.div>

@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config";
-import { fetchWithAuth } from "../utils/utils";
+import { fetchWithAuth, getImageUrl } from "../utils/utils";
 import { useConnection } from "../context/ConnectionContext";
 
 const SkeletonCertificate = ({ darkMode }) => (
@@ -435,7 +435,7 @@ const Certificate = ({ darkMode }) => {
                             >
                                 <div className="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-900">
                                     <img
-                                        src={`${API_URL}/${cert.certificateUrl}`}
+                                        src={getImageUrl(cert.certificateUrl)}
                                         alt={cert.certificateName}
                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                         onError={(e) => {
@@ -473,7 +473,7 @@ const Certificate = ({ darkMode }) => {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <img
-                                                src={cert.member?.profileUrl ? `${API_URL}/${cert.member.profileUrl}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(cert.member?.name || "Member")}&background=0ea5e9&color=fff`}
+                                                src={cert.member?.profileUrl ? getImageUrl(cert.member.profileUrl) : `https://ui-avatars.com/api/?name=${encodeURIComponent(cert.member?.name || "Member")}&background=0ea5e9&color=fff`}
                                                 alt={cert.member?.name || "Member"}
                                                 className="w-8 h-8 rounded-full object-cover border-2 border-sky-500"
                                                 onError={(e) => {
@@ -525,7 +525,7 @@ const Certificate = ({ darkMode }) => {
                                 <FiX className="text-3xl" />
                             </button>
                             <img
-                                src={`${API_URL}/${viewImageModal.certificateUrl}`}
+                                src={getImageUrl(viewImageModal.certificateUrl)}
                                 alt={viewImageModal.certificateName}
                                 className="w-full h-auto rounded-xl shadow-2xl"
                                 onError={(e) => {

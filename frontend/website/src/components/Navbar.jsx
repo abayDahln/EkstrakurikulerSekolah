@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from "../assets/imgs/ekskul_logo.png";
+import config from "../config/config";
+import { sessionManager } from "../utils/utils";
 
 export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogout }) {
   const navigate = useNavigate();
@@ -52,13 +54,20 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
           onClick={handleLogoClick}
         >
           <img src={logo} alt="" className="w-8 h-8 object-cover" />
-          
-          <span
-            className={`text-xl font-bold ${darkMode ? "text-white" : "text-slate-800"
-              }`}
-          >
-            Ekskul Sekolah
-          </span>
+
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-xl font-bold ${darkMode ? "text-white" : "text-slate-800"
+                }`}
+            >
+              Ekskul Sekolah
+            </span>
+            {sessionManager.getDemoMode() && (
+              <span className="px-2 py-0.5 text-[10px] font-bold bg-sky-500 text-white rounded-full uppercase tracking-wider">
+                Demo
+              </span>
+            )}
+          </div>
         </motion.div>
 
         <div className="flex items-center gap-4">
@@ -67,8 +76,8 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
             whileTap={{ scale: 0.95 }}
             onClick={toggleDarkMode}
             className={`p-2.5 rounded-lg transition-colors duration-300 ${darkMode
-                ? "bg-slate-700 hover:bg-slate-600"
-                : "bg-sky-100 hover:bg-sky-200"
+              ? "bg-slate-700 hover:bg-slate-600"
+              : "bg-sky-100 hover:bg-sky-200"
               }`}
           >
             {darkMode ? (

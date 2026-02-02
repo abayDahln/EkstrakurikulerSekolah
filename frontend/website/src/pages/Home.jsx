@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Calendar, { SkeletonCalendar } from "../components/Calendar.jsx";
-import { sessionManager, fetchWithAuth } from "../utils/utils.jsx";
+import { sessionManager, fetchWithAuth, getImageUrl } from "../utils/utils.jsx";
 import { useConnection } from "../context/ConnectionContext.jsx";
 import {
 	BarChart,
@@ -380,7 +380,7 @@ const Home = ({ darkMode }) => {
 							</p>
 						) : (
 							<div className="w-full h-64">
-								<ResponsiveContainer width="100%" height="100%">
+								<ResponsiveContainer width="99%" height="100%" minHeight={200}>
 									<BarChart
 										data={data}
 										margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
@@ -506,7 +506,7 @@ const Home = ({ darkMode }) => {
 									>
 										<div className="flex items-center gap-3">
 											<img
-												src={`${API_URL}/${member.profileUrl}`}
+												src={getImageUrl(member.profileUrl)}
 												alt={member.name}
 												className="w-10 h-10 rounded-full object-cover"
 											/>
@@ -612,7 +612,7 @@ const Home = ({ darkMode }) => {
 								{filteredSchedules.map((item) => (
 									<li key={item.id} className="flex items-center gap-3 transition-all hover:scale-102 cursor-pointer" onClick={() => navigate(`/jadwal/${item.id}`)}>
 										<img
-											src={`${API_URL}/${item.extracurricular.imageUrl}`}
+											src={getImageUrl(item.extracurricular.imageUrl)}
 											alt={item.extracurricular.name}
 											className="w-10 h-10 rounded-lg object-cover"
 

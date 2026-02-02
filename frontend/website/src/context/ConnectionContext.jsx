@@ -24,8 +24,11 @@ export const ConnectionProvider = ({ children }) => {
         window.dispatchEvent(new CustomEvent("retry-connection"));
     };
 
+    const isDemo = localStorage.getItem("demoMode") === "true";
+    const effectiveIsServerDown = isDemo ? false : isServerDown;
+
     return (
-        <ConnectionContext.Provider value={{ isServerDown, setIsServerDown, isOffline, retryConnection }}>
+        <ConnectionContext.Provider value={{ isServerDown: effectiveIsServerDown, setIsServerDown, isOffline, retryConnection }}>
             {children}
         </ConnectionContext.Provider>
     );
