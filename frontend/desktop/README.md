@@ -17,6 +17,7 @@ Digunakan untuk manajemen data ekstrakurikuler sekolah.
 ---
 
 ## 📁 Struktur Project
+```
 desktop/
 ├─ src/ # Source code Vue
 ├─ public/ # File static publik
@@ -28,6 +29,8 @@ desktop/
 ├─ package.json
 ├─ vite.config.js
 └─ README.md
+
+```
 
 ---
 
