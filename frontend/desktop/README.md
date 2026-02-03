@@ -1,5 +1,69 @@
-# Vue 3 + Vite
+# Ekskul-Hub – Desktop App
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Aplikasi desktop berbasis **Vue 3 + Vite + Electron**  
+Digunakan untuk manajemen data ekstrakurikuler sekolah.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+---
+
+## 📦 Teknologi
+- Vue 3
+- Vite
+- Electron
+- Electron Builder
+- Tailwind CSS
+- Vue-Router
+- PrimeVue
+
+---
+
+## 📁 Struktur Project
+desktop/
+├─ src/ # Source code Vue
+├─ public/ # File static publik
+├─ dist/ # Hasil build Vite (auto)
+├─ electron/
+│ └─ main.cjs # Main process Electron
+├─ build/
+│ └─ icon.ico # Icon installer (opsional)
+├─ package.json
+├─ vite.config.js
+└─ README.md
+
+---
+
+## ⚙️ Prasyarat
+Pastikan sudah terinstall:
+- **Node.js (LTS)**
+- **npm**
+
+Cek versi:
+```bash
+node -v
+npm -v
+
+```
+
+## 📥 Install Dependency
+Jalankan di root Project:
+```bash
+npm install
+
+```
+
+## 🌐 Konfigurasi Environment
+Sesuaikan .ENV dengan URL backend
+
+## ▶️ Menjalankan Aplikasi Desktop
+```bash
+npm run desktop
+
+```
+
+## 🏗️ Build Installer
+Jalankan Di Windows PowerShell sebagai admin
+```bash
+# Your Project directory
+cd C:\Users\Name\EkstrakurikulerSekolah\frontend\desktop
+
+npm run dist
+```

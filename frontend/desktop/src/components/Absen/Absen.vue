@@ -15,7 +15,7 @@
     const scheduleAbsen = ref({})
     const selectedSchedule = ref("")
 
-    const defaultImg = "/src/assets/orang.png"
+    import defaultImg from "/orang.png"
 
     const attendanceData = computed(() => scheduleAbsen.value?.attendanceData || [])
     const attendanceSummary = computed(() => scheduleAbsen.value?.attendanceSummary || {})

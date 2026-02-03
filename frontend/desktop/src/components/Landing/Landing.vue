@@ -8,7 +8,7 @@
         <!-- Header -->
         <div class="flex justify-between p-5">
             <div class="flex items-center gap-5">
-                <img class="w-12" src="/src/assets/logo.png">
+                <img class="w-12" src="/logo.png">
                 <h4 class="text-2xl font-bold text-white">Ekskul-Hub</h4>
             </div>
             <div class="w-45 bg-linear-to-b from-blue-800 to-blue-600 flex items-center rounded-full justify-center">

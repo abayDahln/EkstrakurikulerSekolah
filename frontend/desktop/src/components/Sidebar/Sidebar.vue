@@ -23,7 +23,7 @@ const LogOut = () => {
         class="lg:flex hidden fixed top-0 left-0 h-screen bg-blue-600 flex-col h-screen w-1/6 justify-between pb-10 pt-10 gap-8 pl-2 pr-2">
         <div class="flex flex-col gap-10">
             <div class="flex items-center gap-2">
-                <img src="/src/assets/logo.png" class="w-8">
+                <img src="/logo.png" class="w-8">
                 <h3 class="font-extrabold text-white text-2xl">Ekskul-Hub</h3>
             </div>
             <div class="flex flex-col gap-5">
@@ -66,7 +66,7 @@ const LogOut = () => {
     <div class="lg:hidden bg-blue-800 w-full py-2">
         <div class="flex justify-between">
             <div class="flex items-center pl-2 gap-3">
-                <img src="/src/assets/logo.png" class="w-8">
+                <img src="/logo.png" class="w-8">
                 <h3 class=" text-white text-center font-bold">Ekskul-Hub</h3>
             </div>
             <button @click="Handleopen">

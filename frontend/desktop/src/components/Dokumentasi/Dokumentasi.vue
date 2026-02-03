@@ -19,7 +19,7 @@
     const schedule = ref({})
     const Documentations = computed(() => schedule.value?.documentations || [])
 
-    const defaultImg = "/src/assets/orang.png"
+    import defaultImg from "/orang.png"
 
     const isCreate = ref(false)
 
@@ -250,8 +250,7 @@
                             <select v-model="form.ScheduleId" class="w-full py-2 border-2 shadow-md border-gray-400/40 rounded-md pl-5">
                                 <option disabled>-- Pilih Jadwal --</option>
                                 <option v-for="e in scheduleList" :value="e.id">{{ e.title }} 
-                                    <span class="font-bold">{{ e.extracurricular.name }}
-                                    </span>
+                                    ({{ e.extracurricular.name }})
                                 </option>
                             </select>
                             <input @change="handleFile" class="w-full py-2 border-2 shadow-md border-gray-400/40 rounded-md pl-5" type="file">

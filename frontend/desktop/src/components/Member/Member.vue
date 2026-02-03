@@ -11,7 +11,7 @@
 
     const member = ref([])
 
-    const defaultImg = "/src/assets/orang.png"
+    import defaultImg from "/orang.png"
 
     const getMember = async () => {
         try{
