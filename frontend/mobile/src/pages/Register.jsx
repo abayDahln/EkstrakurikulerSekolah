@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { User, Mail, Lock } from "lucide-react";
 import config from "../config/config.js";
-import { useConnection } from "../App.jsx";
+import { useConnection } from "../utils/connectionContext.jsx";
 
 const Register = ({ darkMode, onLogin }) => {
     const navigate = useNavigate();
@@ -88,7 +88,11 @@ const Register = ({ darkMode, onLogin }) => {
                 ? "bg-slate-900"
                 : "bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50"
                 }`}
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                paddingTop: 'env(safe-area-inset-top)',
+                paddingBottom: 'env(safe-area-inset-bottom)'
+            }}
         >
             <div className="w-full max-w-md px-6 py-12 z-10">
                 <motion.div

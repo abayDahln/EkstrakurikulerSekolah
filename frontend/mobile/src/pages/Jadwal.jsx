@@ -14,9 +14,10 @@ import {
     User
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import sessionManager from "../utils/utils.jsx";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
 import config from "../config/config.js";
-import { useConnection, fetchWithTimeout } from "../App.jsx";
+import { useConnection, fetchWithTimeout } from "../utils/connectionContext.jsx";
+import mockData from "../utils/mockData.js";
 
 const Jadwal = ({ darkMode }) => {
     const navigate = useNavigate();
@@ -104,6 +105,13 @@ const Jadwal = ({ darkMode }) => {
 
     const fetchSchedules = async (silent = false) => {
         if (!silent) setLoading(true);
+
+        if (sessionManager.isDemoMode()) {
+            setSchedules(mockData.schedules);
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const response = await fetchWithTimeout(`${config.API_URL}/schedule?_=${Date.now()}`, {
@@ -207,15 +215,10 @@ const Jadwal = ({ darkMode }) => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const getFullImageUrl = (url) => {
-        if (!url) return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=250&fit=crop";
-        if (url.startsWith("http")) return url;
-        return `${config.BASE_URL}/${url}`;
-    };
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${darkMode ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-900"}`}>
-    
+
             <div className={`px-6 pt-12 pb-8 rounded-b-[2.5rem] shadow-sm transition-colors ${darkMode ? "bg-slate-800" : "bg-white"}`}>
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex gap-1">

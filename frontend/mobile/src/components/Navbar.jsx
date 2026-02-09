@@ -35,8 +35,11 @@ export default function Navbar({ darkMode, setActiveMenu, toggleDarkMode, onLogo
 
     return (
         <header
-            className={`fixed top-0 w-full z-50 px-4 backdrop-blur-md shadow-sm transition-colors duration-300 ${darkMode ? "bg-slate-800/90" : "bg-white/80"
+            className={`fixed top-0 w-full z-50 px-4 transition-colors duration-300 ${darkMode
+                ? "bg-slate-800 shadow-md"
+                : "bg-white shadow-md"
                 }`}
+            style={{ paddingTop: 'calc(env(safe-area-inset-top) + 0.5rem)' }}
         >
             <div className="w-full flex justify-between items-center px-2 sm:px-4 py-4">
                 <div className="flex items-center gap-3">

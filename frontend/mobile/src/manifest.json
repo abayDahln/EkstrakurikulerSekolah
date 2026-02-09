@@ -1,13 +1,15 @@
 {
-  "name": "App",
-  "short_name": "App",
+  "name": "Ekskul App",
+  "short_name": "Ekskul",
   "start_url": "index.html",
   "display": "standalone",
-  "icons": [{
-    "src": "assets/imgs/ekskul_logo.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }],
+  "icons": [
+    {
+      "src": "./assets/ekskul_logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
   "background_color": "#31d53d",
   "theme_color": "#31d53d"
 }

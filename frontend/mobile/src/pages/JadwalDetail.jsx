@@ -16,11 +16,12 @@ import {
     ClipboardList,
     ChevronRight
 } from "lucide-react";
-import sessionManager from "../utils/utils.jsx";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
 import config from "../config/config.js";
 import CustomDialog from "../components/CustomDialog.jsx";
 import SliderButton from "../components/SliderButton.jsx";
-import { useConnection, fetchWithTimeout } from "../App.jsx";
+import { useConnection, fetchWithTimeout } from "../utils/connectionContext.jsx";
+import mockData from "../utils/mockData.js";
 
 const JadwalDetail = ({ darkMode }) => {
     const { id } = useParams();
@@ -52,6 +53,17 @@ const JadwalDetail = ({ darkMode }) => {
     };
 
     const fetchDetail = async () => {
+        if (sessionManager.isDemoMode()) {
+            const demoSchedule = mockData.schedules.find(s => s.id === parseInt(id));
+            if (demoSchedule) {
+                setSchedule(demoSchedule);
+            } else {
+                setError("Jadwal tidak ditemukan dalam mode demo");
+            }
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const response = await fetchWithTimeout(`${config.API_URL}/schedule/${id}`, {
@@ -98,6 +110,17 @@ const JadwalDetail = ({ darkMode }) => {
         if (isSubmitting || schedule?.isAbsent) return;
 
         setIsSubmitting(true);
+
+        if (sessionManager.isDemoMode()) {
+            setTimeout(() => {
+                showDialog("Berhasil", "Absen berhasil (Mode Demo)!", "success");
+                setShowAbsenModal(false);
+                setSchedule(prev => ({ ...prev, isAbsent: true, absent: status }));
+                setIsSubmitting(false);
+            }, 1500);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const response = await fetchWithTimeout(`${config.API_URL}/schedule/attendance`, {
@@ -135,10 +158,35 @@ const JadwalDetail = ({ darkMode }) => {
     };
 
     const handleReport = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (isSubmitting || schedule?.isReported || !reportText.trim() || !reportTitle.trim()) return;
 
         setIsSubmitting(true);
+
+        if (sessionManager.isDemoMode()) {
+            setTimeout(() => {
+                showDialog("Berhasil", "Laporan berhasil dikirim (Mode Demo)!", "success");
+                setShowReportModal(false);
+                setReportText("");
+                setReportTitle("");
+                setSchedule(prev => ({
+                    ...prev,
+                    isReported: true,
+                    reports: [
+                        ...(prev.reports || []),
+                        {
+                            id: Date.now(),
+                            reportTitle,
+                            reportText,
+                            member: mockData.profile
+                        }
+                    ]
+                }));
+                setIsSubmitting(false);
+            }, 1500);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const response = await fetchWithTimeout(`${config.API_URL}/schedule/report`, {
@@ -178,11 +226,6 @@ const JadwalDetail = ({ darkMode }) => {
         }
     };
 
-    const getFullImageUrl = (url) => {
-        if (!url) return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop";
-        if (url.startsWith("http")) return url;
-        return `${config.BASE_URL}/${url}`;
-    };
 
     const formatDate = (dateStr) => {
         const d = new Date(dateStr);

@@ -20,30 +20,10 @@ import JadwalDetail from "./pages/JadwalDetail.jsx";
 import Certificate from "./pages/Certificate.jsx";
 import ErrorStatus from "./components/ErrorStatus.jsx";
 import config from "./config/config.js";
+import { SplashScreen } from "@capacitor/splash-screen";
 
 
-export const ConnectionContext = createContext();
-
-export const useConnection = () => useContext(ConnectionContext);
-
-export const fetchWithTimeout = async (resource, options = {}) => {
-    const { timeout = 10000 } = options;
-
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-
-    try {
-        const response = await fetch(resource, {
-            ...options,
-            signal: controller.signal
-        });
-        clearTimeout(id);
-        return response;
-    } catch (error) {
-        clearTimeout(id);
-        throw error;
-    }
-};
+import { ConnectionContext, fetchWithTimeout } from "./utils/connectionContext.jsx";
 
 const useTokenValidation = () => {
     const navigate = useNavigate();
@@ -119,6 +99,10 @@ function App() {
     }, []);
 
     const checkServerStatus = async () => {
+        if (sessionManager.isDemoMode()) {
+            setIsServerDown(false);
+            return true;
+        }
         try {
             const response = await fetchWithTimeout(`${config.API_URL}/profile`, {
                 method: 'GET',
@@ -183,6 +167,7 @@ function App() {
             }
 
             setIsLoading(false);
+            SplashScreen.hide();
 
             return () => {
                 window.removeEventListener("beforeunload", handleBeforeUnload);
@@ -239,7 +224,7 @@ function App() {
         sessionStorage.removeItem("isDemoMode");
     };
 
-    if (isOffline || isServerDown) {
+    if ((isOffline || isServerDown) && !sessionManager.isDemoMode()) {
         return (
             <ErrorStatus
                 isOffline={isOffline}
@@ -269,14 +254,16 @@ function App() {
                     className={`min-h-screen overflow-auto transition-colors duration-300 ${darkMode ? "bg-slate-900 text-white" : "bg-white text-slate-900"
                         }`}
                 >
-                    <Navbar
-                        darkMode={darkMode}
-                        setActiveMenu={setActiveMenu}
-                        toggleDarkMode={toggleDarkMode}
-                        onLogout={handleLogout}
-                        toggleSidebar={toggleSidebar}
-                        isSidebarOpen={isSidebarOpen}
-                    />
+                    {!["/", "/register", "/login"].includes(location.pathname) && (
+                        <Navbar
+                            darkMode={darkMode}
+                            setActiveMenu={setActiveMenu}
+                            toggleDarkMode={toggleDarkMode}
+                            onLogout={handleLogout}
+                            toggleSidebar={toggleSidebar}
+                            isSidebarOpen={isSidebarOpen}
+                        />
+                    )}
 
                     {shouldShowSidebar && (
                         <>
@@ -295,7 +282,12 @@ function App() {
                         </>
                     )}
                     <main
-                        className="pt-16 min-h-screen"
+                        className="min-h-screen"
+                        style={{
+                            paddingTop: location.pathname === "/" || location.pathname === "/register"
+                                ? "0rem"
+                                : "calc(4rem + env(safe-area-inset-top))"
+                        }}
                     >
                         <Routes>
                             <Route

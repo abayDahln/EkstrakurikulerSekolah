@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     FaHome,
@@ -8,9 +9,10 @@ import {
     FaUserCircle,
     FaTimes
 } from "react-icons/fa";
-import { useNavigate, useLocation } from "react-router-dom";
 import config from "../config/config.js";
 import logo from "../assets/imgs/ekskul_logo.png";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
+import mockData from "../utils/mockData.js";
 
 export default function Sidebar({ darkMode, initialMenu, isOpen, onClose }) {
     const [profile, setProfile] = useState(null);
@@ -30,6 +32,12 @@ export default function Sidebar({ darkMode, initialMenu, isOpen, onClose }) {
     }, [hasAnimated]);
 
     const fetchProfile = async () => {
+        if (sessionManager.isDemoMode()) {
+            setProfile(mockData.profile);
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = localStorage.getItem("token");
             const response = await fetch(`${config.API_URL}/profile`, {
@@ -165,12 +173,16 @@ export default function Sidebar({ darkMode, initialMenu, isOpen, onClose }) {
                     className={`fixed top-0 left-0 h-screen w-72 flex flex-col justify-between z-60 shadow-2xl border-r 
               ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
                         }`}
+                    style={{
+                        paddingTop: 'env(safe-area-inset-top)',
+                        paddingBottom: 'env(safe-area-inset-bottom)'
+                    }}
                 >
                     <div className="flex items-center justify-between p-5 border-b border-inherit">
                         <div className="flex items-center gap-3">
-                            
+
                             <img src={logo} alt="" className="w-8 h-8 object-cover" />
-                          
+
                             <h1
                                 className={`font-bold text-xl ${darkMode ? "text-white" : "text-slate-800"
                                     }`}
@@ -246,7 +258,7 @@ export default function Sidebar({ darkMode, initialMenu, isOpen, onClose }) {
                             <div className={`w-12 h-12 rounded-full animate-pulse ${darkMode ? "bg-slate-700" : "bg-slate-200"}`} />
                         ) : profile?.profileUrl ? (
                             <img
-                                src={`${config.BASE_URL}/${profile.profileUrl}`}
+                                src={getFullImageUrl(profile.profileUrl)}
                                 alt={profile?.name || "Profile"}
                                 className="w-12 h-12 rounded-full object-cover ring-2 ring-sky-400 p-0.5"
                                 onError={(e) => {

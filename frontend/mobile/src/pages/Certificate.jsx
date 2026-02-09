@@ -13,9 +13,10 @@ import {
     Inbox
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import sessionManager from "../utils/utils.jsx";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
 import config from "../config/config.js";
-import { useConnection, fetchWithTimeout } from "../App.jsx";
+import { useConnection, fetchWithTimeout } from "../utils/connectionContext.jsx";
+import mockData from "../utils/mockData.js";
 
 const Certificate = ({ darkMode }) => {
     const navigate = useNavigate();
@@ -27,6 +28,16 @@ const Certificate = ({ darkMode }) => {
     const { setIsServerDown } = useConnection();
 
     const fetchCertificates = async () => {
+        if (sessionManager.isDemoMode()) {
+            const demoCerts = mockData.certificates.filter(c =>
+                c.certificateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                c.extracurricularName.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setCertificates(demoCerts);
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const response = await fetchWithTimeout(`${config.API_URL}/certificate?search=${searchQuery}`, {
@@ -62,6 +73,15 @@ const Certificate = ({ darkMode }) => {
 
     const handleDownload = async (id, fileName) => {
         setIsDownloading(id);
+
+        if (sessionManager.isDemoMode()) {
+            setTimeout(() => {
+                alert("Demo Mode: Simulasi download sertifikat berhasil!");
+                setIsDownloading(null);
+            }, 1500);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const response = await fetchWithTimeout(`${config.API_URL}/certificate/download/${id}`, {
@@ -92,12 +112,6 @@ const Certificate = ({ darkMode }) => {
         } finally {
             setIsDownloading(null);
         }
-    };
-
-    const getFullImageUrl = (url) => {
-        if (!url) return null;
-        if (url.startsWith("http")) return url;
-        return `${config.BASE_URL}/${url}`;
     };
 
     const formatDate = (dateStr) => {

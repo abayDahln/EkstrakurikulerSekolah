@@ -1,4 +1,5 @@
 import React from "react";
+import config from "../config/config.js";
 
 const sessionManager = {
     getToken: () => {
@@ -152,7 +153,31 @@ const sessionManager = {
             console.error("Error decoding token:", error);
             return null;
         }
+    },
+
+    isDemoMode: () => {
+        return config.IS_DEMO_MODE || sessionStorage.getItem("isDemoMode") === "true";
     }
+};
+
+export const getFullImageUrl = (url) => {
+    if (!url) return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=250&fit=crop";
+
+    // If it's already an absolute URL, data URL, blob, or a Vite processed asset path
+    if (
+        url.startsWith("http") ||
+        url.startsWith("data:") ||
+        url.startsWith("blob:") ||
+        url.startsWith("/") ||
+        url.includes("static/js") || // Capacitor assets sometimes look like this
+        url.startsWith("capacitor://") ||
+        url.startsWith("http://localhost")
+    ) {
+        return url;
+    }
+
+    // Otherwise prepend BASE_URL
+    return `${config.BASE_URL}/${url}`;
 };
 
 export default sessionManager;

@@ -10,10 +10,11 @@ import {
     Bell,
     X
 } from "lucide-react";
-import sessionManager from "../utils/utils.jsx";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config.js";
-import { useConnection, fetchWithTimeout } from "../App.jsx";
+import { useConnection, fetchWithTimeout } from "../utils/connectionContext.jsx";
+import mockData from "../utils/mockData.js";
 
 const Home = ({ darkMode }) => {
     const navigate = useNavigate();
@@ -27,6 +28,14 @@ const Home = ({ darkMode }) => {
     const { setIsServerDown } = useConnection();
 
     const fetchData = async () => {
+        if (sessionManager.isDemoMode()) {
+            setProfile(mockData.profile);
+            setEkskuls(mockData.extracurriculars);
+            setSchedules(mockData.schedules);
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const headers = {
@@ -107,12 +116,6 @@ const Home = ({ darkMode }) => {
         if (hour < 15) return "Selamat Siang";
         if (hour < 18) return "Selamat Sore";
         return "Selamat Malam";
-    };
-
-    const getFullImageUrl = (url) => {
-        if (!url) return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=250&fit=crop";
-        if (url.startsWith("http")) return url;
-        return `${config.BASE_URL}/${url}`;
     };
 
     const joinedEkskuls = ekskuls.filter(e => e.isMember);

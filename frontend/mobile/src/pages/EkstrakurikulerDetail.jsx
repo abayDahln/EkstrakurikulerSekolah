@@ -10,12 +10,13 @@ import {
     ChevronRight,
     CircleCheck
 } from "lucide-react";
-import sessionManager from "../utils/utils.jsx";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
 import config from "../config/config.js";
 import CustomDialog from "../components/CustomDialog.jsx";
 import SliderButton from "../components/SliderButton.jsx";
 import { Info, X as CloseIcon } from "lucide-react";
-import { useConnection, fetchWithTimeout } from "../App.jsx";
+import { useConnection, fetchWithTimeout } from "../utils/connectionContext.jsx";
+import mockData from "../utils/mockData.js";
 
 const EkstrakurikulerDetail = ({ darkMode }) => {
     const { id } = useParams();
@@ -34,6 +35,23 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
     };
 
     const fetchDetail = async () => {
+        if (sessionManager.isDemoMode()) {
+            const demoEkskul = mockData.extracurriculars.find(e => e.id === parseInt(id));
+            if (demoEkskul) {
+                // Ensure pembinas is an array if the detail page expects it
+                const detailData = {
+                    ...demoEkskul,
+                    pembinas: demoEkskul.pembinas || (demoEkskul.pembina ? [demoEkskul.pembina] : [])
+                };
+                setEkskul(detailData);
+                setMembers(demoEkskul.members || []);
+            } else {
+                setError("Ekskul tidak ditemukan dalam mode demo");
+            }
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const response = await fetchWithTimeout(`${config.API_URL}/extracurricular/${id}`, {
@@ -56,10 +74,7 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
                 setError("Gagal memuat detail ekskul");
             }
         } catch (err) {
-
             console.error("Fetch detail error:", err);
-
-
             if (err.name === 'TypeError' || err.message === 'Failed to fetch') {
                 setIsServerDown(true);
             } else if (err instanceof TypeError && err.message.includes('fetch')) {
@@ -90,6 +105,17 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
 
     const confirmJoin = async () => {
         setIsJoining(true);
+
+        if (sessionManager.isDemoMode()) {
+            setTimeout(() => {
+                showDialog("Berhasil", "Berhasil bergabung (Mode Demo)!", "success");
+                setShowJoinModal(false);
+                setEkskul(prev => ({ ...prev, isMember: true }));
+                setIsJoining(false);
+            }, 1500);
+            return;
+        }
+
         const token = sessionManager.getToken();
         try {
             const response = await fetchWithTimeout(`${config.API_URL}/extracurricular/${id}/join`, {
@@ -123,11 +149,6 @@ const EkstrakurikulerDetail = ({ darkMode }) => {
         }
     };
 
-    const getFullImageUrl = (url) => {
-        if (!url) return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop";
-        if (url.startsWith("http")) return url;
-        return `${config.BASE_URL}/${url}`;
-    };
 
     if (loading) {
         return (

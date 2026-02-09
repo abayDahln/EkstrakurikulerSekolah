@@ -18,10 +18,11 @@ import {
     FileText,
     CalendarCheck2
 } from "lucide-react";
-import sessionManager from "../utils/utils.jsx";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config.js";
-import { useConnection, fetchWithTimeout } from "../App.jsx";
+import { useConnection, fetchWithTimeout } from "../utils/connectionContext.jsx";
+import mockData from "../utils/mockData.js";
 
 const MyProfile = ({ darkMode, onLogout }) => {
     const navigate = useNavigate();
@@ -40,6 +41,12 @@ const MyProfile = ({ darkMode, onLogout }) => {
     const [updateError, setUpdateError] = useState(null);
 
     const fetchProfile = async () => {
+        if (sessionManager.isDemoMode()) {
+            setProfile(mockData.profile);
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const response = await fetchWithTimeout(`${config.API_URL}/profile`, {
@@ -84,6 +91,15 @@ const MyProfile = ({ darkMode, onLogout }) => {
         setIsUpdating(true);
         setUpdateError(null);
 
+        if (sessionManager.isDemoMode()) {
+            setTimeout(() => {
+                setProfile(prev => ({ ...prev, name: editName, email: editEmail }));
+                setShowEditModal(false);
+                setIsUpdating(false);
+            }, 1000);
+            return;
+        }
+
         try {
             const token = sessionManager.getToken();
             const payload = {
@@ -126,6 +142,17 @@ const MyProfile = ({ darkMode, onLogout }) => {
         if (!file) return;
 
         setIsUpdating(true);
+
+        if (sessionManager.isDemoMode()) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfile(prev => ({ ...prev, profileUrl: reader.result }));
+                setIsUpdating(false);
+            };
+            reader.readAsDataURL(file);
+            return;
+        }
+
         const formData = new FormData();
         formData.append("image", file);
 
@@ -175,11 +202,6 @@ const MyProfile = ({ darkMode, onLogout }) => {
         }).format(date);
     };
 
-    const getFullImageUrl = (url) => {
-        if (!url) return null;
-        if (url.startsWith("http")) return url;
-        return `${config.BASE_URL}/${url}`;
-    };
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${darkMode ? "bg-slate-900" : "bg-slate-50"

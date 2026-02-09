@@ -3,7 +3,9 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import config from "../config/config.js";
-import { useConnection } from "../App.jsx";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
+import { useConnection } from "../utils/connectionContext.jsx";
+import ekskulLogo from "../assets/imgs/ekskul_logo.png";
 
 const Login = ({ darkMode, onLogin }) => {
     const navigate = useNavigate();
@@ -21,6 +23,18 @@ const Login = ({ darkMode, onLogin }) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
+        if (sessionManager.isDemoMode()) {
+            // Bypass login for demo mode
+            setTimeout(() => {
+                const dummyToken = "dummy-demo-token.eyJpZCI6MSwibmFtZSI6IkFuZGlhbnN5YWgiLCJyb2xlIjoic2lzd2EifQ.dummy";
+                const dummyExp = new Date(Date.now() + 86400000).toISOString();
+                if (onLogin) onLogin(dummyToken, dummyExp, rememberMe);
+                setLoading(false);
+                navigate("/home");
+            }, 1000);
+            return;
+        }
 
         try {
             const response = await fetch(`${API_URL}`, {
@@ -63,26 +77,14 @@ const Login = ({ darkMode, onLogin }) => {
         sessionStorage.setItem("isDemoMode", "true");
         setLoading(true);
 
-        try {
-            // Trigger interceptor with real fetch call
-            const response = await fetch(`${API_URL}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: "demo@demo.com", password: "demo" }),
-            });
-
-            const responseBody = await response.json();
-            const token = responseBody.data?.token;
-            const expiredAt = responseBody.data?.expiredAt;
-
-            if (onLogin) onLogin(token, expiredAt, true);
-            await new Promise((resolve) => setTimeout(resolve, 100));
-            navigate("/home");
-        } catch (err) {
-            console.error(err);
-        } finally {
+        // Immediate redirect for demo without waiting for real fetch
+        setTimeout(() => {
+            const dummyToken = "dummy-demo-token.eyJpZCI6MSwibmFtZSI6IkFuZGlhbnN5YWgiLCJyb2xlIjoic2lzd2EifQ.dummy";
+            const dummyExp = new Date(Date.now() + 86400000).toISOString();
+            if (onLogin) onLogin(dummyToken, dummyExp, true);
             setLoading(false);
-        }
+            navigate("/home");
+        }, 1000);
     };
 
     return (
@@ -91,9 +93,13 @@ const Login = ({ darkMode, onLogin }) => {
                 ? "bg-slate-900"
                 : "bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50"
                 }`}
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                paddingTop: 'env(safe-area-inset-top)',
+                paddingBottom: 'env(safe-area-inset-bottom)'
+            }}
         >
-            <div className="w-full max-w-md px-6 py-12 z-10">
+            <div className="w-full max-w-md px-6 pt-24 pb-12 z-10">
                 <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -104,12 +110,9 @@ const Login = ({ darkMode, onLogin }) => {
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                            className={`w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-xl mb-6 ${darkMode
-                                ? "bg-gradient-to-br from-sky-700 to-cyan-700"
-                                : "bg-gradient-to-br from-sky-400 to-cyan-500"
-                                }`}
+                            className="w-20 h-20 mx-auto mb-6 flex items-center justify-center"
                         >
-                            <span className="text-white text-3xl font-bold">E</span>
+                            <img src={ekskulLogo} alt="Logo" className="w-full h-full object-contain drop-shadow-xl" />
                         </motion.div>
                         <motion.h1
                             initial={{ y: -10, opacity: 0 }}
@@ -272,8 +275,8 @@ const Login = ({ darkMode, onLogin }) => {
                             type="button"
                             onClick={handleDemoLogin}
                             className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${darkMode
-                                    ? "bg-slate-800 text-sky-400 hover:bg-slate-700"
-                                    : "bg-sky-50 text-sky-600 hover:bg-sky-100"
+                                ? "bg-slate-800 text-sky-400 hover:bg-slate-700"
+                                : "bg-sky-50 text-sky-600 hover:bg-sky-100"
                                 }`}
                         >
                             ✨ Coba Versi Demo

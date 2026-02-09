@@ -12,10 +12,11 @@ import {
     X,
     Zap
 } from "lucide-react";
-import sessionManager from "../utils/utils.jsx";
+import sessionManager, { getFullImageUrl } from "../utils/utils.jsx";
 import { useNavigate } from "react-router-dom";
 import config from "../config/config.js";
-import { useConnection, fetchWithTimeout } from "../App.jsx";
+import { useConnection, fetchWithTimeout } from "../utils/connectionContext.jsx";
+import mockData from "../utils/mockData.js";
 
 
 const Ekstrakurikuler = ({ darkMode }) => {
@@ -29,6 +30,18 @@ const Ekstrakurikuler = ({ darkMode }) => {
 
     const fetchEkskuls = async (searchTerm = "") => {
         setIsSearching(true);
+
+        if (sessionManager.isDemoMode()) {
+            const demoEkskuls = mockData.extracurriculars.filter(e =>
+                e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                e.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setEkskuls(demoEkskuls);
+            setLoading(false);
+            setIsSearching(false);
+            return;
+        }
+
         try {
             console.log("Fetching ekskuls with search:", searchTerm);
             const token = sessionManager.getToken();
@@ -73,11 +86,6 @@ const Ekstrakurikuler = ({ darkMode }) => {
         return () => clearTimeout(delayDebounceFn);
     }, [search]);
 
-    const getFullImageUrl = (url) => {
-        if (!url) return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=250&fit=crop";
-        if (url.startsWith("http")) return url;
-        return `${config.BASE_URL}/${url}`;
-    };
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${darkMode ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-900"}`}>
