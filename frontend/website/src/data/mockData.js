@@ -12,21 +12,19 @@ import pr1 from '../assets/static_files/documentations/pramuka1.jpg';
 import bb from '../assets/static_files/banner/extracurricular_basket.jpg';
 import bp from '../assets/static_files/banner/extracurricular_pramuka.jpg';
 
-const fixPath = (path) => (path.startsWith("/") ? path.substring(1) : path);
+const profile1 = p1;
+const profile12 = p12;
+const profile4 = p4;
+const profile5 = p5;
 
-const profile1 = fixPath(p1);
-const profile12 = fixPath(p12);
-const profile4 = fixPath(p4);
-const profile5 = fixPath(p5);
+const certAndiansyah = cA;
+const certJokowi = cJ;
 
-const certAndiansyah = fixPath(cA);
-const certJokowi = fixPath(cJ);
+const basket1 = b1;
+const pramuka1 = pr1;
 
-const basket1 = fixPath(b1);
-const pramuka1 = fixPath(pr1);
-
-const bannerBasket = fixPath(bb);
-const bannerPramuka = fixPath(bp);
+const bannerBasket = bb;
+const bannerPramuka = bp;
 
 const mockData = {
     auth: {

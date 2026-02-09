@@ -775,7 +775,7 @@ const MyProfile = ({ darkMode, onLogout }) => {
 											onClick={() => handleEkskulClick(ekskul.id)}
 										>
 											<img
-												src={`${API_URL}/${ekskul.imageUrl}`}
+												src={getImageUrl(ekskul.imageUrl)}
 												alt={ekskul.name}
 												className="w-16 h-16 rounded-xl object-cover"
 												onError={(e) => {
