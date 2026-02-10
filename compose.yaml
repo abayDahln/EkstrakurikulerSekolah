@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: ekskul_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: bixkafa
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ekskul_backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=ekskul_db;Username=postgres;Password=bixkafa
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    
+  frontend:
+    build:
+      context: ./frontend/website
+      dockerfile: Dockerfile
+    container_name: ekskul_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
