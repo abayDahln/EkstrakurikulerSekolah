@@ -5,3 +5,11 @@ export const getToken = () => {
 export const removeToken = () => {
     localStorage.removeItem('token')
 }
+
+export const getDemoMode = () => {
+    return localStorage.getItem('demoMode') === 'true'
+}
+
+export const setDemoMode = (isDemo) => {
+    localStorage.setItem('demoMode', isDemo)
+}
