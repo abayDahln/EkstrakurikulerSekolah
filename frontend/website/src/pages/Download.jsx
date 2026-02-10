@@ -42,7 +42,7 @@ const Download = ({ darkMode }) => {
         },
         {
             id: "desktop",
-            title: "Desktop",
+            title: "Windows",
             user: "Pembina",
             tagline: "Manajemen Data Pembina",
             icon: <FaWindows className="text-4xl text-blue-500" />,
@@ -52,7 +52,7 @@ const Download = ({ darkMode }) => {
                 "Dashboard Real-time",
                 "Login Dengan Akun Pembina"
             ],
-            action: "Download .exe",
+            action: "Download .msi",
             link: config.DOWNLOAD_LINKS.DESKTOP
         },
         {

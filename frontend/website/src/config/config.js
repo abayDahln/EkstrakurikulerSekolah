@@ -3,9 +3,9 @@ const config = {
     API_URL: "http://localhost:5000/api",
     DEMO_MODE: false,
     DOWNLOAD_LINKS: {
-        ANDROID: "",
-        IOS: "",
-        DESKTOP: "",
+        ANDROID: "https://github.com/abayDahln/EkstrakurikulerSekolah/releases/download/Beta/EkskulApp.apk",
+        IOS: "https://github.com/abayDahln/EkstrakurikulerSekolah/releases/download/Beta/EkskulApp.ipa",
+        DESKTOP: "https://github.com/abayDahln/EkstrakurikulerSekolah/releases/download/Beta/EkskulApp.msi",
         WEB: "/login"
     }
 };
